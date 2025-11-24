@@ -642,7 +642,7 @@ cl {
     }
 
     # Main App with React Router
-    def app()  -> any {
+    def app()-> any {
         return <Router>
             <div
                 style={{"fontFamily": "system-ui, sans-serif"}}
