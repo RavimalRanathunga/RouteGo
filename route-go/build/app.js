@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 function _regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */ var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i["return"]) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } r ? i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n : (o("next", 0), o("throw", 1), o("return", 2)); }, _regeneratorDefine2(e, r, n, t); }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
@@ -667,3 +668,306 @@ function app() {
   }, [])])])]);
 }
 export { HomePage, LoginPage, Navigation, SignupPage, TodosPage, app };
+=======
+import { __jacJsx, __jacSpawn } from "@jac-client/utils";
+import { useState, useEffect } from "react";
+function SearchBusTable() {
+  return __jacJsx("div", {
+    "style": {
+      "background": "linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)",
+      "padding": "40px 20px",
+      "borderRadius": "0px",
+      "color": "white"
+    }
+  }, [__jacJsx("h3", {
+    "style": {
+      "marginBottom": "20px",
+      "fontWeight": "600"
+    }
+  }, ["Search Bus Time Table"]), __jacJsx("div", {
+    "style": {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+      gap: "20px"
+    }
+  }, [__jacJsx("div", {}, [__jacJsx("label", {}, ["From *"]), __jacJsx("select", {
+    "style": {
+      "width": "100%",
+      "padding": "10px",
+      "borderRadius": "4px",
+      "border": "1px solid #ccc",
+      "fontSize": "0.9rem"
+    }
+  }, [__jacJsx("option", {}, ["Select Start"]), __jacJsx("option", {}, ["Colombo"]), __jacJsx("option", {}, ["Jaffna"])])]), __jacJsx("div", {}, [__jacJsx("label", {}, ["To *"]), __jacJsx("select", {
+    "style": {
+      "width": "100%",
+      "padding": "10px",
+      "borderRadius": "4px",
+      "border": "1px solid #ccc",
+      "fontSize": "0.9rem"
+    }
+  }, [__jacJsx("option", {}, ["Select Destination"]), __jacJsx("option", {}, ["Colombo"]), __jacJsx("option", {}, ["Jaffna"]), __jacJsx("option", {}, ["Kandy"])])]), __jacJsx("div", {}, [__jacJsx("label", {}, ["Start Time"]), __jacJsx("select", {
+    "style": {
+      "width": "100%",
+      "padding": "10px",
+      "borderRadius": "4px",
+      "border": "1px solid #ccc",
+      "fontSize": "0.9rem"
+    }
+  }, [__jacJsx("option", {}, ["Select Start Time"]), __jacJsx("option", {}, ["00:00"]), __jacJsx("option", {}, ["01:00"]), __jacJsx("option", {}, ["02:00"]), __jacJsx("option", {}, ["03:00"]), __jacJsx("option", {}, ["04:00"]), __jacJsx("option", {}, ["05:00"]), __jacJsx("option", {}, ["06:00"]), __jacJsx("option", {}, ["07:00"]), __jacJsx("option", {}, ["08:00"]), __jacJsx("option", {}, ["09:00"]), __jacJsx("option", {}, ["10:00"]), __jacJsx("option", {}, ["11:00"]), __jacJsx("option", {}, ["12:00"]), __jacJsx("option", {}, ["13:00"]), __jacJsx("option", {}, ["14:00"]), __jacJsx("option", {}, ["15:00"]), __jacJsx("option", {}, ["16:00"]), __jacJsx("option", {}, ["17:00"]), __jacJsx("option", {}, ["18:00"]), __jacJsx("option", {}, ["19:00"]), __jacJsx("option", {}, ["20:00"]), __jacJsx("option", {}, ["21:00"]), __jacJsx("option", {}, ["22:00"]), __jacJsx("option", {}, ["23:00"])])]), __jacJsx("div", {}, [__jacJsx("label", {}, ["End Time"]), __jacJsx("select", {
+    "style": {
+      "width": "100%",
+      "padding": "10px",
+      "borderRadius": "4px",
+      "border": "1px solid #ccc",
+      "fontSize": "0.9rem"
+    }
+  }, [__jacJsx("option", {}, ["Select End Time"]), __jacJsx("option", {}, ["00:00"]), __jacJsx("option", {}, ["01:00"]), __jacJsx("option", {}, ["02:00"]), __jacJsx("option", {}, ["03:00"]), __jacJsx("option", {}, ["04:00"]), __jacJsx("option", {}, ["05:00"]), __jacJsx("option", {}, ["06:00"]), __jacJsx("option", {}, ["07:00"]), __jacJsx("option", {}, ["08:00"]), __jacJsx("option", {}, ["09:00"]), __jacJsx("option", {}, ["10:00"]), __jacJsx("option", {}, ["11:00"]), __jacJsx("option", {}, ["12:00"]), __jacJsx("option", {}, ["13:00"]), __jacJsx("option", {}, ["14:00"]), __jacJsx("option", {}, ["15:00"]), __jacJsx("option", {}, ["16:00"]), __jacJsx("option", {}, ["17:00"]), __jacJsx("option", {}, ["18:00"]), __jacJsx("option", {}, ["19:00"]), __jacJsx("option", {}, ["20:00"]), __jacJsx("option", {}, ["21:00"]), __jacJsx("option", {}, ["22:00"]), __jacJsx("option", {}, ["23:00"])])]), __jacJsx("div", {
+    "style": {
+      display: "flex",
+      alignItems: "flex-end"
+    }
+  }, [__jacJsx("button", {
+    "style": {
+      "background": "#ff7f32",
+      "border": "none",
+      "padding": "10px 25px",
+      "borderRadius": "4px",
+      "cursor": "pointer",
+      "fontSize": "1rem",
+      "fontWeight": "600",
+      "color": "white",
+      "width": "100%"
+    }
+  }, ["Search"])])])]);
+}
+function HeroSection() {
+  return __jacJsx("div", {
+    "style": {
+      "display": "flex",
+      "flexDirection": "column",
+      "alignItems": "center",
+      "justifyContent": "center",
+      "height": "100vh",
+      "background": "linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)",
+      "color": "white",
+      "textAlign": "center",
+      "padding": "0 20px",
+      "position": "relative",
+      "overflow": "hidden"
+    }
+  }, [__jacJsx("div", {
+    "style": {
+      "position": "absolute",
+      "top": "20%",
+      "left": "10%",
+      "width": "100px",
+      "height": "100px",
+      "background": "linear-gradient(45deg, #667eea, #764ba2)",
+      "borderRadius": "50%",
+      "opacity": "0.1",
+      "animation": "float 6s ease-in-out infinite"
+    }
+  }, []), __jacJsx("div", {
+    "style": {
+      "position": "absolute",
+      "top": "60%",
+      "right": "15%",
+      "width": "150px",
+      "height": "150px",
+      "background": "linear-gradient(45deg, #ff6b6b, #ee5a24)",
+      "borderRadius": "30%",
+      "opacity": "0.08",
+      "animation": "float 8s ease-in-out infinite reverse"
+    }
+  }, []), __jacJsx("div", {
+    "style": {
+      "maxWidth": "900px",
+      "animation": "slideInUp 0.8s ease-out",
+      "zIndex": 1
+    }
+  }, [__jacJsx("div", {
+    "style": {
+      "display": "inline-block",
+      "background": "rgba(255, 255, 255, 0.1)",
+      "backdropFilter": "blur(20px)",
+      "border": "1px solid rgba(255, 255, 255, 0.2)",
+      "borderRadius": "50px",
+      "padding": "8px 20px",
+      "fontSize": "0.9rem",
+      "marginBottom": "2rem",
+      "fontWeight": "500",
+      "letterSpacing": "0.5px"
+    }
+  }, ["✨ Smart Transportation Solution"]), __jacJsx("h1", {
+    "style": {
+      "fontSize": "4rem",
+      "fontWeight": "800",
+      "marginBottom": "1.5rem",
+      "background": "linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%)",
+      "WebkitBackgroundClip": "text",
+      "WebkitTextFillColor": "transparent",
+      "letterSpacing": "-0.02em",
+      "lineHeight": "1.1"
+    }
+  }, ["Route-Go", __jacJsx("br", {}, []), __jacJsx("span", {
+    "style": {
+      "fontSize": "3rem",
+      "background": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      "WebkitBackgroundClip": "text",
+      "WebkitTextFillColor": "transparent"
+    }
+  }, ["Sri Lanka"])]), __jacJsx("p", {
+    "style": {
+      "fontSize": "1.3rem",
+      "marginBottom": "3rem",
+      "opacity": "0.8",
+      "lineHeight": "1.7",
+      "fontWeight": "300",
+      "maxWidth": "600px",
+      "margin": "0 auto 3rem auto"
+    }
+  }, ["Discover optimal bus routes across all 25 districts with real-time filtering and intelligent path finding"]), __jacJsx("div", {
+    "style": {
+      "display": "flex",
+      "gap": "1rem",
+      "justifyContent": "center",
+      "marginBottom": "4rem",
+      "flexWrap": "wrap"
+    }
+  }, [__jacJsx("button", {
+    "onClick": SearchBusTable,
+    "style": {
+      "background": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      "color": "white",
+      "border": "none",
+      "padding": "16px 32px",
+      "fontSize": "1.1rem",
+      "borderRadius": "12px",
+      "cursor": "pointer",
+      "fontWeight": "600",
+      "boxShadow": "0 8px 32px rgba(102, 126, 234, 0.3)",
+      "transition": "all 0.3s ease",
+      "transform": "translateY(0)",
+      "minWidth": "180px"
+    }
+  }, ["🚀 Start Planning"])]), __jacJsx("div", {
+    "style": {
+      "display": "grid",
+      "gridTemplateColumns": "repeat(auto-fit, minmax(200px, 1fr))",
+      "gap": "1.5rem",
+      "maxWidth": "700px",
+      "margin": "0 auto"
+    }
+  }, [__jacJsx("div", {
+    "style": {
+      "background": "rgba(255, 255, 255, 0.05)",
+      "backdropFilter": "blur(20px)",
+      "border": "1px solid rgba(255, 255, 255, 0.1)",
+      "borderRadius": "16px",
+      "padding": "2rem 1.5rem",
+      "textAlign": "center",
+      "transition": "all 0.3s ease"
+    }
+  }, [__jacJsx("div", {
+    "style": {
+      "fontSize": "2.5rem",
+      "marginBottom": "1rem",
+      "background": "linear-gradient(135deg, #667eea, #764ba2)",
+      "borderRadius": "50%",
+      "width": "60px",
+      "height": "60px",
+      "display": "flex",
+      "alignItems": "center",
+      "justifyContent": "center",
+      "margin": "0 auto 1rem auto"
+    }
+  }, ["🗺️"]), __jacJsx("h4", {
+    "style": {
+      "fontSize": "1.1rem",
+      "marginBottom": "0.5rem",
+      "fontWeight": "600"
+    }
+  }, ["25 Districts"]), __jacJsx("p", {
+    "style": {
+      "fontSize": "0.9rem",
+      "opacity": "0.7",
+      "margin": 0
+    }
+  }, ["Complete coverage"])]), __jacJsx("div", {
+    "style": {
+      "background": "rgba(255, 255, 255, 0.05)",
+      "backdropFilter": "blur(20px)",
+      "border": "1px solid rgba(255, 255, 255, 0.1)",
+      "borderRadius": "16px",
+      "padding": "2rem 1.5rem",
+      "textAlign": "center",
+      "transition": "all 0.3s ease"
+    }
+  }, [__jacJsx("div", {
+    "style": {
+      "fontSize": "2.5rem",
+      "marginBottom": "1rem",
+      "background": "linear-gradient(135deg, #ff6b6b, #ee5a24)",
+      "borderRadius": "50%",
+      "width": "60px",
+      "height": "60px",
+      "display": "flex",
+      "alignItems": "center",
+      "justifyContent": "center",
+      "margin": "0 auto 1rem auto"
+    }
+  }, ["⏰"]), __jacJsx("h4", {
+    "style": {
+      "fontSize": "1.1rem",
+      "marginBottom": "0.5rem",
+      "fontWeight": "600"
+    }
+  }, ["Smart Timing"]), __jacJsx("p", {
+    "style": {
+      "fontSize": "0.9rem",
+      "opacity": "0.7",
+      "margin": 0
+    }
+  }, ["Real-time filtering"])]), __jacJsx("div", {
+    "style": {
+      "background": "rgba(255, 255, 255, 0.05)",
+      "backdropFilter": "blur(20px)",
+      "border": "1px solid rgba(255, 255, 255, 0.1)",
+      "borderRadius": "16px",
+      "padding": "2rem 1.5rem",
+      "textAlign": "center",
+      "transition": "all 0.3s ease"
+    }
+  }, [__jacJsx("div", {
+    "style": {
+      "fontSize": "2.5rem",
+      "marginBottom": "1rem",
+      "background": "linear-gradient(135deg, #00d2ff, #3a7bd5)",
+      "borderRadius": "50%",
+      "width": "60px",
+      "height": "60px",
+      "display": "flex",
+      "alignItems": "center",
+      "justifyContent": "center",
+      "margin": "0 auto 1rem auto"
+    }
+  }, ["🚌"]), __jacJsx("h4", {
+    "style": {
+      "fontSize": "1.1rem",
+      "marginBottom": "0.5rem",
+      "fontWeight": "600"
+    }
+  }, ["Multi-Route"]), __jacJsx("p", {
+    "style": {
+      "fontSize": "0.9rem",
+      "opacity": "0.7",
+      "margin": 0
+    }
+  }, ["Best connections"])])])])]);
+}
+function app() {
+  return __jacJsx("div", {}, [__jacJsx(HeroSection, {}, []), __jacJsx(SearchBusTable, {}, [])]);
+}
+export { HeroSection, SearchBusTable, app };
+>>>>>>> 0bd80e2228311001530bc21eb1b01e13f24f15cd
