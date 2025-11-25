@@ -4,8 +4,9 @@ cl import from react {
 }
 
 cl {
-
-        def SearchBusTable() -> any {
+    def SearchBusTable() -> any 
+    {
+        
             return (
         <div
             style={{
@@ -134,24 +135,6 @@ cl {
                         <option>23:00</option>
                     </select>
                 </div>
-
-                # <div>
-                #     <label>Bus Type</label>
-                #     <select style={{
-                #         "width": "100%",
-                #         "padding": "10px",
-                #         "borderRadius": "4px",
-                #         "border": "1px solid #ccc",
-                #         "fontSize": "0.9rem",
-                #     }}>
-                #         <option>Select Bus Type</option>
-                #         <option>Any</option>
-                #         <option>Normal</option>
-                #         <option>Semi-Luxury</option>
-                #         <option>Luxury</option>
-                #     </select>
-                # </div>
-
                 
                 <div style={{
                     display: "flex",
@@ -175,8 +158,7 @@ cl {
             </div>
         </div>
     );
-
-    }
+}
 
     def HeroSection() -> any {
         return <div
@@ -474,12 +456,20 @@ cl {
         </div>;
     }
 
+    def DisplaySection() -> any
+    {
+
+    }
 
 
 
     def app() -> any {
 
-        useEffect(lambda -> None{} );
+        useEffect(lambda -> None{ async def create_graph() -> None {
+            result = root spawn createGraph();
+        }create_graph();},
+        [] );
+
         return <div>
             <HeroSection />
             <SearchBusTable />

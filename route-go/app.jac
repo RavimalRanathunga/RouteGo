@@ -123,7 +123,6 @@ walker createGraph{
             intermediate_stops = ["Kegalle", "Mawanella"]
         );
     }
-
 }
 
 
