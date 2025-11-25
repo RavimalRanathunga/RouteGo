@@ -1,20 +1,6 @@
 import from byllm.lib {Model}
 glob llm = Model(model_name = "gemini/gemini-2.0-flash")
 
-def recommend_budget_bus(bus_info: str) -> str by llm();
-    Budget_friendly_bus = [];
-    for bus in available_buses {
-        if bus.fare<= user_budget;
-            Budget_friendly_bus.append(bus);
-        }
-    return
-        f"Recommended Buses within budget Rs.{user_budget}:\n" +
-        "\n".join([f"Bus {bus.bus_id}: {bus.bus_type}, Fare Rs.{bus.fare}, Time: {bus.starting_time}-{bus.reach_time}" for bus in Budget_friendly_bus]);
-    }
-
-def analyze_price_comparison(bus_list: str, budget: float) -> str by llm(method='Reason');
-
-
 enum cityType
 {
     start = "start",
@@ -60,7 +46,7 @@ edge busRoute
 edge busedge
 {
     has bus_edge_type: busedgeType;
-} 
+}
 
 walker createGraph
 {
@@ -89,10 +75,41 @@ walker createGraph
 
 walker filterRoutes
 {
-    
+    has bus_type_filter: str = "";
+    has edge_type_filter: str = "";
+    has results: list[bus] = [];
+
+    can filter with city entry
+    {
+
+    }
 }
 
 walker findResults
+{
+    has from_city: cityType;
+    has from_city_name: str;
+    has to_city: cityType;
+    has to_city_name: str;
+    has start_time: str;
+    has end_time: str;
+
+    can search with `root entry
+    {
+        start_results = [-->(`?city)](?city_type==self.from_city,name==self.from_city_name);
+        visit[-->start_results];
+        visit[-->(`?city)](?city_type==self.to_city,name==self.to_city_name);
+        visit[-->(`?bus)];
+        visit[-->(`?bus)](?starting_time >= start_time and starting_time <= end_time);
+    }
+
+    can report_buses with bus entry
+    {
+        report here;
+    }
+}
+
+walker recommendBus
 {
     has from_city: str;
     has to_city: str;
@@ -100,49 +117,16 @@ walker findResults
     has to_city_type: cityType;
     has start_time: str;
     has end_time: str;
-    has available_buses: list[bus] = [];
-
-    can search with `root entry
-    {
-        start_cities = [root-->(`?city)(?city_type == from_city_type , name == from_city)];
-        for start_city in start_cities {
-            end_cities = [(?city_type == to_city_type , name == to_city)];
-            for end_city in end_cities {
-                buses_on_route = [end_city+>:busedge+>=(`?bus)];
-                filtered_buses = buses_on_route(?starting_time >= start_time and starting_time <= end_time);
-                available_buses += filtered_buses;
-                for bus in filtered_buses {
-                    print(f"Bus ID: {bus.bus_id}, Type: {bus.bus_type}, Departure: {bus.starting_time}, Arrival: {bus.reach_time}, Fare: Rs.{bus.fare}, Stops: {bus.intermidiate_stops}");
-                }
-            }
-        }
-    }
-}
-
-walker recommendBus
-{
-    has available_buses: list[bus];
     has user_budget: float;
     has recommendation: str = "";
 
-    can recommend with `root entry
+    def recommend_best_bus(all_buses: str, from_city: str, to_city: str, start_time: str, end_time: str, budget: float) -> str by llm();
+
+    can search_and_recommend with `root entry
     {
-        if (len(available_buses) == 0) {
-            print("No buses available");
-        }
-        else {
-            bus_list = "";
-            for bus in available_buses {
-                bus_list += f"Bus {bus.bus_id}: {bus.bus_type}, Fare Rs.{bus.fare}, Time: {bus.starting_time}-{bus.reach_time}\n";
-            }
-
-            # Call 1: LLM - Analyze buses and recommend budget-friendly option
-            recommendation = recommend_budget_bus(bus_list);
-            print(f"Budget Recommendation: {recommendation}");
-
-            # Call 2: LLM with Reasoning - Get price comparison and best deal
-            price_analysis = analyze_price_comparison(bus_list, user_budget);
-            print(f"Price Analysis: {price_analysis}");
-        }
+        all_buses = [-->(`?bus)];
+        bus_list = "\n".join([f"Bus {b.bus_id}: {b.bus_type}, Fare Rs.{b.fare}, Time: {b.starting_time}-{b.reach_time}, Stops: {b.intermidiate_stops}" for b in all_buses]);
+        recommendation = self.recommend_best_bus(bus_list, from_city, to_city, start_time, end_time, user_budget);
+        print(f"Recommendation:\n{recommendation}");
     }
 }
