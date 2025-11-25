@@ -128,7 +128,35 @@ walker createGraph{
 
 
 walker findResults{
+    has from_city: cityType.start;
+    has from_city_name: str;
+    has to_city: cityType.end;
+    has to_city_name: str;
+    has start_time: str;
+    has end_time: str;
 
-    has 
+    can search with `root entry{
+
+        start_results = [-->(`?City: city_type==self.from_city, name==self.from_city_name)];
+        visit[-->start_results];
+        visit[-->(`?City: city_type==self.to_city,name==self.to_city_name)];
+        visit[-->(`?Bus)];
+    }
+
+    can report_buses with Bus entry{
+        report here;
+    }
+
 }
 
+walker filterRoutes
+{
+    has route_no: str = "";
+    has bus_type: str = "";
+    has bus_edge_type:str = "";
+
+    can filterRoutes with city entry
+    {
+        
+    }
+}
