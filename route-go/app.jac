@@ -1,1 +1,1 @@
-#test
+import from frontend.front {}
