@@ -54,15 +54,15 @@ edge busEdge{
 walker createGraph{
 
     can start with `root entry {
-        start_node_1 = root ++> City(city_type=cityType.start, name="Jaffna");
-        start_node_2 = root ++> City(city_type=cityType.start, name="Colombo");
-        start_node_3 = root ++> City(city_type=cityType.start, name="Colombo");
+        start_node_1 = root ++> City(city_type=cityType.start.value, name="Jaffna");
+        start_node_2 = root ++> City(city_type=cityType.start.value, name="Colombo");
+        start_node_3 = root ++> City(city_type=cityType.start.value, name="Colombo");
 
-        end_node_1 = start_node_1 +>: busRoute(route_number="57",distance=405) :+> City(city_type=cityType.end, name="Colombo");
-        end_node_2 = start_node_1 +>: busRoute(route_number="87",distance=450) :+> City(city_type=cityType.end, name="Colombo");
-        end_node_3 = start_node_2 +>: busRoute(route_number="57", distance=405) :+> City(city_type=cityType.end, name="Jaffna");
-        end_node_4 = start_node_2 +>: busRoute(route_number="87", distance=450) :+> City(city_type=cityType.end, name="Jaffna");
-        end_node_5 = start_node_3 +>: busRoute(route_number="01", distance=200) :+> City(city_type=cityType.end, name="Kandy");
+        end_node_1 = start_node_1 +>: busRoute(route_number="57",distance=405) :+> City(city_type=cityType.end.value, name="Colombo");
+        end_node_2 = start_node_1 +>: busRoute(route_number="87",distance=450) :+> City(city_type=cityType.end.value, name="Colombo");
+        end_node_3 = start_node_2 +>: busRoute(route_number="57", distance=405) :+> City(city_type=cityType.end.value, name="Jaffna");
+        end_node_4 = start_node_2 +>: busRoute(route_number="87", distance=450) :+> City(city_type=cityType.end.value, name="Jaffna");
+        end_node_5 = start_node_3 +>: busRoute(route_number="01", distance=200) :+> City(city_type=cityType.end.value, name="Kandy");
 
         bus_1 = end_node_1 +>: busEdge(edge_type=busEdgeType.direct) :+> Bus(
             bus_type=busType.normal,
@@ -194,6 +194,7 @@ walker computeBusTime{
     def compute_number_of_intermediate_stops{
         cities: City_details = extract_city_details(user_input=self.user_input);
         print("Extracted Cities: ", cities);
+
         root spawn computeIntermediateStops(cities);
     }
 
@@ -235,13 +236,16 @@ walker computeIntermediateStops
         else
         {
 
-            start_cities_nodes = [root-->(`?City: city_type==cityType.start, name==self.cities.start_city)];
 
-            print("Starting Cities Nodes: ", start_cities_nodes);
+            start_cities_nodes = [root-->(`?City: city_type==cityType.start.value, name==self.cities.start_city)];
             
+            print("Starting Cities Nodes: ", start_cities_nodes);
+
             visit[-->start_cities_nodes];
 
-            filtered_edges = [->:busRoute:->(`?City: city_type==cityType.end, name==self.cities.end_city)];
+            
+
+            filtered_edges = [->:busRoute:->(`?City: city_type==cityType.end.value, name==self.cities.end_city)];
 
             print("Filtered Edges: ", filtered_edges);
 
@@ -276,6 +280,7 @@ walker computeIntermediateStops
 
 
 with entry{
+    root spawn createGraph();
     compute_time_walker = root spawn computeBusTime(user_input="Compute the time taken using average speed and stop delay for a luxury bus starting at Jaffna and ending at Colombo.");
 }
 
