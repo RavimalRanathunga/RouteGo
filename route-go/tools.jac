@@ -1,6 +1,8 @@
 import from byllm.llm {Model}
 import from datetime {time}
 
+import from utils {extract_city_details}
+
 glob llm = Model(model_name="gemini/gemini-2.0-flash");
 
 
@@ -40,6 +42,7 @@ node Bus{
 # Edge Definitions
 edge busRoute{
     has route_number: str;
+    has distance: int;
 }
 
 edge busEdge{
@@ -55,11 +58,11 @@ walker createGraph{
         start_node_2 = root ++> City(city_type=cityType.start, name="Colombo");
         start_node_3 = root ++> City(city_type=cityType.start, name="Colombo");
 
-        end_node_1 = start_node_1 +>: busRoute(route_number="57") :+> City(city_type=cityType.end, name="Colombo");
-        end_node_2 = start_node_1 +>: busRoute(route_number="87") :+> City(city_type=cityType.end, name="Colombo");
-        end_node_3 = start_node_2 +>: busRoute(route_number="57") :+> City(city_type=cityType.end, name="Jaffna");
-        end_node_4 = start_node_2 +>: busRoute(route_number="87") :+> City(city_type=cityType.end, name="Jaffna");
-        end_node_5 = start_node_3 +>: busRoute(route_number="01") :+> City(city_type=cityType.end, name="Kandy");
+        end_node_1 = start_node_1 +>: busRoute(route_number="57",distance=405) :+> City(city_type=cityType.end, name="Colombo");
+        end_node_2 = start_node_1 +>: busRoute(route_number="87",distance=450) :+> City(city_type=cityType.end, name="Colombo");
+        end_node_3 = start_node_2 +>: busRoute(route_number="57", distance=405) :+> City(city_type=cityType.end, name="Jaffna");
+        end_node_4 = start_node_2 +>: busRoute(route_number="87", distance=450) :+> City(city_type=cityType.end, name="Jaffna");
+        end_node_5 = start_node_3 +>: busRoute(route_number="01", distance=200) :+> City(city_type=cityType.end, name="Kandy");
 
         bus_1 = end_node_1 +>: busEdge(edge_type=busEdgeType.direct) :+> Bus(
             bus_type=busType.normal,
@@ -156,8 +159,7 @@ walker findResults{
 
 }
 
-walker filterRoutes
-{
+walker filterRoutes{
     has route_no: str = "";
     has bus_type: str = "";
     has bus_edge_type:str = "";
@@ -168,13 +170,10 @@ walker filterRoutes
     }
 }
 
-node City{
-    has city_type: str;
-    has name: str;
-}
 
 walker computeBusTime{
     has user_input: str = "";
+    # has system_prompt: str = ;
 
 
     def compute_average_speed(bus_type: str) -> float{
@@ -192,19 +191,22 @@ walker computeBusTime{
         return stop_delay;
     }
 
-    # def selectBusType(user_input: str) -> busType by llm();
-    # def selectCityType(user_input: str) -> cityType by llm();
+    def compute_number_of_intermediate_stops{
+        cities: City_details = extract_city_details(user_input=self.user_input);
+        print("Extracted Cities: ", cities);
+        root spawn computeIntermediateStops(cities);
+    }
 
-    def route_and_run(user_input: str) -> str by llm(
+
+    # complete the system prompt
+    def route_and_run(user_input: str, system_prompt: str = "You are a helpful assistant that computes bus travel time based on average speed and stop delays. If the user provides a bus type, starting city, ending city, and intermediate stops, use the provided tools. If the user does not provide starting city or ending city, ask for more information. If the user does not provide intermediate stops, use compute_number_of_intermediate_stops function") -> str by llm(
         method = "ReAct",
-        tools=([self.compute_average_speed, self.compute_stop_delay])
+        tools=([self.compute_average_speed, self.compute_stop_delay, self.compute_number_of_intermediate_stops])
     );
 
     can start with `root entry{
-        # selected_bus_type = self.selectBusType(user_input=self.user_input);
-        # selected_city_type = self.selectCityType(user_input=self.user_input); 
-        # print("Selected Bus Type: ", selected_bus_type);
-        # print("Selected City Type: ", selected_city_type);
+
+        # number_of_stops: str = self.compute_number_of_stops();
 
         response = self.route_and_run(user_input=self.user_input);
 
@@ -220,8 +222,61 @@ walker computeBusTime{
 
 }
 
+walker computeIntermediateStops
+{
+
+    has cities: City_details;
+
+    can start with `root entry{
+        if (self.cities.start_city == "" or self.cities.end_city == "")
+        {
+            print("Insufficient information to compute intermediate stops. Please provide both starting and ending cities.");
+        }
+        else
+        {
+
+            start_cities_nodes = [root-->(`?City: city_type==cityType.start, name==self.cities.start_city)];
+
+            print("Starting Cities Nodes: ", start_cities_nodes);
+            
+            visit[-->start_cities_nodes];
+
+            filtered_edges = [->:busRoute:->(`?City: city_type==cityType.end, name==self.cities.end_city)];
+
+            print("Filtered Edges: ", filtered_edges);
+
+            if (len(filtered_edges) == 0)
+            {
+                print("No routes found between ", self.cities.start_city, " and ", self.cities.end_city);
+            }
+            else
+            {
+                min_distance_edge = filtered_edges[0];
+                for item in filtered_edges{
+                    if (item.distance < min_distance_edge.distance)
+                    {
+                        min_distance_edge = item;
+                    }
+                }
+
+                end_city_node = [min_distance_edge -->(`?City: city_type==cityType.end)][0];
+                visit[-->end_city_node];
+                visit[->:busEdge: edge_type=="direct":->];
+                target_bus = [-->(`?Bus)][0];
+
+                number_of_stops = len(target_bus.intermediate_stops);
+                print("Number of Intermediate Stops: ", number_of_stops);
+
+            
+            }
+        }
+    }
+
+}
+
+
 with entry{
-    compute_time_walker = root spawn computeBusTime(user_input="Compute the time taken using average speed and stop delay for a luxury bus starting at Kandy and ending at Galle. Intermediate stops are Matara and Hambantota.");
+    compute_time_walker = root spawn computeBusTime(user_input="Compute the time taken using average speed and stop delay for a luxury bus starting at Jaffna and ending at Colombo.");
 }
 
 
