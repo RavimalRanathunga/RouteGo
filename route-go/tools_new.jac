@@ -228,7 +228,6 @@ walker computeIntermediateStops
 
     has cities: City_details;
     
-    
 
     can start with `root entry{
         if (self.cities.start_city == "" or self.cities.end_city == ""){
@@ -242,11 +241,11 @@ walker computeIntermediateStops
 
     can search with City entry{
 
-        
+        min_distance_edge: bueRoute = {route_number: "", distance: 0};
 
         if (here.city_type == cityType.start.value and here.name == self.cities.start_city){
         
-            
+            print(here);
             filtered_edges = [edge-->(`?City: city_type==cityType.end.value, name==self.cities.end_city)];
             print("Filtered Edges: ", filtered_edges);
 
@@ -254,29 +253,21 @@ walker computeIntermediateStops
                 print("No routes found between ", self.cities.start_city, " and ", self.cities.end_city);
             }
             else{
-                self.min_distance_edge = filtered_edges[0];
+                min_distance_edge = filtered_edges[0];
                 for item in filtered_edges{
-                    if (item.distance < self.min_distance_edge.distance){
-                        # print("*****test");
-                        self.min_distance_edge = item;
+                    if (item.distance < min_distance_edge.distance){
+                        min_distance_edge = item;
                     }
                     
                 }
 
-                print("Minimum Distance Edge: ", self.min_distance_edge);
-                next_node = [->:busRoute:distance==self.min_distance_edge.distance:->(`?City)](?city_type==cityType.end.value);
-                print("Next Node: ", next_node);
-                print(next_node[0].city_type);
-                print(next_node[0].name);
-                print(self.cities.end_city);
-                print(cityType.end.value);
-                visit next_node[0];
+                print("Minimum Distance Edge: ", min_distance_edge);
 
             }
         }
-        elif (here.city_type == cityType.end.value and here.name == self.cities.end_city){
-            print("hello");
-            end_city_node = [self.min_distance_edge -->(`?City: city_type==cityType.end)][0];
+        if (here.city_type == cityType.end.value and here.name == self.cities.end_city){
+
+            end_city_node = [min_distance_edge -->(`?City: city_type==cityType.end)][0];
             visit[-->end_city_node];
             print("End City Node: ", end_city_node);
 
@@ -287,27 +278,15 @@ walker computeIntermediateStops
             # number_of_stops = len(target_bus.intermediate_stops);
             # print("Number of Intermediate Stops: ", number_of_stops);
 
-        } 
-    }
+        }       
 
-    # can search2 with City entry{
-    #     # if (here.city_type == cityType.end.value and here.name == self.cities.end_city){
-    #     #     print(here);
-    #     #     end_city_node = [self.min_distance_edge -->(`?City: city_type==cityType.end)][0];
-    #     #     visit[-->end_city_node];
-    #     #     print("End City Node: ", end_city_node);
+
 
             
-    #     #     # visit[->:busEdge: edge_type=="direct":->];
-    #     #     # target_bus = [-->(`?Bus)][0];
-
-    #     #     # number_of_stops = len(target_bus.intermediate_stops);
-    #     #     # print("Number of Intermediate Stops: ", number_of_stops);
-
-    #     # }    
-    # }            
-    
+    }
 }
+
+
 
 
 
