@@ -235,19 +235,17 @@ walker computeIntermediateStops
         }
         else
         {
+            visit[-->](`?City: city_type==cityType.start.value, name==self.cities.start_city);
 
+        }
+    }
 
-            start_cities_nodes = [root-->(`?City: city_type==cityType.start.value, name==self.cities.start_city)];
-            
-            print("Starting Cities Nodes: ", start_cities_nodes);
+    can search with City entry{
 
-            visit[-->start_cities_nodes];
-
-            
-
-            filtered_edges = [->:busRoute:->(`?City: city_type==cityType.end.value, name==self.cities.end_city)];
-
-            print("Filtered Edges: ", filtered_edges);
+        
+        print(here);
+        filtered_edges = [edge-->(`?City: city_type==cityType.end.value, name==self.cities.end_city)];
+        print("Filtered Edges: ", filtered_edges);
 
             if (len(filtered_edges) == 0)
             {
@@ -261,20 +259,26 @@ walker computeIntermediateStops
                     {
                         min_distance_edge = item;
                     }
+                    
                 }
 
-                end_city_node = [min_distance_edge -->(`?City: city_type==cityType.end)][0];
-                visit[-->end_city_node];
-                visit[->:busEdge: edge_type=="direct":->];
-                target_bus = [-->(`?Bus)][0];
+                print("Minimum Distance Edge: ", min_distance_edge);
 
-                number_of_stops = len(target_bus.intermediate_stops);
-                print("Number of Intermediate Stops: ", number_of_stops);
+                # end_city_node = [min_distance_edge -->(`?City: city_type==cityType.end)][0];
+
+                # print("End City Node: ", end_city_node);
+
+                # visit[-->end_city_node];
+                # visit[->:busEdge: edge_type=="direct":->];
+                # target_bus = [-->(`?Bus)][0];
+
+                # number_of_stops = len(target_bus.intermediate_stops);
+                # print("Number of Intermediate Stops: ", number_of_stops);
 
             
             }
-        }
     }
+
 
 }
 
