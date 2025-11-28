@@ -1,3 +1,185 @@
+import from datetime {time}
+import from datetime {datetime}
+
+enum cityType{
+    start = "start",
+    end = "end",
+}
+
+enum busType{
+    normal = "normal",
+    semi_luxury = "semi_luxury",
+    luxury = "luxury",
+}
+
+enum busEdgeType{
+    direct = "direct",
+    via = "via",
+}
+
+# Node Definitions
+node City{
+    has city_type: str;
+    has name: str;
+}
+
+node Bus{
+    has bus_type: str;
+    has bus_id: str;
+    has start_time: time;
+    has end_time: time;
+    has fare: float;
+    has intermediate_stops: list[str];
+}
+
+# Edge Definitions
+edge busRoute{
+    has route_number: str;
+}
+
+edge busEdge{
+    has edge_type: str;
+}
+
+# Walker Definitions
+walker createGraph{
+
+    can start with `root entry {
+        start_node_1 = root ++> City(city_type=cityType.start.value, name="Jaffna");
+        start_node_2 = root ++> City(city_type=cityType.start.value, name="Colombo");
+        start_node_3 = root ++> City(city_type=cityType.start.value, name="Colombo");
+
+        end_node_1 = start_node_1 +>: busRoute(route_number="57") :+> City(city_type=cityType.end.value, name="Colombo");
+        end_node_2 = start_node_1 +>: busRoute(route_number="87") :+> City(city_type=cityType.end.value, name="Colombo");
+        end_node_3 = start_node_2 +>: busRoute(route_number="57") :+> City(city_type=cityType.end.value, name="Jaffna");
+        end_node_4 = start_node_2 +>: busRoute(route_number="87") :+> City(city_type=cityType.end.value, name="Jaffna");
+        end_node_5 = start_node_3 +>: busRoute(route_number="01") :+> City(city_type=cityType.end.value, name="Kandy");
+
+        bus_1 = end_node_1 +>: busEdge(edge_type=busEdgeType.direct.value) :+> Bus(
+            bus_type=busType.normal.value,
+            bus_id="AB1234",
+            start_time=time(8, 0),
+            end_time=time(12, 0),
+            fare=500.0,
+            intermediate_stops=["Vavuniya", "Anuradhapura"]
+        );
+
+        bus_2 = end_node_1 +>: busEdge(edge_type=busEdgeType.direct.value) :+> Bus(
+            bus_type = busType.luxury.value,
+            bus_id = "CD5678", 
+            start_time = time(8,0), 
+            end_time = time(13, 0), 
+            fare = 2800.0,
+            intermediate_stops = ["Vavuniya", "Kurunagala"]
+        ); 
+
+        bus_3 = end_node_2 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
+            bus_type = busType.semi_luxury.value, 
+            bus_id = "EF9012", 
+            start_time = time(9, 0), 
+            end_time = time(15, 0), 
+            fare = 2200.0, 
+            intermediate_stops = ["Vavuniya", "Puttalam"]
+        );
+
+        bus_4 = end_node_2 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
+            bus_type = busType.normal.value, 
+            bus_id = "GH3456", 
+            start_time = time(10, 30), 
+            end_time = time(16, 30), 
+            fare = 1600.0, 
+            intermediate_stops = ["Vavuniya", "Puttalam"]
+        );
+        bus_5 = end_node_3 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
+            bus_type = busType.luxury.value, 
+            bus_id = "IJ7890", 
+            start_time = time(16, 0), 
+            end_time = time(2, 0), 
+            fare = 3000.0, 
+            intermediate_stops = ["Kurunagala", "Vavuniya"]
+        );
+        bus_6 = end_node_4 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
+            bus_type = busType.normal.value, 
+            bus_id = "KL1234", 
+            start_time = time(14, 0), 
+            end_time = time(22, 0), 
+            fare = 1500.0,
+            intermediate_stops = ["Puttalam", "Vavuniya"]
+        );
+        bus_7 = end_node_4 +>: busEdge(edge_type = busEdgeType.via.value) :+> Bus(
+            bus_type = busType.semi_luxury.value, 
+            bus_id = "MN5678", 
+            start_time = time(7, 30), 
+            end_time = time(10, 30), 
+            fare = 1200.0, 
+            intermediate_stops = ["Dehiwala", "Colombo", "Puttalam", "Vavuniya"]
+        );
+        bus_8 = end_node_5 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
+            bus_type = busType.normal.value, 
+            bus_id = "OP9012", 
+            start_time = time(12, 0), 
+            end_time = time(15, 0), 
+            fare = 800.0, 
+            intermediate_stops = ["Kegalle", "Mawanella"]
+        );
+
+        report {"data":"Graph Created Successfully"};
+    }
+
+}
+
+walker findResults{
+
+    has from_city_name: str;
+    has to_city_name: str;
+    has from_city: str =cityType.start.value;
+    has to_city: str = cityType.end.value;
+    # has start_time: time;
+    # has end_time: time;
+
+    can search with `root entry{
+
+        print("Searching buses from ", self.from_city_name, " to ", self.to_city_name);
+        start_results = [-->(`?City: name==self.from_city_name, city_type==self.from_city)];
+        print("start_results",start_results);
+        visit[-->start_results];
+    }
+
+    can visit_cities with City entry{
+        
+        print("Now we are in",here);
+
+        if (here.city_type == cityType.end.value and here.name == self.to_city_name){
+            report[--> (`?Bus)];
+        } else {
+        end_results = [-->(`?City: name==self.to_city_name, city_type==self.to_city)];
+            print("end_results",end_results);
+            visit[-->end_results];
+        }
+    }
+}
+
+walker filterRoutes
+{
+    has route_no: str = "";
+    has bus_type: str = "";
+    has bus_edge_type:str = "";
+
+    can filterRoutes with city entry
+    {
+        
+    }
+}
+
+walker findGraph{
+    can find with `root entry{
+
+        results = [-->(`?City)];
+        report {"data":True} if len(results) > 0 else {"data":False};
+
+    }
+}
+
 cl import from react {
     useState,
     useEffect
@@ -5,17 +187,57 @@ cl import from react {
 
 cl {
 
-        def SearchBusTable(){
-            return (
-        <div
-            style={{
+        def SearchBusTable()
+        {
+            let [from_city_name,setFromCityName] = useState("");
+            let [to_city_name,setToCityName] = useState("");
+            let [start_time,setStartTime] = useState("");
+            let [end_time,setEndTime] = useState("");
+            let [clicked,setClick] = useState(False);
+            let [buses,setBuses] = useState([]);
+
+            def handleRefresh() -> None
+            {
+                setClick(not clicked);
+            }
+
+            async def handleClick() -> None
+            {
+                console.log("Button clicked!");
+                console.log(f"From: {from_city_name}, To: {to_city_name}, Start Time: {start_time}, End Time: {end_time}");
+                setClick(not clicked);
+
+                results = root spawn findResults(
+                    from_city_name=from_city_name,
+                    to_city_name=to_city_name,
+                    # start_time=datetime.strptime(start_time, "%H:%M").time(),
+                    # end_time=datetime.strptime(end_time, "%H:%M").time()
+                );
+
+                console.log(f"Found {results.reports.length} reports.");
+
+                if (results.reports.length >0){
+                    for results in results.reports{
+                        for bus in results{
+                            console.log("Bus Found:", bus);
+                            setBuses(buses.concat(bus));
+                        }
+                    }
+                }
+
+                console.log(f"Found {buses.length} buses.");
+                console.log(buses);
+                }
+
+
+            return 
+        <div style={{
                 "background": "linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)",
                 "padding": "40px 20px",
                 "borderRadius": "0px", 
                 # "width": "100%",
                 "color": "white",
-             }}
-            >
+        }}>
 
             <h3 style={{ 
                 "marginBottom": "20px", 
@@ -38,10 +260,10 @@ cl {
                         "borderRadius": "4px",
                         "border": "1px solid #ccc",
                         "fontSize": "0.9rem",
-                    }}>
+                }} value={from_city_name} onChange={lambda e:any -> None { setFromCityName(e.target.value);}}>
                         <option>Select Start</option>
-                        <option>Colombo</option>
-                        <option>Jaffna</option>
+                        <option value="Colombo">Colombo</option>
+                        <option value="Jaffna">Jaffna</option>
                     </select>
                 </div>
 
@@ -53,11 +275,11 @@ cl {
                         "borderRadius": "4px",
                         "border": "1px solid #ccc",
                         "fontSize": "0.9rem",
-                    }}>
+                }} value={to_city_name} onChange={lambda e:any -> None { setToCityName(e.target.value);}}>
                         <option>Select Destination</option>
-                        <option>Colombo</option>
-                        <option>Jaffna</option>
-                        <option>Kandy</option>
+                        <option value="Colombo">Colombo</option>
+                        <option value="Jaffna">Jaffna</option>
+                        <option value="Kandy">Kandy</option>
                     </select>
                 </div>
 
@@ -69,32 +291,32 @@ cl {
                         "borderRadius": "4px",
                         "border": "1px solid #ccc",
                         "fontSize": "0.9rem",
-                    }}>
+                }} value={start_time} onChange={lambda e:any -> None { setStartTime(e.target.value);}}>
                         <option>Select Start Time</option>
-                        <option>00:00</option>
-                        <option>01:00</option>
-                        <option>02:00</option>
-                        <option>03:00</option>
-                        <option>04:00</option>
-                        <option>05:00</option>
-                        <option>06:00</option>
-                        <option>07:00</option>
-                        <option>08:00</option>
-                        <option>09:00</option>
-                        <option>10:00</option>
-                        <option>11:00</option>
-                        <option>12:00</option>
-                        <option>13:00</option>
-                        <option>14:00</option>
-                        <option>15:00</option>
-                        <option>16:00</option>
-                        <option>17:00</option>
-                        <option>18:00</option>
-                        <option>19:00</option>
-                        <option>20:00</option>
-                        <option>21:00</option>
-                        <option>22:00</option>
-                        <option>23:00</option>
+                        <option value="00:00">00:00</option>
+                        <option value="01:00">01:00</option>
+                        <option value="02:00">02:00</option>
+                        <option value="03:00">03:00</option>
+                        <option value="04:00">04:00</option>
+                        <option value="05:00">05:00</option>
+                        <option value="06:00">06:00</option>
+                        <option value="07:00">07:00</option>
+                        <option value="08:00">08:00</option>
+                        <option value="09:00">09:00</option>
+                        <option value="10:00">10:00</option>
+                        <option value="11:00">11:00</option>
+                        <option value="12:00">12:00</option>
+                        <option value="13:00">13:00</option>
+                        <option value="14:00">14:00</option>
+                        <option value="15:00">15:00</option>
+                        <option value="16:00">16:00</option>
+                        <option value="17:00">17:00</option>
+                        <option value="18:00">18:00</option>
+                        <option value="19:00">19:00</option>
+                        <option value="20:00">20:00</option>
+                        <option value="21:00">21:00</option>
+                        <option value="22:00">22:00</option>
+                        <option value="23:00">23:00</option>
                     </select>
                 </div>
 
@@ -106,53 +328,35 @@ cl {
                         "borderRadius": "4px",
                         "border": "1px solid #ccc",
                         "fontSize": "0.9rem",
-                    }}>
+                }} value={end_time} onChange={lambda e:any -> None { setEndTime(e.target.value);}}>
                         <option>Select End Time</option>
-                        <option>00:00</option>
-                        <option>01:00</option>
-                        <option>02:00</option>
-                        <option>03:00</option>
-                        <option>04:00</option>
-                        <option>05:00</option>
-                        <option>06:00</option>
-                        <option>07:00</option>
-                        <option>08:00</option>
-                        <option>09:00</option>
-                        <option>10:00</option>
-                        <option>11:00</option>
-                        <option>12:00</option>
-                        <option>13:00</option>
-                        <option>14:00</option>
-                        <option>15:00</option>
-                        <option>16:00</option>
-                        <option>17:00</option>
-                        <option>18:00</option>
-                        <option>19:00</option>
-                        <option>20:00</option>
-                        <option>21:00</option>
-                        <option>22:00</option>
-                        <option>23:00</option>
+                        <option value="00:00">00:00</option>
+                        <option value="01:00">01:00</option>
+                        <option value="02:00">02:00</option>
+                        <option value="03:00">03:00</option>
+                        <option value="04:00">04:00</option>
+                        <option value="05:00">05:00</option>
+                        <option value="06:00">06:00</option>
+                        <option value="07:00">07:00</option>
+                        <option value="08:00">08:00</option>
+                        <option value="09:00">09:00</option>
+                        <option value="10:00">10:00</option>
+                        <option value="11:00">11:00</option>
+                        <option value="12:00">12:00</option>
+                        <option value="13:00">13:00</option>
+                        <option value="14:00">14:00</option>
+                        <option value="15:00">15:00</option>
+                        <option value="16:00">16:00</option>
+                        <option value="17:00">17:00</option>
+                        <option value="18:00">18:00</option>
+                        <option value="19:00">19:00</option>
+                        <option value="20:00">20:00</option>
+                        <option value="21:00">21:00</option>
+                        <option value="22:00">22:00</option>
+                        <option value="23:00">23:00</option>
                     </select>
                 </div>
 
-                # <div>
-                #     <label>Bus Type</label>
-                #     <select style={{
-                #         "width": "100%",
-                #         "padding": "10px",
-                #         "borderRadius": "4px",
-                #         "border": "1px solid #ccc",
-                #         "fontSize": "0.9rem",
-                #     }}>
-                #         <option>Select Bus Type</option>
-                #         <option>Any</option>
-                #         <option>Normal</option>
-                #         <option>Semi-Luxury</option>
-                #         <option>Luxury</option>
-                #     </select>
-                # </div>
-
-                
                 <div style={{
                     display: "flex",
                     alignItems: "flex-end"
@@ -167,29 +371,68 @@ cl {
                         "fontWeight": "600",
                         "color": "white",
                         "width": "100%"
-                    }}>
+                    }} onClick={handleClick} disabled={clicked}>
                         Search
                     </button>
                 </div>
 
             </div>
-        </div>
-    );
-
+            {(<div style={{"height":"auto","display":"flex","alignItems":"center","justifyContent":"center","minheight":"200px","padding":"20px 20px"}}>
+            # <table style={{"width":"100%","marginTop":"30px","borderCollapse":"collapse"}}>
+            #     <thead>
+            #         <tr>
+            #             <th style={{"borderBottom":"2px solid #ddd","padding":"10px","textAlign":"left"}}>Bus ID</th>
+            #             <th style={{"borderBottom":"2px solid #ddd","padding":"10px","textAlign":"left"}}>Bus Type</th>
+            #             <th style={{"borderBottom":"2px solid #ddd","padding":"10px","textAlign":"left"}}>Start Time</th>
+            #             <th style={{"borderBottom":"2px solid #ddd","padding":"10px","textAlign":"left"}}>End Time</th>
+            #             <th style={{"borderBottom":"2px solid #ddd","padding":"10px","textAlign":"left"}}>Fare (LKR)</th>
+            #             <th style={{"borderBottom":"2px solid #ddd","padding":"10px","textAlign":"left"}}>Intermediate Stops</th>
+            #         </tr>
+            #     </thead>
+            #     <tbody>
+            #         {buses.map(lambda bus:any -> any {
+            #             return <div><tr key={bus.bus_id} style={{"borderBottom":"1px solid #ddd"}}>
+            #                 <td style={{"padding":"10px"}}>{bus.bus_id}</td>
+            #                 <td style={{"padding":"10px"}}>{bus.bus_type}</td>
+            #                 <td style={{"padding":"10px"}}>{bus.start_time}</td>
+            #                 <td style={{"padding":"10px"}}>{bus.end_time}</td>
+            #                 <td style={{"padding":"10px"}}>{bus.fare.toFixed(2)}</td>
+            #                 <td style={{"padding":"10px"}}>{bus.intermediate_stops.join(", ")}</td>
+            #             </tr></div>;
+            #         })}
+            #     </tbody>
+                 <button style={{
+                        "background": "#ff3232ff",
+                        "border": "none",
+                        "padding": "10px 25px",
+                        "borderRadius": "4px",
+                        "cursor": "pointer",
+                        "fontSize": "1rem",
+                        "fontWeight": "600",
+                        "color": "white",
+                        "width": "100px",
+                        "height":"40px",
+                        "textAlign":"center"
+                    }} onClick={handleRefresh}>
+                        Refresh
+                 </button>
+              </div>)if clicked 
+            else(<div style={{"height":"auto","display":"flex","alignItems":"center","justifyContent":"center","minheight":"200px"}}>
+            <h1 style={{"textAlign":"center","fontSize":"1rem","padding":"2px 2px"}}>Search some buses!!!</h1></div>)}
+        </div>;
     }
 
     def HeroSection(){
-        return <div
-            style={{
+        return <div style={{
                 "display": "flex",
                 "flexDirection": "column",
                 "alignItems": "center",
                 "justifyContent": "center",
                 "height": "100vh",
+                "padding":"20px 20px",
                 "background": "linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)",
                 "color": "white",
                 "textAlign": "center",
-                "padding": "0 20px",
                 "position": "relative",
                 "overflow": "hidden"
             }}
@@ -294,42 +537,26 @@ cl {
                         "transform": "translateY(0)",
                         "minWidth": "180px"
                     }}
-                    # onMouseOver={(e) => {
-                    #     e.target.style.transform = "translateY(-2px)";
-                    #     e.target.style.boxShadow = "0 12px 40px rgba(102, 126, 234, 0.4)";
-                    # }}
-                    # onMouseOut={(e) => {
-                    #     e.target.style.transform = "translateY(0)";
-                    #     e.target.style.boxShadow = "0 8px 32px rgba(102, 126, 234, 0.3)";
-                    # }}
                     >
-                        🚀 Start Planning
+                        🚀 Start Browsing
                     </button>
 
-                    # <button style={{
-                    #     "background": "rgba(255, 255, 255, 0.1)",
-                    #     "color": "white",
-                    #     "border": "1px solid rgba(255, 255, 255, 0.2)",
-                    #     "padding": "16px 32px",
-                    #     "fontSize": "1.1rem",
-                    #     "borderRadius": "12px",
-                    #     "cursor": "pointer",
-                    #     "fontWeight": "600",
-                    #     "backdropFilter": "blur(20px)",
-                    #     "transition": "all 0.3s ease",
-                    #     "minWidth": "180px"
-                    # }}
-                    # # onMouseOver={(e) => {
-                    # #     e.target.style.background = "rgba(255, 255, 255, 0.15)";
-                    # #     e.target.style.borderColor = "rgba(255, 255, 255, 0.3)";
-                    # # }}
-                    # # onMouseOut={(e) => {
-                    # #     e.target.style.background = "rgba(255, 255, 255, 0.1)";
-                    # #     e.target.style.borderColor = "rgba(255, 255, 255, 0.2)";
-                    # # }}
-                    # >
-                    #     📱 Learn More
-                    # </button>
+                    <button style={{
+                        "background": "rgba(255, 255, 255, 0.1)",
+                        "color": "white",
+                        "border": "1px solid rgba(255, 255, 255, 0.2)",
+                        "padding": "16px 32px",
+                        "fontSize": "1.1rem",
+                        "borderRadius": "12px",
+                        "cursor": "pointer",
+                        "fontWeight": "600",
+                        "backdropFilter": "blur(20px)",
+                        "transition": "all 0.3s ease",
+                        "minWidth": "180px"
+                    }}
+                    >
+                        📱 Bus AI
+                    </button>
                 </div>
 
                 
@@ -349,16 +576,6 @@ cl {
                         "textAlign": "center",
                         "transition": "all 0.3s ease"
                     }}
-                    # onMouseOver={(e) => {
-                    #     e.currentTarget.style.transform = "translateY(-4px)";
-                    #     e.currentTarget.style.background = "rgba(255, 255, 255, 0.08)";
-                    #     e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.2)";
-                    # }}
-                    # onMouseOut={(e) => {
-                    #     e.currentTarget.style.transform = "translateY(0)";
-                    #     e.currentTarget.style.background = "rgba(255, 255, 255, 0.05)";
-                    #     e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.1)";
-                    # }}
                     >
                         <div style={{ 
                             "fontSize": "2.5rem", 
@@ -385,16 +602,7 @@ cl {
                         "textAlign": "center",
                         "transition": "all 0.3s ease"
                     }}
-                    # onMouseOver={(e) => {
-                    #     e.currentTarget.style.transform = "translateY(-4px)";
-                    #     e.currentTarget.style.background = "rgba(255, 255, 255, 0.08)";
-                    #     e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.2)";
-                    # }}
-                    # onMouseOut={(e) => {
-                    #     e.currentTarget.style.transform = "translateY(0)";
-                    #     e.currentTarget.style.background = "rgba(255, 255, 255, 0.05)";
-                    #     e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.1)";
-                    # }}
+                
                     >
                         <div style={{ 
                             "fontSize": "2.5rem", 
@@ -421,16 +629,6 @@ cl {
                         "textAlign": "center",
                         "transition": "all 0.3s ease"
                     }}
-                    # onMouseOver={(e) => {
-                    #     e.currentTarget.style.transform = "translateY(-4px)";
-                    #     e.currentTarget.style.background = "rgba(255, 255, 255, 0.08)";
-                    #     e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.2)";
-                    # }}
-                    # onMouseOut={(e) => {
-                    #     e.currentTarget.style.transform = "translateY(0)";
-                    #     e.currentTarget.style.background = "rgba(255, 255, 255, 0.05)";
-                    #     e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.1)";
-                    # }}
                     >
                         <div style={{ 
                             "fontSize": "2.5rem", 
@@ -449,36 +647,28 @@ cl {
                     </div>
                 </div>
             </div>
-
-            # <style>{`
-            #     @keyframes slideInUp {
-            #         from {
-            #             opacity: 0;
-            #             transform: translateY(40px);
-            #         }
-            #         to {
-            #             opacity: 1;
-            #             transform: translateY(0);
-            #         }
-            #     }
-                
-            #     @keyframes float {
-            #         0%, 100% {
-            #             transform: translateY(0px);
-            #         }
-            #         50% {
-            #             transform: translateY(-20px);
-            #         }
-            #     }
-            # `}</style>
         </div>;
     }
 
-
-
-
     def app() -> any {
-        return <div>
+
+        useEffect(
+            lambda -> None
+            {
+                async def creategraph() -> None
+                {
+                    is_graph_created = root spawn findGraph();
+                    console.log("Graph exists:", is_graph_created.reports[0].data);
+                    if (is_graph_created.reports[0].data == False){
+                        result = root spawn createGraph();
+                    }
+                }
+            creategraph();
+            },
+            []
+        );
+
+        return <div style={{"width":"100%"}}>
             <HeroSection />
             <SearchBusTable />
         </div>;
