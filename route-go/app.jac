@@ -132,10 +132,10 @@ walker findResults{
 
     has from_city_name: str;
     has to_city_name: str;
+    has start_time: time;
+    has end_time: time;
     has from_city: str =cityType.start.value;
     has to_city: str = cityType.end.value;
-    # has start_time: time;
-    # has end_time: time;
 
     can search with `root entry{
 
@@ -150,7 +150,10 @@ walker findResults{
         print("Now we are in",here);
 
         if (here.city_type == cityType.end.value and here.name == self.to_city_name){
-            report[--> (`?Bus)];
+            if(self.start_time<=self.end_time){
+                report[--> (`?Bus: start_time >= self.start_time, start_time <= self.end_time)];
+            }
+            report[--> (`?Bus: start_time >= self.start_time or start_time <= self.end_time)];
         } else {
         end_results = [-->(`?City: name==self.to_city_name, city_type==self.to_city)];
             print("end_results",end_results);
@@ -210,8 +213,8 @@ cl {
                 results = root spawn findResults(
                     from_city_name=from_city_name,
                     to_city_name=to_city_name,
-                    # start_time=datetime.strptime(start_time, "%H:%M").time(),
-                    # end_time=datetime.strptime(end_time, "%H:%M").time()
+                    start_time=datetime.strptime(start_time, "%H:%M").time(),
+                    end_time=datetime.strptime(end_time, "%H:%M").time()
                 );
 
                 console.log(f"Found {results.reports.length} reports.");
@@ -284,7 +287,7 @@ cl {
                 </div>
 
                 <div>
-                    <label>Start Time</label>
+                    <label>Time Range:Start Time</label>
                     <select style={{
                         "width": "100%",
                         "padding": "10px",
@@ -321,7 +324,7 @@ cl {
                 </div>
 
                 <div>
-                    <label>End Time</label>
+                    <label>Time Range:End Time</label>
                     <select style={{
                         "width": "100%",
                         "padding": "10px",
