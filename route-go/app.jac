@@ -378,29 +378,33 @@ cl {
 
             </div>
             {(<div style={{"height":"auto","display":"flex","alignItems":"center","justifyContent":"center","minheight":"200px","padding":"20px 20px"}}>
-            # <table style={{"width":"100%","marginTop":"30px","borderCollapse":"collapse"}}>
-            #     <thead>
-            #         <tr>
-            #             <th style={{"borderBottom":"2px solid #ddd","padding":"10px","textAlign":"left"}}>Bus ID</th>
-            #             <th style={{"borderBottom":"2px solid #ddd","padding":"10px","textAlign":"left"}}>Bus Type</th>
-            #             <th style={{"borderBottom":"2px solid #ddd","padding":"10px","textAlign":"left"}}>Start Time</th>
-            #             <th style={{"borderBottom":"2px solid #ddd","padding":"10px","textAlign":"left"}}>End Time</th>
-            #             <th style={{"borderBottom":"2px solid #ddd","padding":"10px","textAlign":"left"}}>Fare (LKR)</th>
-            #             <th style={{"borderBottom":"2px solid #ddd","padding":"10px","textAlign":"left"}}>Intermediate Stops</th>
-            #         </tr>
-            #     </thead>
-            #     <tbody>
-            #         {buses.map(lambda bus:any -> any {
-            #             return <div><tr key={bus.bus_id} style={{"borderBottom":"1px solid #ddd"}}>
-            #                 <td style={{"padding":"10px"}}>{bus.bus_id}</td>
-            #                 <td style={{"padding":"10px"}}>{bus.bus_type}</td>
-            #                 <td style={{"padding":"10px"}}>{bus.start_time}</td>
-            #                 <td style={{"padding":"10px"}}>{bus.end_time}</td>
-            #                 <td style={{"padding":"10px"}}>{bus.fare.toFixed(2)}</td>
-            #                 <td style={{"padding":"10px"}}>{bus.intermediate_stops.join(", ")}</td>
-            #             </tr></div>;
-            #         })}
-            #     </tbody>
+            <table style={{ width: "100%", marginTop: "30px", borderCollapse: "collapse" }}>
+                <thead>
+                    <tr>
+                        <th style={{ borderBottom: "2px solid #ddd", padding: "10px", textAlign: "left" }}>Bus ID</th>
+                        <th style={{ borderBottom: "2px solid #ddd", padding: "10px", textAlign: "left" }}>Bus Type</th>
+                        <th style={{ borderBottom: "2px solid #ddd", padding: "10px", textAlign: "left" }}>Start Time</th>
+                        <th style={{ borderBottom: "2px solid #ddd", padding: "10px", textAlign: "left" }}>End Time</th>
+                        <th style={{ borderBottom: "2px solid #ddd", padding: "10px", textAlign: "left" }}>Fare (LKR)</th>
+                        <th style={{ borderBottom: "2px solid #ddd", padding: "10px", textAlign: "left" }}>Intermediate Stops</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {buses.map(lambda bus:any -> any {
+                        return <div><tr key={bus.bus_id} style={{"borderBottom":"1px solid #ddd"}}>
+                            <td style={{"padding":"10px"}}>{bus.bus_id}</td>
+                            <td style={{"padding":"10px"}}>{bus.bus_type}</td>
+                            <td style={{"padding":"10px"}}>{bus.start_time}</td>
+                            <td style={{"padding":"10px"}}>{bus.end_time}</td>
+                            <td style={{"padding":"10px"}}>{bus.fare.toFixed(2)}</td>
+                            <td style={{"padding":"10px"}}>{bus.intermediate_stops.join(", ")}</td>
+                        </tr></div>;
+                    })}
+                </tbody>
+            </table>
+
+
                  <button style={{
                         "background": "#ff3232ff",
                         "border": "none",
