@@ -64,16 +64,16 @@ walker createGraph{
         end_node_4 = start_node_2 +>: busRoute(route_number="87", distance=450) :+> City(city_type=cityType.end.value, name="Jaffna");
         end_node_5 = start_node_3 +>: busRoute(route_number="01", distance=200) :+> City(city_type=cityType.end.value, name="Kandy");
 
-        bus_1 = end_node_1 +>: busEdge(edge_type=busEdgeType.direct.value) :+> Bus(
+        bus_1 = end_node_1 +>: busEdge(edge_type=busEdgeType.direct) :+> Bus(
             bus_type=busType.normal,
             bus_id="AB1234",
             start_time=time(8, 0),
             end_time=time(12, 0),
             fare=500.0,
-            intermediate_stops=["Vavuniya", "Anuradhapura", "Dambulla"]
+            intermediate_stops=["Vavuniya", "Anuradhapura"]
         );
 
-        bus_2 = end_node_1 +>: busEdge(edge_type=busEdgeType.direct.value) :+> Bus(
+        bus_2 = end_node_1 +>: busEdge(edge_type=busEdgeType.direct) :+> Bus(
             bus_type = busType.luxury,
             bus_id = "CD5678", 
             start_time = time(8,0), 
@@ -82,7 +82,7 @@ walker createGraph{
             intermediate_stops = ["Vavuniya", "Kurunagala"]
         ); 
 
-        bus_3 = end_node_2 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
+        bus_3 = end_node_2 +>: busEdge(edge_type = busEdgeType.direct) :+> Bus(
             bus_type = busType.semi_luxury, 
             bus_id = "EF9012", 
             start_time = time(9, 0), 
@@ -91,7 +91,7 @@ walker createGraph{
             intermediate_stops = ["Vavuniya", "Puttalam"]
         );
 
-        bus_4 = end_node_2 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
+        bus_4 = end_node_2 +>: busEdge(edge_type = busEdgeType.direct) :+> Bus(
             bus_type = busType.normal, 
             bus_id = "GH3456", 
             start_time = time(10, 30), 
@@ -99,7 +99,7 @@ walker createGraph{
             fare = 1600.0, 
             intermediate_stops = ["Vavuniya", "Puttalam"]
         );
-        bus_5 = end_node_3 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
+        bus_5 = end_node_3 +>: busEdge(edge_type = busEdgeType.direct) :+> Bus(
             bus_type = busType.luxury, 
             bus_id = "IJ7890", 
             start_time = time(16, 0), 
@@ -107,7 +107,7 @@ walker createGraph{
             fare = 3000.0, 
             intermediate_stops = ["Kurunagala", "Vavuniya"]
         );
-        bus_6 = end_node_4 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
+        bus_6 = end_node_4 +>: busEdge(edge_type = busEdgeType.direct) :+> Bus(
             bus_type = busType.normal, 
             bus_id = "KL1234", 
             start_time = time(14, 0), 
@@ -115,7 +115,7 @@ walker createGraph{
             fare = 1500.0,
             intermediate_stops = ["Puttalam", "Vavuniya"]
         );
-        bus_7 = end_node_4 +>: busEdge(edge_type = busEdgeType.via.value) :+> Bus(
+        bus_7 = end_node_4 +>: busEdge(edge_type = busEdgeType.via) :+> Bus(
             bus_type = busType.semi_luxury, 
             bus_id = "MN5678", 
             start_time = time(7, 30), 
@@ -123,7 +123,7 @@ walker createGraph{
             fare = 1200.0, 
             intermediate_stops = ["Dehiwala", "Colombo", "Puttalam", "Vavuniya"]
         );
-        bus_8 = end_node_5 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
+        bus_8 = end_node_5 +>: busEdge(edge_type = busEdgeType.direct) :+> Bus(
             bus_type = busType.normal, 
             bus_id = "OP9012", 
             start_time = time(12, 0), 
@@ -193,12 +193,9 @@ walker computeBusTime{
 
     def compute_number_of_intermediate_stops{
         cities: City_details = extract_city_details(user_input=self.user_input);
-        # print("Extracted Cities: ", cities);
+        print("Extracted Cities: ", cities);
 
-        result = root spawn computeIntermediateStops(cities,output_number=0);
-        # print("Number of Intermediate Stops: ", result.output_number);
-        return result.output_number;
-
+        root spawn computeIntermediateStops(cities);
     }
 
 
@@ -210,7 +207,7 @@ walker computeBusTime{
 
     can start with `root entry{
 
-        
+        # number_of_stops: str = self.compute_number_of_stops();
 
         response = self.route_and_run(user_input=self.user_input);
 
@@ -230,8 +227,6 @@ walker computeIntermediateStops
 {
 
     has cities: City_details;
-    has output_number: int;
-    
     
 
     can start with `root entry{
@@ -246,46 +241,52 @@ walker computeIntermediateStops
 
     can search with City entry{
 
-        
+        min_distance_edge: bueRoute = {route_number: "", distance: 0};
 
         if (here.city_type == cityType.start.value and here.name == self.cities.start_city){
         
-            
+            print(here);
             filtered_edges = [edge-->(`?City: city_type==cityType.end.value, name==self.cities.end_city)];
-            # print("Filtered Edges: ", filtered_edges);
+            print("Filtered Edges: ", filtered_edges);
 
             if (len(filtered_edges) == 0){
                 print("No routes found between ", self.cities.start_city, " and ", self.cities.end_city);
             }
             else{
-                self.min_distance_edge = filtered_edges[0];
+                min_distance_edge = filtered_edges[0];
                 for item in filtered_edges{
-                    if (item.distance < self.min_distance_edge.distance){
-                        self.min_distance_edge = item;
+                    if (item.distance < min_distance_edge.distance){
+                        min_distance_edge = item;
                     }
                     
                 }
 
-                # print("Minimum Distance Edge: ", self.min_distance_edge);
-                next_node = [->:busRoute:distance==self.min_distance_edge.distance:->(`?City)](?city_type==cityType.end.value);
-                visit next_node[0];
+                print("Minimum Distance Edge: ", min_distance_edge);
 
             }
         }
-        elif (here.city_type == cityType.end.value and here.name == self.cities.end_city){
-            
+        if (here.city_type == cityType.end.value and here.name == self.cities.end_city){
 
-            bus_nodes = [->:busEdge:edge_type=="direct":->(`?Bus)];
-            
-            selected_bus = bus_nodes[0]; # the first bus is selected out of the all direct buses
+            end_city_node = [min_distance_edge -->(`?City: city_type==cityType.end)][0];
+            visit[-->end_city_node];
+            print("End City Node: ", end_city_node);
 
-            number_of_stops = len(selected_bus.intermediate_stops);
-            self.output_number = number_of_stops;
             
+            # visit[->:busEdge: edge_type=="direct":->];
+            # target_bus = [-->(`?Bus)][0];
 
-        } 
-    }      
+            # number_of_stops = len(target_bus.intermediate_stops);
+            # print("Number of Intermediate Stops: ", number_of_stops);
+
+        }       
+
+
+
+            
+    }
 }
+
+
 
 
 
