@@ -380,31 +380,9 @@ cl {
                 </div>
 
             </div>
-            {(<div style={{"height":"auto","display":"flex","alignItems":"center","justifyContent":"center","minheight":"200px","padding":"20px 20px"}}>
-            # <table style={{"width":"100%","marginTop":"30px","borderCollapse":"collapse"}}>
-            #     <thead>
-            #         <tr>
-            #             <th style={{"borderBottom":"2px solid #ddd","padding":"10px","textAlign":"left"}}>Bus ID</th>
-            #             <th style={{"borderBottom":"2px solid #ddd","padding":"10px","textAlign":"left"}}>Bus Type</th>
-            #             <th style={{"borderBottom":"2px solid #ddd","padding":"10px","textAlign":"left"}}>Start Time</th>
-            #             <th style={{"borderBottom":"2px solid #ddd","padding":"10px","textAlign":"left"}}>End Time</th>
-            #             <th style={{"borderBottom":"2px solid #ddd","padding":"10px","textAlign":"left"}}>Fare (LKR)</th>
-            #             <th style={{"borderBottom":"2px solid #ddd","padding":"10px","textAlign":"left"}}>Intermediate Stops</th>
-            #         </tr>
-            #     </thead>
-            #     <tbody>
-            #         {buses.map(lambda bus:any -> any {
-            #             return <div><tr key={bus.bus_id} style={{"borderBottom":"1px solid #ddd"}}>
-            #                 <td style={{"padding":"10px"}}>{bus.bus_id}</td>
-            #                 <td style={{"padding":"10px"}}>{bus.bus_type}</td>
-            #                 <td style={{"padding":"10px"}}>{bus.start_time}</td>
-            #                 <td style={{"padding":"10px"}}>{bus.end_time}</td>
-            #                 <td style={{"padding":"10px"}}>{bus.fare.toFixed(2)}</td>
-            #                 <td style={{"padding":"10px"}}>{bus.intermediate_stops.join(", ")}</td>
-            #             </tr></div>;
-            #         })}
-            #     </tbody>
-                 <button style={{
+            {(<div style={{"display":"flex","flexDirection":"column","padding":"20px 20px"}}>
+                <div style={{"display":"flex","justifyContent":"flex-end","marginBottom":"15px"}}>
+                    <button style={{
                         "background": "#ff3232ff",
                         "border": "none",
                         "padding": "10px 25px",
@@ -418,7 +396,36 @@ cl {
                         "textAlign":"center"
                     }} onClick={handleRefresh}>
                         Refresh
-                 </button>
+                    </button>
+                </div>
+                
+                <div style={{"overflowX":"auto"}}>
+                    <table style={{ width: "100%", borderCollapse: "collapse", backgroundColor: "rgba(255,255,255,0.05)" }}>
+                        <thead>
+                            <tr style={{ backgroundColor: "rgba(255,127,50,0.1)", borderBottom: "2px solid #ff7f32" }}>
+                                <th style={{ borderBottom: "2px solid #ff7f32", padding: "12px", textAlign: "left", color: "#ff7f32", fontWeight: "600" }}>Bus ID</th>
+                                <th style={{ borderBottom: "2px solid #ff7f32", padding: "12px", textAlign: "left", color: "#ff7f32", fontWeight: "600" }}>Bus Type</th>
+                                <th style={{ borderBottom: "2px solid #ff7f32", padding: "12px", textAlign: "left", color: "#ff7f32", fontWeight: "600" }}>Start Time</th>
+                                <th style={{ borderBottom: "2px solid #ff7f32", padding: "12px", textAlign: "left", color: "#ff7f32", fontWeight: "600" }}>End Time</th>
+                                <th style={{ borderBottom: "2px solid #ff7f32", padding: "12px", textAlign: "left", color: "#ff7f32", fontWeight: "600" }}>Fare (LKR)</th>
+                                <th style={{ borderBottom: "2px solid #ff7f32", padding: "12px", textAlign: "left", color: "#ff7f32", fontWeight: "600" }}>Intermediate Stops</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {buses.map(lambda bus:any -> any {
+                                return <tr key={bus.bus_id} style={{"borderBottom":"1px solid rgba(255,255,255,0.1)","backgroundColor":"rgba(255,255,255,0.02)","transition":"backgroundColor 0.2s"}}>
+                                    <td style={{"padding":"12px","color":"#fff"}}>{bus.bus_id}</td>
+                                    <td style={{"padding":"12px","color":"#ffffffff","fontWeight":"600"}}>{bus.bus_type}</td>
+                                    <td style={{"padding":"12px","color":"#fff"}}>{bus.start_time}</td>
+                                    <td style={{"padding":"12px","color":"#fff"}}>{bus.end_time}</td>
+                                    <td style={{"padding":"12px","color":"#4ade80","fontWeight":"600"}}>Rs. {bus.fare.toFixed(2)}</td>
+                                    <td style={{"padding":"12px","color":"#fff","fontSize":"0.9rem"}}>{bus.intermediate_stops.join(", ")}</td>
+                                </tr>;
+                            })}
+                        </tbody>
+                    </table>
+                </div>
               </div>)if clicked 
             else(<div style={{"height":"auto","display":"flex","alignItems":"center","justifyContent":"center","minheight":"200px"}}>
             <h1 style={{"textAlign":"center","fontSize":"1rem","padding":"2px 2px"}}>Search some buses!!!</h1></div>)}
@@ -677,7 +684,6 @@ cl {
         </div>;
     }
 }
-
 
 
 

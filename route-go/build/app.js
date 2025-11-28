@@ -292,7 +292,80 @@ function SearchBusTable() {
       "minheight": "200px",
       "padding": "20px 20px"
     }
-  }, [__jacJsx("button", {
+  }, [__jacJsx("table", {
+    "style": {
+      width: "100%",
+      marginTop: "30px",
+      borderCollapse: "collapse"
+    }
+  }, [__jacJsx("thead", {}, [__jacJsx("tr", {}, [__jacJsx("th", {
+    "style": {
+      borderBottom: "2px solid #ddd",
+      padding: "10px",
+      textAlign: "left"
+    }
+  }, ["Bus ID"]), __jacJsx("th", {
+    "style": {
+      borderBottom: "2px solid #ddd",
+      padding: "10px",
+      textAlign: "left"
+    }
+  }, ["Bus Type"]), __jacJsx("th", {
+    "style": {
+      borderBottom: "2px solid #ddd",
+      padding: "10px",
+      textAlign: "left"
+    }
+  }, ["Start Time"]), __jacJsx("th", {
+    "style": {
+      borderBottom: "2px solid #ddd",
+      padding: "10px",
+      textAlign: "left"
+    }
+  }, ["End Time"]), __jacJsx("th", {
+    "style": {
+      borderBottom: "2px solid #ddd",
+      padding: "10px",
+      textAlign: "left"
+    }
+  }, ["Fare (LKR)"]), __jacJsx("th", {
+    "style": {
+      borderBottom: "2px solid #ddd",
+      padding: "10px",
+      textAlign: "left"
+    }
+  }, ["Intermediate Stops"])])]), __jacJsx("tbody", {}, [buses.map(function (bus) {
+    return __jacJsx("div", {}, [__jacJsx("tr", {
+      "key": bus.bus_id,
+      "style": {
+        "borderBottom": "1px solid #ddd"
+      }
+    }, [__jacJsx("td", {
+      "style": {
+        "padding": "10px"
+      }
+    }, [bus.bus_id]), __jacJsx("td", {
+      "style": {
+        "padding": "10px"
+      }
+    }, [bus.bus_type]), __jacJsx("td", {
+      "style": {
+        "padding": "10px"
+      }
+    }, [bus.start_time]), __jacJsx("td", {
+      "style": {
+        "padding": "10px"
+      }
+    }, [bus.end_time]), __jacJsx("td", {
+      "style": {
+        "padding": "10px"
+      }
+    }, [bus.fare.toFixed(2)]), __jacJsx("td", {
+      "style": {
+        "padding": "10px"
+      }
+    }, [bus.intermediate_stops.join(", ")])])]);
+  })])]), __jacJsx("button", {
     "style": {
       "background": "#ff3232ff",
       "border": "none",
