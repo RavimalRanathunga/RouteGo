@@ -37,6 +37,11 @@ function SearchBusTable() {
     buses = _useState10[0],
     setBuses = _useState10[1];
   function handleRefresh() {
+    setFromCityName("");
+    setToCityName("");
+    setStartTime("");
+    setEndTime("");
+    setBuses([]);
     setClick(!clicked);
   }
   function handleClick() {
@@ -44,22 +49,34 @@ function SearchBusTable() {
   }
   function _handleClick() {
     _handleClick = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee() {
-      var results, _iterator, _step, _results, _iterator2, _step2, bus;
+      var results, newBuses, _iterator, _step, _results, _iterator2, _step2, bus;
       return _regenerator().w(function (_context) {
         while (1) switch (_context.n) {
           case 0:
             console.log("Button clicked!");
             console.log("From: ".concat(from_city_name, ", To: ").concat(to_city_name, ", Start Time: ").concat(start_time, ", End Time: ").concat(end_time));
             setClick(!clicked);
-            _context.n = 1;
+            setBuses([]);
+            if (!(!from_city_name && to_city_name && start_time && end_time)) {
+              _context.n = 1;
+              break;
+            }
+            console.log("Please fill all the fields.");
+            alert("Please fill all the fields.");
+            return _context.a(2, null);
+          case 1:
+            _context.n = 2;
             return __jacSpawn("findResults", "", {
               "from_city_name": from_city_name,
-              "to_city_name": to_city_name
+              "to_city_name": to_city_name,
+              "start_time": start_time,
+              "end_time": end_time
             });
-          case 1:
+          case 2:
             results = _context.v;
             console.log("Found ".concat(results.reports.length, " reports."));
             if (results.reports.length > 0) {
+              newBuses = [];
               _iterator = _createForOfIteratorHelper(results.reports);
               try {
                 for (_iterator.s(); !(_step = _iterator.n()).done;) {
@@ -69,7 +86,7 @@ function SearchBusTable() {
                     for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
                       bus = _step2.value;
                       console.log("Bus Found:", bus);
-                      setBuses(buses.concat(bus));
+                      newBuses.push(bus);
                     }
                   } catch (err) {
                     _iterator2.e(err);
@@ -82,10 +99,11 @@ function SearchBusTable() {
               } finally {
                 _iterator.f();
               }
+              setBuses(newBuses);
             }
             console.log("Found ".concat(buses.length, " buses."));
             console.log(buses);
-          case 2:
+          case 3:
             return _context.a(2);
         }
       }, _callee);
@@ -144,7 +162,7 @@ function SearchBusTable() {
     "value": "Jaffna"
   }, ["Jaffna"]), __jacJsx("option", {
     "value": "Kandy"
-  }, ["Kandy"])])]), __jacJsx("div", {}, [__jacJsx("label", {}, ["Start Time"]), __jacJsx("select", {
+  }, ["Kandy"])])]), __jacJsx("div", {}, [__jacJsx("label", {}, ["Time Range:Start Time"]), __jacJsx("select", {
     "style": {
       "width": "100%",
       "padding": "10px",
@@ -204,7 +222,7 @@ function SearchBusTable() {
     "value": "22:00"
   }, ["22:00"]), __jacJsx("option", {
     "value": "23:00"
-  }, ["23:00"])])]), __jacJsx("div", {}, [__jacJsx("label", {}, ["End Time"]), __jacJsx("select", {
+  }, ["23:00"])])]), __jacJsx("div", {}, [__jacJsx("label", {}, ["Time Range:End Time"]), __jacJsx("select", {
     "style": {
       "width": "100%",
       "padding": "10px",
@@ -285,87 +303,17 @@ function SearchBusTable() {
     "disabled": clicked
   }, ["Search"])])]), clicked ? __jacJsx("div", {
     "style": {
-      "height": "auto",
       "display": "flex",
-      "alignItems": "center",
-      "justifyContent": "center",
-      "minheight": "200px",
+      "flexDirection": "column",
       "padding": "20px 20px"
     }
-  }, [__jacJsx("table", {
+  }, [__jacJsx("div", {
     "style": {
-      width: "100%",
-      marginTop: "30px",
-      borderCollapse: "collapse"
+      "display": "flex",
+      "justifyContent": "flex-end",
+      "marginBottom": "15px"
     }
-  }, [__jacJsx("thead", {}, [__jacJsx("tr", {}, [__jacJsx("th", {
-    "style": {
-      borderBottom: "2px solid #ddd",
-      padding: "10px",
-      textAlign: "left"
-    }
-  }, ["Bus ID"]), __jacJsx("th", {
-    "style": {
-      borderBottom: "2px solid #ddd",
-      padding: "10px",
-      textAlign: "left"
-    }
-  }, ["Bus Type"]), __jacJsx("th", {
-    "style": {
-      borderBottom: "2px solid #ddd",
-      padding: "10px",
-      textAlign: "left"
-    }
-  }, ["Start Time"]), __jacJsx("th", {
-    "style": {
-      borderBottom: "2px solid #ddd",
-      padding: "10px",
-      textAlign: "left"
-    }
-  }, ["End Time"]), __jacJsx("th", {
-    "style": {
-      borderBottom: "2px solid #ddd",
-      padding: "10px",
-      textAlign: "left"
-    }
-  }, ["Fare (LKR)"]), __jacJsx("th", {
-    "style": {
-      borderBottom: "2px solid #ddd",
-      padding: "10px",
-      textAlign: "left"
-    }
-  }, ["Intermediate Stops"])])]), __jacJsx("tbody", {}, [buses.map(function (bus) {
-    return __jacJsx("div", {}, [__jacJsx("tr", {
-      "key": bus.bus_id,
-      "style": {
-        "borderBottom": "1px solid #ddd"
-      }
-    }, [__jacJsx("td", {
-      "style": {
-        "padding": "10px"
-      }
-    }, [bus.bus_id]), __jacJsx("td", {
-      "style": {
-        "padding": "10px"
-      }
-    }, [bus.bus_type]), __jacJsx("td", {
-      "style": {
-        "padding": "10px"
-      }
-    }, [bus.start_time]), __jacJsx("td", {
-      "style": {
-        "padding": "10px"
-      }
-    }, [bus.end_time]), __jacJsx("td", {
-      "style": {
-        "padding": "10px"
-      }
-    }, [bus.fare.toFixed(2)]), __jacJsx("td", {
-      "style": {
-        "padding": "10px"
-      }
-    }, [bus.intermediate_stops.join(", ")])])]);
-  })])]), __jacJsx("button", {
+  }, [__jacJsx("button", {
     "style": {
       "background": "#ff3232ff",
       "border": "none",
@@ -380,7 +328,112 @@ function SearchBusTable() {
       "textAlign": "center"
     },
     "onClick": handleRefresh
-  }, ["Refresh"])]) : __jacJsx("div", {
+  }, ["Refresh"])]), __jacJsx("div", {
+    "style": {
+      "overflowX": "auto"
+    }
+  }, [__jacJsx("table", {
+    "style": {
+      width: "100%",
+      borderCollapse: "collapse",
+      backgroundColor: "rgba(255,255,255,0.05)"
+    }
+  }, [__jacJsx("thead", {}, [__jacJsx("tr", {
+    "style": {
+      backgroundColor: "rgba(255,127,50,0.1)",
+      borderBottom: "2px solid #ff7f32"
+    }
+  }, [__jacJsx("th", {
+    "style": {
+      borderBottom: "2px solid #ff7f32",
+      padding: "12px",
+      textAlign: "left",
+      color: "#ff7f32",
+      fontWeight: "600"
+    }
+  }, ["Bus ID"]), __jacJsx("th", {
+    "style": {
+      borderBottom: "2px solid #ff7f32",
+      padding: "12px",
+      textAlign: "left",
+      color: "#ff7f32",
+      fontWeight: "600"
+    }
+  }, ["Bus Type"]), __jacJsx("th", {
+    "style": {
+      borderBottom: "2px solid #ff7f32",
+      padding: "12px",
+      textAlign: "left",
+      color: "#ff7f32",
+      fontWeight: "600"
+    }
+  }, ["Start Time"]), __jacJsx("th", {
+    "style": {
+      borderBottom: "2px solid #ff7f32",
+      padding: "12px",
+      textAlign: "left",
+      color: "#ff7f32",
+      fontWeight: "600"
+    }
+  }, ["End Time"]), __jacJsx("th", {
+    "style": {
+      borderBottom: "2px solid #ff7f32",
+      padding: "12px",
+      textAlign: "left",
+      color: "#ff7f32",
+      fontWeight: "600"
+    }
+  }, ["Fare (LKR)"]), __jacJsx("th", {
+    "style": {
+      borderBottom: "2px solid #ff7f32",
+      padding: "12px",
+      textAlign: "left",
+      color: "#ff7f32",
+      fontWeight: "600"
+    }
+  }, ["Intermediate Stops"])])]), __jacJsx("tbody", {}, [buses.map(function (bus) {
+    return __jacJsx("tr", {
+      "key": bus.bus_id,
+      "style": {
+        "borderBottom": "1px solid rgba(255,255,255,0.1)",
+        "backgroundColor": "rgba(255,255,255,0.02)",
+        "transition": "backgroundColor 0.2s"
+      }
+    }, [__jacJsx("td", {
+      "style": {
+        "padding": "12px",
+        "color": "#fff"
+      }
+    }, [bus.bus_id]), __jacJsx("td", {
+      "style": {
+        "padding": "12px",
+        "color": "#ffffffff",
+        "fontWeight": "600"
+      }
+    }, [bus.bus_type]), __jacJsx("td", {
+      "style": {
+        "padding": "12px",
+        "color": "#fff"
+      }
+    }, [bus.start_time]), __jacJsx("td", {
+      "style": {
+        "padding": "12px",
+        "color": "#fff"
+      }
+    }, [bus.end_time]), __jacJsx("td", {
+      "style": {
+        "padding": "12px",
+        "color": "#4ade80",
+        "fontWeight": "600"
+      }
+    }, ["Rs. ", bus.fare.toFixed(2)]), __jacJsx("td", {
+      "style": {
+        "padding": "12px",
+        "color": "#fff",
+        "fontSize": "0.9rem"
+      }
+    }, [bus.intermediate_stops.join(", ")])]);
+  })])])])]) : __jacJsx("div", {
     "style": {
       "height": "auto",
       "display": "flex",
@@ -675,4 +728,3 @@ function app() {
   }, [__jacJsx(HeroSection, {}, []), __jacJsx(SearchBusTable, {}, [])]);
 }
 export { HeroSection, SearchBusTable, app };
->>>>>>> 144eea30a19c5135bf6127f19924e8f4faabfb19
