@@ -181,9 +181,32 @@ cl {
         let [isChatOpen, setIsChatOpen] = useState(false);
 
         if isChatOpen {
-            return <ChatWindow
-                closeChat={lambda -> None { setIsChatOpen(false); }}
-            />;
+            return <div>
+                <ChatWindow
+                    closeChat={lambda -> None { setIsChatOpen(false); }}
+                />
+                <button
+                    onClick={lambda -> None { setIsChatOpen(false); }}
+                    style={{
+                        "position": "fixed",
+                        "bottom": "100px",
+                        "right": "20px",
+                        "width": "100px",
+                        "height": "200px",
+                        "background": "white",
+                        "borderRadius": "10px",
+                        "boxShadow": "0 4px 12px rgba(0,0,0,0.2)",
+                        "display": "flex",
+                        "flexDirection": "column",
+                        "zIndex": "999",
+                        "position": "absolute",
+                        "top": "0",
+                        "opacity": "0",
+                        "cursor":"pointer"
+                    }}
+                >
+                </button>
+            </div>;
         }
 
         return <div>
