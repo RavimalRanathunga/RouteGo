@@ -1,5 +1,5 @@
-import from datetime {time}
 import from datetime {datetime}
+import from datetime {time}
 
 enum cityType{
     start = "start",
@@ -132,10 +132,10 @@ walker findResults{
 
     has from_city_name: str;
     has to_city_name: str;
+    has start_time: str;
+    has end_time: str;
     has from_city: str =cityType.start.value;
     has to_city: str = cityType.end.value;
-    # has start_time: time;
-    # has end_time: time;
 
     can search with `root entry{
 
@@ -150,7 +150,17 @@ walker findResults{
         print("Now we are in",here);
 
         if (here.city_type == cityType.end.value and here.name == self.to_city_name){
-            report[--> (`?Bus)];
+
+            start_t:time = datetime.strptime(self.start_time, "%H:%M").time();
+            end_t:time = datetime.strptime(self.end_time, "%H:%M").time();
+            print("Filtering buses between", start_t, "and", end_t);
+
+            if(start_t<=end_t){
+                report[--> (`?Bus: start_time >= start_t, start_time <= end_t)];
+            }else{
+
+            report[--> (`?Bus: start_time >= start_t or start_time <= end_t)];
+            }
         } else {
         end_results = [-->(`?City: name==self.to_city_name, city_type==self.to_city)];
             print("end_results",end_results);
@@ -198,6 +208,11 @@ cl {
 
             def handleRefresh() -> None
             {
+                setFromCityName("");
+                setToCityName("");
+                setStartTime("");
+                setEndTime("");
+                setBuses([]);
                 setClick(not clicked);
             }
 
@@ -207,22 +222,33 @@ cl {
                 console.log(f"From: {from_city_name}, To: {to_city_name}, Start Time: {start_time}, End Time: {end_time}");
                 setClick(not clicked);
 
+                setBuses([]);
+
+                # if (not(from_city_name and to_city_name and start_time and end_time)){
+                #     console.log("Please fill all the fields.");
+                #     alert("Please fill all the fields.");
+                #     return None;
+
+                # }
+
                 results = root spawn findResults(
                     from_city_name=from_city_name,
                     to_city_name=to_city_name,
-                    # start_time=datetime.strptime(start_time, "%H:%M").time(),
-                    # end_time=datetime.strptime(end_time, "%H:%M").time()
+                    start_time=start_time,
+                    end_time=end_time
                 );
 
                 console.log(f"Found {results.reports.length} reports.");
 
                 if (results.reports.length >0){
+                    let newBuses = [];
                     for results in results.reports{
                         for bus in results{
                             console.log("Bus Found:", bus);
-                            setBuses(buses.concat(bus));
+                            newBuses.push(bus);
                         }
                     }
+                    setBuses(newBuses);
                 }
 
                 console.log(f"Found {buses.length} buses.");
@@ -284,7 +310,7 @@ cl {
                 </div>
 
                 <div>
-                    <label>Start Time</label>
+                    <label>Time Range:Start Time</label>
                     <select style={{
                         "width": "100%",
                         "padding": "10px",
@@ -321,7 +347,7 @@ cl {
                 </div>
 
                 <div>
-                    <label>End Time</label>
+                    <label>Time Range:End Time</label>
                     <select style={{
                         "width": "100%",
                         "padding": "10px",
