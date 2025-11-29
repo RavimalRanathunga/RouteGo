@@ -10,7 +10,7 @@ enum cityType
 enum busType
 {   
     normal = "normal",
-    semi_luxury = "semi-luxury",
+    semi_luxury = "semi_luxury",
     luxury = "luxury",
 }
 
@@ -19,8 +19,6 @@ enum busedgeType
     direct = "direct",
     via = "via",
 }
-
-
 
 node city
 {

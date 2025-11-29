@@ -140,6 +140,7 @@ walker findResults{
         start_results = [-->(`?City: city_type==self.from_city, name==self.from_city_name)];
         visit[-->start_results];
         visit[-->(`?City: city_type==self.to_city,name==self.to_city_name)];
+        
         visit[-->(`?Bus)];
     }
 
