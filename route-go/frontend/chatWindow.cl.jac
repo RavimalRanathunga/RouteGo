@@ -168,40 +168,63 @@ def ChatWindow(props: any) -> any {
                 </button>
             </div>
         </div>;
-}
-
-def ChatBot() -> any {
-    let [isChatOpen, setIsChatOpen] = useState(false);
-
-    if isChatOpen {
-        return <ChatWindow
-            closeChat={lambda -> None { setIsChatOpen(false); }}
-        />;
     }
 
-    return <div>
-        <button
-            onClick={lambda -> None { setIsChatOpen(true); }}
-            style={{
-                "position": "fixed",
-                "bottom": "20px",
-                "right": "20px",
-                "width": "60px",
-                "height": "60px",
-                "borderRadius": "50%",
-                "background": "#ff7f32",
-                "color": "white",
-                "border": "none",
-                "fontSize": "1.8rem",
-                "cursor": "pointer",
-                "boxShadow": "0 4px 12px rgba(0,0,0,0.2)",
-                "display": "flex",
-                "alignItems": "center",
-                "justifyContent": "center",
-                "zIndex": "998"
-            }}
-        >
-            💬
-        </button>
-    </div>;
-}
+    def ChatBot() -> any {
+        let [isChatOpen, setIsChatOpen] = useState(false);
+
+        if isChatOpen {
+            return <div>
+                <ChatWindow
+                    closeChat={lambda -> None { setIsChatOpen(false); }}
+                />
+                <button
+                    onClick={lambda -> None { setIsChatOpen(false); }}
+                    style={{
+                        "position": "fixed",
+                        "bottom": "100px",
+                        "right": "20px",
+                        "width": "100px",
+                        "height": "200px",
+                        "background": "white",
+                        "borderRadius": "10px",
+                        "boxShadow": "0 4px 12px rgba(0,0,0,0.2)",
+                        "display": "flex",
+                        "flexDirection": "column",
+                        "zIndex": "999",
+                        "position": "absolute",
+                        "top": "0",
+                        "opacity": "0",
+                        "cursor":"pointer"
+                    }}
+                >
+                </button>
+            </div>;
+        }
+
+        return <div>
+            <button
+                onClick={lambda -> None { setIsChatOpen(true); }}
+                style={{
+                    "position": "fixed",
+                    "bottom": "20px",
+                    "right": "20px",
+                    "width": "60px",
+                    "height": "60px",
+                    "borderRadius": "50%",
+                    "background": "#ff7f32",
+                    "color": "white",
+                    "border": "none",
+                    "fontSize": "1.8rem",
+                    "cursor": "pointer",
+                    "boxShadow": "0 4px 12px rgba(0,0,0,0.2)",
+                    "display": "flex",
+                    "alignItems": "center",
+                    "justifyContent": "center",
+                    "zIndex": "998"
+                }}
+            >
+                💬
+            </button>
+        </div>;
+    }
