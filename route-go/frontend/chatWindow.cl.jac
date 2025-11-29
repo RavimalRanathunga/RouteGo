@@ -1,11 +1,4 @@
-cl import from react {
-    useState,
-    useEffect
-}
-
-cl {
-
-    def ChatWindow(closeChat: any) -> any {
+def ChatWindow(props: any) -> any {
         let [messages, setMessages] = useState([
             {sender: "bot", text: "Hi! I'm RouteGo Assistant. How can I help you find buses today?", id: 0}
         ]);
@@ -76,7 +69,7 @@ cl {
                     RouteGo Chat
                 </h4>
                 <button
-                    onClick={lambda -> None { closeChat(); }}
+                    onClick={lambda -> None { props.closeChat(); }}
                     style={{
                         "background": "none",
                         "border": "none",
@@ -235,9 +228,3 @@ cl {
             </button>
         </div>;
     }
-
-    def app() -> any {
-        return <ChatBot />;
-    }
-
-}
