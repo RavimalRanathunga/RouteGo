@@ -1,11 +1,4 @@
-cl import from react {
-    useState,
-    useEffect
-}
-
-cl {
-
-    def ChatWindow(closeChat: any) -> any {
+def ChatWindow(props: any) -> any {
         let [messages, setMessages] = useState([
             {sender: "bot", text: "Hi! I'm RouteGo Assistant. How can I help you find buses today?", id: 0}
         ]);
@@ -76,7 +69,7 @@ cl {
                     RouteGo Chat
                 </h4>
                 <button
-                    onClick={lambda -> None { closeChat(); }}
+                    onClick={lambda -> None { props.closeChat(); }}
                     style={{
                         "background": "none",
                         "border": "none",
@@ -175,46 +168,40 @@ cl {
                 </button>
             </div>
         </div>;
+}
+
+def ChatBot() -> any {
+    let [isChatOpen, setIsChatOpen] = useState(false);
+
+    if isChatOpen {
+        return <ChatWindow
+            closeChat={lambda -> None { setIsChatOpen(false); }}
+        />;
     }
 
-    def ChatBot() -> any {
-        let [isChatOpen, setIsChatOpen] = useState(false);
-
-        if isChatOpen {
-            return <ChatWindow
-                closeChat={lambda -> None { setIsChatOpen(false); }}
-            />;
-        }
-
-        return <div>
-            <button
-                onClick={lambda -> None { setIsChatOpen(true); }}
-                style={{
-                    "position": "fixed",
-                    "bottom": "20px",
-                    "right": "20px",
-                    "width": "60px",
-                    "height": "60px",
-                    "borderRadius": "50%",
-                    "background": "#ff7f32",
-                    "color": "white",
-                    "border": "none",
-                    "fontSize": "1.8rem",
-                    "cursor": "pointer",
-                    "boxShadow": "0 4px 12px rgba(0,0,0,0.2)",
-                    "display": "flex",
-                    "alignItems": "center",
-                    "justifyContent": "center",
-                    "zIndex": "998"
-                }}
-            >
-                💬
-            </button>
-        </div>;
-    }
-
-    def app() -> any {
-        return <ChatBot />;
-    }
-
+    return <div>
+        <button
+            onClick={lambda -> None { setIsChatOpen(true); }}
+            style={{
+                "position": "fixed",
+                "bottom": "20px",
+                "right": "20px",
+                "width": "60px",
+                "height": "60px",
+                "borderRadius": "50%",
+                "background": "#ff7f32",
+                "color": "white",
+                "border": "none",
+                "fontSize": "1.8rem",
+                "cursor": "pointer",
+                "boxShadow": "0 4px 12px rgba(0,0,0,0.2)",
+                "display": "flex",
+                "alignItems": "center",
+                "justifyContent": "center",
+                "zIndex": "998"
+            }}
+        >
+            💬
+        </button>
+    </div>;
 }
