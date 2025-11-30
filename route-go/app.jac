@@ -165,13 +165,13 @@ walker findResults{
             print("Filtering buses between", start_t, "and", end_t);
 
             if(start_t<=end_t){
-                report[--> (`?Bus: start_time >= start_t, start_time <= end_t)];
+                report [-->(`?Bus: start_time >= start_t and start_time <= end_t)];
             }else{
-
-            report[--> (`?Bus: start_time >= start_t or start_time <= end_t)];
+                report[-->(`?Bus: start_time >= start_t or start_time <= end_t)];
             }
         } else {
-        end_results = [-->(`?City: name==self.to_city_name, city_type==self.to_city)];
+            
+            end_results = [-->(`?City: name==self.to_city_name, city_type==self.to_city)];
             print("end_results",end_results);
             visit[-->end_results];
         }
@@ -307,7 +307,6 @@ walker computeIntermediateStops
         } 
     }      
 }
-
 
 cl {
 
