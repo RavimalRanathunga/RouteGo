@@ -1,3 +1,7 @@
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function _regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */ var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i["return"]) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
 function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } r ? i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n : (o("next", 0), o("throw", 1), o("return", 2)); }, _regeneratorDefine2(e, r, n, t); }
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t["return"] || t["return"](); } finally { if (u) throw o; } } }; }
@@ -37,6 +41,11 @@ function SearchBusTable() {
     buses = _useState10[0],
     setBuses = _useState10[1];
   function handleRefresh() {
+    setFromCityName("");
+    setToCityName("");
+    setStartTime("");
+    setEndTime("");
+    setBuses([]);
     setClick(!clicked);
   }
   function handleClick() {
@@ -44,22 +53,33 @@ function SearchBusTable() {
   }
   function _handleClick() {
     _handleClick = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee() {
-      var results, _iterator, _step, _results, _iterator2, _step2, bus;
+      var results, newBuses, _iterator, _step, _results, _iterator2, _step2, bus;
       return _regenerator().w(function (_context) {
         while (1) switch (_context.n) {
           case 0:
             console.log("Button clicked!");
+            if (!(from_city_name === "" || to_city_name === "" || start_time === "" || end_time === "")) {
+              _context.n = 1;
+              break;
+            }
+            alert("Please fill in all fields before searching.");
+            return _context.a(2);
+          case 1:
             console.log("From: ".concat(from_city_name, ", To: ").concat(to_city_name, ", Start Time: ").concat(start_time, ", End Time: ").concat(end_time));
             setClick(!clicked);
-            _context.n = 1;
+            setBuses([]);
+            _context.n = 2;
             return __jacSpawn("findResults", "", {
               "from_city_name": from_city_name,
-              "to_city_name": to_city_name
+              "to_city_name": to_city_name,
+              "start_time": start_time,
+              "end_time": end_time
             });
-          case 1:
+          case 2:
             results = _context.v;
             console.log("Found ".concat(results.reports.length, " reports."));
             if (results.reports.length > 0) {
+              newBuses = [];
               _iterator = _createForOfIteratorHelper(results.reports);
               try {
                 for (_iterator.s(); !(_step = _iterator.n()).done;) {
@@ -69,7 +89,7 @@ function SearchBusTable() {
                     for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
                       bus = _step2.value;
                       console.log("Bus Found:", bus);
-                      setBuses(buses.concat(bus));
+                      newBuses.push(bus);
                     }
                   } catch (err) {
                     _iterator2.e(err);
@@ -82,10 +102,11 @@ function SearchBusTable() {
               } finally {
                 _iterator.f();
               }
+              setBuses(newBuses);
             }
             console.log("Found ".concat(buses.length, " buses."));
             console.log(buses);
-          case 2:
+          case 3:
             return _context.a(2);
         }
       }, _callee);
@@ -111,6 +132,7 @@ function SearchBusTable() {
       gap: "20px"
     }
   }, [__jacJsx("div", {}, [__jacJsx("label", {}, ["From *"]), __jacJsx("select", {
+    "required": true,
     "style": {
       "width": "100%",
       "padding": "10px",
@@ -127,6 +149,7 @@ function SearchBusTable() {
   }, ["Colombo"]), __jacJsx("option", {
     "value": "Jaffna"
   }, ["Jaffna"])])]), __jacJsx("div", {}, [__jacJsx("label", {}, ["To *"]), __jacJsx("select", {
+    "required": true,
     "style": {
       "width": "100%",
       "padding": "10px",
@@ -144,7 +167,8 @@ function SearchBusTable() {
     "value": "Jaffna"
   }, ["Jaffna"]), __jacJsx("option", {
     "value": "Kandy"
-  }, ["Kandy"])])]), __jacJsx("div", {}, [__jacJsx("label", {}, ["Start Time"]), __jacJsx("select", {
+  }, ["Kandy"])])]), __jacJsx("div", {}, [__jacJsx("label", {}, ["Time Range:Start Time"]), __jacJsx("select", {
+    "required": true,
     "style": {
       "width": "100%",
       "padding": "10px",
@@ -204,7 +228,8 @@ function SearchBusTable() {
     "value": "22:00"
   }, ["22:00"]), __jacJsx("option", {
     "value": "23:00"
-  }, ["23:00"])])]), __jacJsx("div", {}, [__jacJsx("label", {}, ["End Time"]), __jacJsx("select", {
+  }, ["23:00"])])]), __jacJsx("div", {}, [__jacJsx("label", {}, ["Time Range:End Time"]), __jacJsx("select", {
+    "required": true,
     "style": {
       "width": "100%",
       "padding": "10px",
@@ -285,87 +310,17 @@ function SearchBusTable() {
     "disabled": clicked
   }, ["Search"])])]), clicked ? __jacJsx("div", {
     "style": {
-      "height": "auto",
       "display": "flex",
-      "alignItems": "center",
-      "justifyContent": "center",
-      "minheight": "200px",
+      "flexDirection": "column",
       "padding": "20px 20px"
     }
-  }, [__jacJsx("table", {
+  }, [__jacJsx("div", {
     "style": {
-      width: "100%",
-      marginTop: "30px",
-      borderCollapse: "collapse"
+      "display": "flex",
+      "justifyContent": "flex-end",
+      "marginBottom": "15px"
     }
-  }, [__jacJsx("thead", {}, [__jacJsx("tr", {}, [__jacJsx("th", {
-    "style": {
-      borderBottom: "2px solid #ddd",
-      padding: "10px",
-      textAlign: "left"
-    }
-  }, ["Bus ID"]), __jacJsx("th", {
-    "style": {
-      borderBottom: "2px solid #ddd",
-      padding: "10px",
-      textAlign: "left"
-    }
-  }, ["Bus Type"]), __jacJsx("th", {
-    "style": {
-      borderBottom: "2px solid #ddd",
-      padding: "10px",
-      textAlign: "left"
-    }
-  }, ["Start Time"]), __jacJsx("th", {
-    "style": {
-      borderBottom: "2px solid #ddd",
-      padding: "10px",
-      textAlign: "left"
-    }
-  }, ["End Time"]), __jacJsx("th", {
-    "style": {
-      borderBottom: "2px solid #ddd",
-      padding: "10px",
-      textAlign: "left"
-    }
-  }, ["Fare (LKR)"]), __jacJsx("th", {
-    "style": {
-      borderBottom: "2px solid #ddd",
-      padding: "10px",
-      textAlign: "left"
-    }
-  }, ["Intermediate Stops"])])]), __jacJsx("tbody", {}, [buses.map(function (bus) {
-    return __jacJsx("div", {}, [__jacJsx("tr", {
-      "key": bus.bus_id,
-      "style": {
-        "borderBottom": "1px solid #ddd"
-      }
-    }, [__jacJsx("td", {
-      "style": {
-        "padding": "10px"
-      }
-    }, [bus.bus_id]), __jacJsx("td", {
-      "style": {
-        "padding": "10px"
-      }
-    }, [bus.bus_type]), __jacJsx("td", {
-      "style": {
-        "padding": "10px"
-      }
-    }, [bus.start_time]), __jacJsx("td", {
-      "style": {
-        "padding": "10px"
-      }
-    }, [bus.end_time]), __jacJsx("td", {
-      "style": {
-        "padding": "10px"
-      }
-    }, [bus.fare.toFixed(2)]), __jacJsx("td", {
-      "style": {
-        "padding": "10px"
-      }
-    }, [bus.intermediate_stops.join(", ")])])]);
-  })])]), __jacJsx("button", {
+  }, [__jacJsx("button", {
     "style": {
       "background": "#ff3232ff",
       "border": "none",
@@ -380,7 +335,112 @@ function SearchBusTable() {
       "textAlign": "center"
     },
     "onClick": handleRefresh
-  }, ["Refresh"])]) : __jacJsx("div", {
+  }, ["Refresh"])]), __jacJsx("div", {
+    "style": {
+      "overflowX": "auto"
+    }
+  }, [__jacJsx("table", {
+    "style": {
+      width: "100%",
+      borderCollapse: "collapse",
+      backgroundColor: "rgba(255,255,255,0.05)"
+    }
+  }, [__jacJsx("thead", {}, [__jacJsx("tr", {
+    "style": {
+      backgroundColor: "rgba(255,127,50,0.1)",
+      borderBottom: "2px solid #ff7f32"
+    }
+  }, [__jacJsx("th", {
+    "style": {
+      borderBottom: "2px solid #ff7f32",
+      padding: "12px",
+      textAlign: "left",
+      color: "#ff7f32",
+      fontWeight: "600"
+    }
+  }, ["Bus ID"]), __jacJsx("th", {
+    "style": {
+      borderBottom: "2px solid #ff7f32",
+      padding: "12px",
+      textAlign: "left",
+      color: "#ff7f32",
+      fontWeight: "600"
+    }
+  }, ["Bus Type"]), __jacJsx("th", {
+    "style": {
+      borderBottom: "2px solid #ff7f32",
+      padding: "12px",
+      textAlign: "left",
+      color: "#ff7f32",
+      fontWeight: "600"
+    }
+  }, ["Start Time"]), __jacJsx("th", {
+    "style": {
+      borderBottom: "2px solid #ff7f32",
+      padding: "12px",
+      textAlign: "left",
+      color: "#ff7f32",
+      fontWeight: "600"
+    }
+  }, ["End Time"]), __jacJsx("th", {
+    "style": {
+      borderBottom: "2px solid #ff7f32",
+      padding: "12px",
+      textAlign: "left",
+      color: "#ff7f32",
+      fontWeight: "600"
+    }
+  }, ["Fare (LKR)"]), __jacJsx("th", {
+    "style": {
+      borderBottom: "2px solid #ff7f32",
+      padding: "12px",
+      textAlign: "left",
+      color: "#ff7f32",
+      fontWeight: "600"
+    }
+  }, ["Intermediate Stops"])])]), __jacJsx("tbody", {}, [buses.map(function (bus) {
+    return __jacJsx("tr", {
+      "key": bus.bus_id,
+      "style": {
+        "borderBottom": "1px solid rgba(255,255,255,0.1)",
+        "backgroundColor": "rgba(255,255,255,0.02)",
+        "transition": "backgroundColor 0.2s"
+      }
+    }, [__jacJsx("td", {
+      "style": {
+        "padding": "12px",
+        "color": "#fff"
+      }
+    }, [bus.bus_id]), __jacJsx("td", {
+      "style": {
+        "padding": "12px",
+        "color": "#ffffffff",
+        "fontWeight": "600"
+      }
+    }, [bus.bus_type]), __jacJsx("td", {
+      "style": {
+        "padding": "12px",
+        "color": "#fff"
+      }
+    }, [bus.start_time]), __jacJsx("td", {
+      "style": {
+        "padding": "12px",
+        "color": "#fff"
+      }
+    }, [bus.end_time]), __jacJsx("td", {
+      "style": {
+        "padding": "12px",
+        "color": "#4ade80",
+        "fontWeight": "600"
+      }
+    }, ["Rs. ", bus.fare.toFixed(2)]), __jacJsx("td", {
+      "style": {
+        "padding": "12px",
+        "color": "#fff",
+        "fontSize": "0.9rem"
+      }
+    }, [bus.intermediate_stops.join(", ")])]);
+  })])])])]) : __jacJsx("div", {
     "style": {
       "height": "auto",
       "display": "flex",
@@ -635,34 +695,273 @@ function HeroSection() {
     }
   }, ["Best connections"])])])])]);
 }
+function ChatWindow(props) {
+  var _useState11 = useState([{
+      sender: "bot",
+      text: "Hi! I'm RouteGo Assistant. How can I help you find buses today?",
+      id: 0
+    }]),
+    _useState12 = _slicedToArray(_useState11, 2),
+    messages = _useState12[0],
+    setMessages = _useState12[1];
+  var _useState13 = useState(""),
+    _useState14 = _slicedToArray(_useState13, 2),
+    inputValue = _useState14[0],
+    setInputValue = _useState14[1];
+  var _useState15 = useState(1),
+    _useState16 = _slicedToArray(_useState15, 2),
+    messageId = _useState16[0],
+    setMessageId = _useState16[1];
+  function handleSendMessage() {
+    return _handleSendMessage.apply(this, arguments);
+  }
+  function _handleSendMessage() {
+    _handleSendMessage = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2() {
+      var results, userMsg, botMsg;
+      return _regenerator().w(function (_context2) {
+        while (1) switch (_context2.n) {
+          case 0:
+            if (inputValue) {
+              _context2.n = 1;
+              break;
+            }
+            return _context2.a(2);
+          case 1:
+            _context2.n = 2;
+            return __jacSpawn("computeBusTime", "", {
+              "user_input": inputValue
+            });
+          case 2:
+            results = _context2.v;
+            userMsg = {
+              sender: "user",
+              text: inputValue,
+              id: messageId
+            };
+            botMsg = {
+              sender: "bot",
+              text: results.reports[0].response,
+              id: messageId + 1
+            };
+            setMessages(messages.concat([userMsg, botMsg]));
+            setMessageId(messageId + 2);
+            setInputValue("");
+          case 3:
+            return _context2.a(2);
+        }
+      }, _callee2);
+    }));
+    return _handleSendMessage.apply(this, arguments);
+  }
+  function handleInputChange(e) {
+    setInputValue(e.target.value);
+  }
+  function handleKeyPress(e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  }
+  return __jacJsx("div", {
+    "style": {
+      "position": "fixed",
+      "bottom": "100px",
+      "right": "20px",
+      "width": "350px",
+      "height": "500px",
+      "background": "white",
+      "borderRadius": "10px",
+      "boxShadow": "0 4px 12px rgba(0,0,0,0.2)",
+      "display": "flex",
+      "flexDirection": "column",
+      "zIndex": "999"
+    }
+  }, [__jacJsx("div", {
+    "style": {
+      "background": "#ff7f32",
+      "color": "white",
+      "padding": "15px",
+      "borderRadius": "10px 10px 0 0",
+      "display": "flex",
+      "justifyContent": "space-between",
+      "alignItems": "center"
+    }
+  }, [__jacJsx("h4", {
+    "style": {
+      "margin": "0",
+      "fontSize": "1rem"
+    }
+  }, ["RouteGo Chat"]), __jacJsx("button", {
+    "onClick": function onClick() {
+      props.closeChat();
+    },
+    "style": {
+      "background": "none",
+      "border": "none",
+      "color": "white",
+      "fontSize": "1.5rem",
+      "cursor": "pointer",
+      "padding": "0"
+    }
+  }, ["×"])]), __jacJsx("div", {
+    "id": "messages-container",
+    "style": {
+      "flex": "1",
+      "overflowY": "auto",
+      "padding": "15px",
+      "background": "#f9f9f9",
+      "display": "flex",
+      "flexDirection": "column"
+    }
+  }, [messages.map(function (msg) {
+    var justifyContent = "flex-start";
+    var bgColor = "#e0e0e0";
+    var textColor = "black";
+    if (msg.sender === "user") {
+      justifyContent = "flex-end";
+      bgColor = "#ff7f32";
+      textColor = "white";
+    }
+    return __jacJsx("div", {
+      "key": msg.id,
+      "style": {
+        "marginBottom": "10px",
+        "display": "flex",
+        "justifyContent": justifyContent
+      }
+    }, [__jacJsx("div", {
+      "style": {
+        "maxWidth": "70%",
+        "padding": "10px 15px",
+        "borderRadius": "10px",
+        "background": bgColor,
+        "color": textColor,
+        "wordWrap": "break-word",
+        "fontSize": "0.95rem"
+      }
+    }, [msg.text])]);
+  })]), __jacJsx("div", {
+    "style": {
+      "padding": "10px",
+      "borderTop": "1px solid #ddd",
+      "display": "flex",
+      "gap": "10px"
+    }
+  }, [__jacJsx("input", {
+    "type": "text",
+    "value": inputValue,
+    "onChange": function onChange(e) {
+      handleInputChange(e);
+    },
+    "onKeyPress": function onKeyPress(e) {
+      handleKeyPress(e);
+    },
+    "placeholder": "Type your message...",
+    "style": {
+      "flex": "1",
+      "padding": "10px",
+      "borderRadius": "5px",
+      "border": "1px solid #ddd",
+      "fontSize": "0.9rem",
+      "fontFamily": "Arial, sans-serif"
+    }
+  }, []), __jacJsx("button", {
+    "onClick": function onClick() {
+      handleSendMessage();
+    },
+    "style": {
+      "background": "#ff7f32",
+      "color": "white",
+      "border": "none",
+      "padding": "10px 15px",
+      "borderRadius": "5px",
+      "cursor": "pointer",
+      "fontWeight": "600",
+      "fontSize": "0.9rem"
+    }
+  }, ["Send"])])]);
+}
+function ChatBot() {
+  var _useState17 = useState(false),
+    _useState18 = _slicedToArray(_useState17, 2),
+    isChatOpen = _useState18[0],
+    setIsChatOpen = _useState18[1];
+  if (isChatOpen) {
+    return __jacJsx("div", {}, [__jacJsx(ChatWindow, {
+      "closeChat": function closeChat() {
+        setIsChatOpen(false);
+      }
+    }, []), __jacJsx("button", {
+      "onClick": function onClick() {
+        setIsChatOpen(false);
+      },
+      "style": _defineProperty(_defineProperty(_defineProperty(_defineProperty({
+        "position": "fixed",
+        "bottom": "100px",
+        "right": "20px",
+        "width": "100px",
+        "height": "200px",
+        "background": "white",
+        "borderRadius": "10px",
+        "boxShadow": "0 4px 12px rgba(0,0,0,0.2)",
+        "display": "flex",
+        "flexDirection": "column",
+        "zIndex": "999"
+      }, "position", "absolute"), "top", "0"), "opacity", "0"), "cursor", "pointer")
+    }, [])]);
+  }
+  return __jacJsx("div", {}, [__jacJsx("button", {
+    "onClick": function onClick() {
+      setIsChatOpen(true);
+    },
+    "style": {
+      "position": "fixed",
+      "bottom": "20px",
+      "right": "20px",
+      "width": "60px",
+      "height": "60px",
+      "borderRadius": "50%",
+      "background": "#ff7f32",
+      "color": "white",
+      "border": "none",
+      "fontSize": "1.8rem",
+      "cursor": "pointer",
+      "boxShadow": "0 4px 12px rgba(0,0,0,0.2)",
+      "display": "flex",
+      "alignItems": "center",
+      "justifyContent": "center",
+      "zIndex": "998"
+    }
+  }, ["💬"])]);
+}
 function app() {
   useEffect(function () {
     function creategraph() {
       return _creategraph.apply(this, arguments);
     }
     function _creategraph() {
-      _creategraph = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2() {
+      _creategraph = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3() {
         var is_graph_created, result;
-        return _regenerator().w(function (_context2) {
-          while (1) switch (_context2.n) {
+        return _regenerator().w(function (_context3) {
+          while (1) switch (_context3.n) {
             case 0:
-              _context2.n = 1;
+              _context3.n = 1;
               return __jacSpawn("findGraph", "", {});
             case 1:
-              is_graph_created = _context2.v;
+              is_graph_created = _context3.v;
               console.log("Graph exists:", is_graph_created.reports[0].data);
               if (!(is_graph_created.reports[0].data === false)) {
-                _context2.n = 3;
+                _context3.n = 3;
                 break;
               }
-              _context2.n = 2;
+              _context3.n = 2;
               return __jacSpawn("createGraph", "", {});
             case 2:
-              result = _context2.v;
+              result = _context3.v;
             case 3:
-              return _context2.a(2);
+              return _context3.a(2);
           }
-        }, _callee2);
+        }, _callee3);
       }));
       return _creategraph.apply(this, arguments);
     }
@@ -672,6 +971,6 @@ function app() {
     "style": {
       "width": "100%"
     }
-  }, [__jacJsx(HeroSection, {}, []), __jacJsx(SearchBusTable, {}, [])]);
+  }, [__jacJsx(HeroSection, {}, []), __jacJsx(SearchBusTable, {}, []), __jacJsx(ChatBot, {}, [])]);
 }
-export { HeroSection, SearchBusTable, app };
+export { ChatBot, ChatWindow, HeroSection, SearchBusTable, app };

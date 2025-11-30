@@ -210,8 +210,6 @@ walker computeBusTime{
 
     can start with `root entry{
 
-        
-
         response = self.route_and_run(user_input=self.user_input);
 
         print("Computed Response: ", response);
@@ -232,8 +230,6 @@ walker computeIntermediateStops
     has cities: City_details;
     has output_number: int;
     
-    
-
     can start with `root entry{
         if (self.cities.start_city == "" or self.cities.end_city == ""){
             print("Insufficient information to compute intermediate stops. Please provide both starting and ending cities.");
@@ -246,11 +242,8 @@ walker computeIntermediateStops
 
     can search with City entry{
 
-        
-
         if (here.city_type == cityType.start.value and here.name == self.cities.start_city){
         
-            
             filtered_edges = [edge-->(`?City: city_type==cityType.end.value, name==self.cities.end_city)];
             # print("Filtered Edges: ", filtered_edges);
 
