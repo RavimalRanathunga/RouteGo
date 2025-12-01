@@ -52,6 +52,10 @@ function SearchBusTable() {
     _useState16 = _slicedToArray(_useState15, 2),
     selectedRouteType = _useState16[0],
     setSelectedRouteType = _useState16[1];
+  var _useState17 = useState("all"),
+    _useState18 = _slicedToArray(_useState17, 2),
+    selectedRoute = _useState18[0],
+    setSelectedRoute = _useState18[1];
   function handleRefresh() {
     setFromCityName("");
     setToCityName("");
@@ -63,28 +67,83 @@ function SearchBusTable() {
     setSelectedBusType("all");
     setSelectedRouteType("all");
   }
+  function handleFilters() {
+    return _handleFilters.apply(this, arguments);
+  }
+  function _handleFilters() {
+    _handleFilters = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee() {
+      var results, newBuses, _iterator, _step, _results, _iterator2, _step2, bus;
+      return _regenerator().w(function (_context) {
+        while (1) switch (_context.n) {
+          case 0:
+            _context.n = 1;
+            return __jacSpawn("filterBuses", "", {
+              "from_city_name": from_city_name,
+              "to_city_name": to_city_name,
+              "start_time": start_time,
+              "end_time": end_time,
+              "route_no": selectedRoute !== "all" ? selectedRoute : "",
+              "bus_type": selectedBusType !== "all" ? selectedBusType : "",
+              "bus_edge_type": selectedRouteType !== "all" ? selectedRouteType : ""
+            });
+          case 1:
+            results = _context.v;
+            console.log("Found ".concat(results.reports.length, " reports."));
+            if (results.reports.length > 0) {
+              newBuses = [];
+              _iterator = _createForOfIteratorHelper(results.reports);
+              try {
+                for (_iterator.s(); !(_step = _iterator.n()).done;) {
+                  _results = _step.value;
+                  _iterator2 = _createForOfIteratorHelper(_results);
+                  try {
+                    for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+                      bus = _step2.value;
+                      console.log("Bus Found:", bus);
+                      newBuses.push(bus);
+                    }
+                  } catch (err) {
+                    _iterator2.e(err);
+                  } finally {
+                    _iterator2.f();
+                  }
+                }
+              } catch (err) {
+                _iterator.e(err);
+              } finally {
+                _iterator.f();
+              }
+              setBuses(newBuses);
+            }
+          case 2:
+            return _context.a(2);
+        }
+      }, _callee);
+    }));
+    return _handleFilters.apply(this, arguments);
+  }
   function handleClick() {
     return _handleClick.apply(this, arguments);
   }
   function _handleClick() {
-    _handleClick = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee() {
-      var results, newBuses, _iterator, _step, _results, _iterator2, _step2, bus, routes;
-      return _regenerator().w(function (_context) {
-        while (1) switch (_context.n) {
+    _handleClick = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2() {
+      var results, newBuses, _iterator3, _step3, _results2, _iterator4, _step4, bus, routes;
+      return _regenerator().w(function (_context2) {
+        while (1) switch (_context2.n) {
           case 0:
             console.log("Button clicked!");
             if (!(from_city_name === "" || to_city_name === "" || start_time === "" || end_time === "")) {
-              _context.n = 1;
+              _context2.n = 1;
               break;
             }
             alert("Please fill in all fields before searching.");
-            return _context.a(2);
+            return _context2.a(2);
           case 1:
             console.log("From: ".concat(from_city_name, ", To: ").concat(to_city_name, ", Start Time: ").concat(start_time, ", End Time: ").concat(end_time));
             setClick(!clicked);
             setBuses([]);
             setBusRoutes([]);
-            _context.n = 2;
+            _context2.n = 2;
             return __jacSpawn("filterBuses", "", {
               "from_city_name": from_city_name,
               "to_city_name": to_city_name,
@@ -92,43 +151,43 @@ function SearchBusTable() {
               "end_time": end_time
             });
           case 2:
-            results = _context.v;
+            results = _context2.v;
             console.log("Found ".concat(results.reports.length, " reports."));
             if (!(results.reports.length > 0)) {
-              _context.n = 4;
+              _context2.n = 4;
               break;
             }
             newBuses = [];
-            _iterator = _createForOfIteratorHelper(results.reports);
+            _iterator3 = _createForOfIteratorHelper(results.reports);
             try {
-              for (_iterator.s(); !(_step = _iterator.n()).done;) {
-                _results = _step.value;
-                _iterator2 = _createForOfIteratorHelper(_results);
+              for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+                _results2 = _step3.value;
+                _iterator4 = _createForOfIteratorHelper(_results2);
                 try {
-                  for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-                    bus = _step2.value;
+                  for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+                    bus = _step4.value;
                     console.log("Bus Found:", bus);
                     newBuses.push(bus);
                   }
                 } catch (err) {
-                  _iterator2.e(err);
+                  _iterator4.e(err);
                 } finally {
-                  _iterator2.f();
+                  _iterator4.f();
                 }
               }
             } catch (err) {
-              _iterator.e(err);
+              _iterator3.e(err);
             } finally {
-              _iterator.f();
+              _iterator3.f();
             }
             setBuses(newBuses);
-            _context.n = 3;
+            _context2.n = 3;
             return __jacSpawn("findRoutes", "", {
               "from_city_name": from_city_name,
               "to_city_name": to_city_name
             });
           case 3:
-            routes = _context.v;
+            routes = _context2.v;
             console.log("Routes Found:", routes.reports[0].routes);
             setBusRoutes(bus_routes.concat(routes.reports[0].routes));
             console.log("Bus Routes:", bus_routes);
@@ -136,9 +195,9 @@ function SearchBusTable() {
             console.log("Found ".concat(buses.length, " buses."));
             console.log(buses);
           case 5:
-            return _context.a(2);
+            return _context2.a(2);
         }
-      }, _callee);
+      }, _callee2);
     }));
     return _handleClick.apply(this, arguments);
   }
@@ -349,7 +408,7 @@ function SearchBusTable() {
     },
     "onClick": handleClick,
     "disabled": clicked
-  }, ["Search"])])]), clicked ? __jacJsx("div", {
+  }, ["Search"])])]), clicked && buses.length > 0 ? __jacJsx("div", {
     "style": {
       "display": "flex",
       "flexDirection": "column",
@@ -365,7 +424,7 @@ function SearchBusTable() {
     "style": {
       "background": "#ff3232ff",
       "border": "none",
-      "padding": "10px 25px",
+      "padding": "10px 10px",
       "borderRadius": "4px",
       "cursor": "pointer",
       "fontSize": "1rem",
@@ -407,12 +466,14 @@ function SearchBusTable() {
     "value": selectedBusType,
     "onChange": function onChange(e) {
       setSelectedBusType(e.target.value);
-    }
+    },
+    "required": true
   }, [__jacJsx("option", {
     "value": "all",
     "style": {
       "color": "black"
-    }
+    },
+    "disabled": true
   }, ["All Bus Types"]), __jacJsx("option", {
     "value": "normal",
     "style": {
@@ -449,12 +510,14 @@ function SearchBusTable() {
     "value": selectedRouteType,
     "onChange": function onChange(e) {
       setSelectedRouteType(e.target.value);
-    }
+    },
+    "required": true
   }, [__jacJsx("option", {
     "value": "all",
     "style": {
       "color": "black"
-    }
+    },
+    "disabled": true
   }, ["All Route Types"]), __jacJsx("option", {
     "value": "direct",
     "style": {
@@ -465,7 +528,62 @@ function SearchBusTable() {
     "style": {
       "color": "black"
     }
-  }, ["Via (Intermediate)"])])])]), __jacJsx("div", {
+  }, ["Via (Intermediate)"])])]), __jacJsx("div", {}, [__jacJsx("label", {
+    "style": {
+      "display": "block",
+      "marginBottom": "8px",
+      "fontSize": "0.9rem",
+      "fontWeight": "600",
+      "color": "#ff7f32"
+    }
+  }, ["Filter by Route"]), __jacJsx("select", {
+    "style": {
+      "width": "100%",
+      "padding": "10px",
+      "borderRadius": "4px",
+      "border": "1px solid #ff7f32",
+      "fontSize": "0.9rem",
+      "backgroundColor": "rgba(255,255,255,0.1)",
+      "color": "white"
+    },
+    "value": selectedRoute,
+    "onChange": function onChange(e) {
+      setSelectedRoute(e.target.value);
+    },
+    "required": true
+  }, [__jacJsx("option", {
+    "value": "all",
+    "style": {
+      "color": "black"
+    },
+    "disabled": true
+  }, ["All Types"]), bus_routes.map(function (route) {
+    return __jacJsx("option", {
+      "key": route,
+      "value": route,
+      "style": {
+        "color": "black"
+      }
+    }, [route]);
+  })])]), __jacJsx("div", {
+    "style": {
+      "display": "flex",
+      "alignItems": "flex-end"
+    }
+  }, [__jacJsx("button", {
+    "style": {
+      "background": "#667eea",
+      "border": "none",
+      "padding": "10px 20px",
+      "borderRadius": "4px",
+      "cursor": "pointer",
+      "fontSize": "0.9rem",
+      "fontWeight": "600",
+      "color": "white",
+      "width": "100%"
+    },
+    "onClick": handleFilters
+  }, ["Filter Results"])])]), __jacJsx("div", {
     "style": {
       "overflowX": "auto"
     }
@@ -528,7 +646,7 @@ function SearchBusTable() {
       color: "#ff7f32",
       fontWeight: "600"
     }
-  }, ["Intermediate Stops"])])]), __jacJsx("tbody", {}, [getFilteredBuses().map(function (bus) {
+  }, ["Intermediate Stops"])])]), __jacJsx("tbody", {}, [buses.map(function (bus) {
     return __jacJsx("tr", {
       "key": bus.bus_id,
       "style": {
@@ -570,7 +688,7 @@ function SearchBusTable() {
         "fontSize": "0.9rem"
       }
     }, [bus.intermediate_stops.join(", ")])]);
-  })])])])]) : __jacJsx("div", {
+  })])])])]) : !clicked ? __jacJsx("div", {
     "style": {
       "height": "auto",
       "display": "flex",
@@ -584,7 +702,45 @@ function SearchBusTable() {
       "fontSize": "1rem",
       "padding": "2px 2px"
     }
-  }, ["Search some buses!!!"])])]);
+  }, ["Search some buses!!!"])]) : __jacJsx("div", {
+    "style": {
+      "height": "auto",
+      "display": "flex",
+      "alignItems": "center",
+      "justifyContent": "center",
+      "minheight": "200px",
+      "columnGap": "50px",
+      "padding": "10px",
+      "flexDirection": "column"
+    }
+  }, [__jacJsx("h1", {
+    "style": {
+      "textAlign": "center",
+      "fontSize": "1rem",
+      "padding": "2px 2px"
+    }
+  }, ["No buses found for the given criteria."]), __jacJsx("div", {
+    "style": {
+      "display": "flex",
+      "justifyContent": "flex-end",
+      "marginBottom": "15px"
+    }
+  }, [__jacJsx("button", {
+    "style": {
+      "background": "#ff3232ff",
+      "border": "none",
+      "padding": "10px 10px",
+      "borderRadius": "4px",
+      "cursor": "pointer",
+      "fontSize": "1rem",
+      "fontWeight": "600",
+      "color": "white",
+      "width": "100px",
+      "height": "40px",
+      "textAlign": "center"
+    },
+    "onClick": handleRefresh
+  }, ["Refresh"])])])]);
 }
 function HeroSection() {
   return __jacJsx("div", {
@@ -812,43 +968,43 @@ function HeroSection() {
   }, ["Best connections"])])])])]);
 }
 function ChatWindow(props) {
-  var _useState17 = useState([{
+  var _useState19 = useState([{
       sender: "bot",
       text: "Hi! I'm RouteGo Assistant. How can I help you find buses today?",
       id: 0
     }]),
-    _useState18 = _slicedToArray(_useState17, 2),
-    messages = _useState18[0],
-    setMessages = _useState18[1];
-  var _useState19 = useState(""),
     _useState20 = _slicedToArray(_useState19, 2),
-    inputValue = _useState20[0],
-    setInputValue = _useState20[1];
-  var _useState21 = useState(1),
+    messages = _useState20[0],
+    setMessages = _useState20[1];
+  var _useState21 = useState(""),
     _useState22 = _slicedToArray(_useState21, 2),
-    messageId = _useState22[0],
-    setMessageId = _useState22[1];
+    inputValue = _useState22[0],
+    setInputValue = _useState22[1];
+  var _useState23 = useState(1),
+    _useState24 = _slicedToArray(_useState23, 2),
+    messageId = _useState24[0],
+    setMessageId = _useState24[1];
   function handleSendMessage() {
     return _handleSendMessage.apply(this, arguments);
   }
   function _handleSendMessage() {
-    _handleSendMessage = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2() {
+    _handleSendMessage = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3() {
       var results, userMsg, botMsg;
-      return _regenerator().w(function (_context2) {
-        while (1) switch (_context2.n) {
+      return _regenerator().w(function (_context3) {
+        while (1) switch (_context3.n) {
           case 0:
             if (inputValue) {
-              _context2.n = 1;
+              _context3.n = 1;
               break;
             }
-            return _context2.a(2);
+            return _context3.a(2);
           case 1:
-            _context2.n = 2;
+            _context3.n = 2;
             return __jacSpawn("computeBusTime", "", {
               "user_input": inputValue
             });
           case 2:
-            results = _context2.v;
+            results = _context3.v;
             userMsg = {
               sender: "user",
               text: inputValue,
@@ -863,9 +1019,9 @@ function ChatWindow(props) {
             setMessageId(messageId + 2);
             setInputValue("");
           case 3:
-            return _context2.a(2);
+            return _context3.a(2);
         }
-      }, _callee2);
+      }, _callee3);
     }));
     return _handleSendMessage.apply(this, arguments);
   }
@@ -998,10 +1154,10 @@ function ChatWindow(props) {
   }, ["Send"])])]);
 }
 function ChatBot() {
-  var _useState23 = useState(false),
-    _useState24 = _slicedToArray(_useState23, 2),
-    isChatOpen = _useState24[0],
-    setIsChatOpen = _useState24[1];
+  var _useState25 = useState(false),
+    _useState26 = _slicedToArray(_useState25, 2),
+    isChatOpen = _useState26[0],
+    setIsChatOpen = _useState26[1];
   if (isChatOpen) {
     return __jacJsx("div", {}, [__jacJsx(ChatWindow, {
       "closeChat": function closeChat() {
@@ -1056,28 +1212,28 @@ function app() {
       return _creategraph.apply(this, arguments);
     }
     function _creategraph() {
-      _creategraph = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3() {
+      _creategraph = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee4() {
         var is_graph_created, result;
-        return _regenerator().w(function (_context3) {
-          while (1) switch (_context3.n) {
+        return _regenerator().w(function (_context4) {
+          while (1) switch (_context4.n) {
             case 0:
-              _context3.n = 1;
+              _context4.n = 1;
               return __jacSpawn("findGraph", "", {});
             case 1:
-              is_graph_created = _context3.v;
+              is_graph_created = _context4.v;
               console.log("Graph exists:", is_graph_created.reports[0].data);
               if (!(is_graph_created.reports[0].data === false)) {
-                _context3.n = 3;
+                _context4.n = 3;
                 break;
               }
-              _context3.n = 2;
+              _context4.n = 2;
               return __jacSpawn("createGraph", "", {});
             case 2:
-              result = _context3.v;
+              result = _context4.v;
             case 3:
-              return _context3.a(2);
+              return _context4.a(2);
           }
-        }, _callee3);
+        }, _callee4);
       }));
       return _creategraph.apply(this, arguments);
     }
