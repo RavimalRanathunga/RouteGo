@@ -229,11 +229,15 @@ walker findGraph{
     }
 }
 
+
+walker agentAI{
+    has user_input: str = "";
+    has chat_history: list[str] = [];
+}
+
 walker computeBusTime{
     has user_input: str = "";
-    # has system_prompt: str = ;
-
-
+  
     def compute_average_speed(bus_type: str) -> float{
         print("tool: average speed called");
         if (bus_type == "normal"){
@@ -257,28 +261,25 @@ walker computeBusTime{
         print("Extracted Cities: ", cities);
 
         result = root spawn computeIntermediateStops(cities,output_number=0);
-        # print("Number of Intermediate Stops: ", result.output_number);
         return result.output_number;
 
     }
 
 
-    # complete the system prompt
-    # def route_and_run(user_input: str, system_prompt: str = "You are a helpful assistant that computes bus travel time based on average speed and stop delays. If the user provides a bus type, starting city, ending city, and intermediate stops, use the provided tools. If the user does not provide starting city or ending city, ask for more information. IMPORTANT: IF THE USER DOES NOT PROVIDE INTERMEDIATE STOPS, USE compute_number_of_intermediate_stops FUNCTION") -> str by llm(
-    #     method = "ReAct",
-    #     tools=([self.compute_average_speed, self.compute_stop_delay, self.compute_number_of_intermediate_stops])
-    # );
 
     def route_and_run(user_input: str, 
                     system_prompt: str = 
-                        "You are a helpful assistant that computes bus travel time based on average speed and stop delays. "
-                        "If the user provides a bus type, starting city, ending city, and intermediate stops, use the provided tools. "
-                        "If the user does not provide starting city or ending city, ask for more information. "
-                        "IMPORTANT: IF THE USER DOES NOT PROVIDE INTERMEDIATE STOPS, USE compute_number_of_intermediate_stops FUNCTION"
+            "You are a helpful assistant that computes bus travel time based on average speed "
+            "and stop delays.\n"
+            "If the user provides a bus type, starting city, ending city, and intermediate stops, "
+            "use the provided tools.\n"
+            "If the user does not provide starting city or ending city, ask for more information.\n"
+            "IMPORTANT: IF THE USER DOES NOT PROVIDE INTERMEDIATE STOPS, USE compute_number_of_intermediate_stops FUNCTION.\n\n"
+            "### Conversation History ###\n"
+            "{chat_history}\n"
+            "### End of History ###\n"
     ) -> str by llm(
-            # user_input,
             method="ReAct",
-            # system_prompt=system_prompt,  
             tools=[
                 self.compute_average_speed, 
                 self.compute_stop_delay, 
@@ -290,7 +291,14 @@ walker computeBusTime{
 
     can start with `root entry{
 
-        response = self.route_and_run(user_input=self.user_input);
+        self.chat_history.append("User: " + self.user_input);
+
+        final_system_prompt = system_prompt.format(
+            chat_history="\n".join(self.chat_history)
+        );
+
+        response = self.route_and_run(user_input=self.user_input, system_prompt=final_system_prompt);
+        self.chat_history.append("Assistant: " + response);
 
         print("Computed Response: ", response);
  
@@ -325,7 +333,7 @@ walker computeIntermediateStops
         if (here.city_type == cityType.start.value and here.name == self.cities.start_city){
         
             filtered_edges = [edge-->(`?City: city_type==cityType.end.value, name==self.cities.end_city)];
-            # print("Filtered Edges: ", filtered_edges);
+            
 
             if (len(filtered_edges) == 0){
                 print("No routes found between ", self.cities.start_city, " and ", self.cities.end_city);
@@ -339,7 +347,7 @@ walker computeIntermediateStops
                     
                 }
 
-                # print("Minimum Distance Edge: ", self.min_distance_edge);
+                
                 next_node = [->:busRoute:distance==self.min_distance_edge.distance:->(`?City)](?city_type==cityType.end.value);
                 visit next_node[0];
 
@@ -848,17 +856,13 @@ cl {
         let [inputValue, setInputValue] = useState("");
         let [messageId, setMessageId] = useState(1);
 
-        # useEffect(
-        #     lambda -> None {},
-        #     []
-        # );
 
         async def handleSendMessage() -> None {
             if not inputValue {
                 return;
             }
 
-            results = root spawn computeBusTime(user_input=inputValue);
+            results = root spawn computeBusTime(user_input=inputValue,chat_history=[]);
 
             let userMsg = {sender: "user", text: inputValue, id: messageId};
             let botMsg = {sender: "bot", text: results.reports[0].response, id: messageId + 1};
