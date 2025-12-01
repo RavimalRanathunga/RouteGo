@@ -65,15 +65,15 @@ edge busEdge{
 walker createGraph{
 
     can start with `root entry {
-        start_node_1 = root ++> City(city_type=cityType.start.value, name="Jaffna");
-        start_node_2 = root ++> City(city_type=cityType.start.value, name="Colombo");
-        start_node_3 = root ++> City(city_type=cityType.start.value, name="Colombo");
+        start_node_1 = root ++> City(city_type=cityType.start.value, name="jaffna");
+        start_node_2 = root ++> City(city_type=cityType.start.value, name="colombo");
+        start_node_3 = root ++> City(city_type=cityType.start.value, name="colombo");
 
-        end_node_1 = start_node_1 +>: busRoute(route_number="57",distance=405) :+> City(city_type=cityType.end.value, name="Colombo");
-        end_node_2 = start_node_1 +>: busRoute(route_number="87",distance=450) :+> City(city_type=cityType.end.value, name="Colombo");
-        end_node_3 = start_node_2 +>: busRoute(route_number="57", distance=405) :+> City(city_type=cityType.end.value, name="Jaffna");
-        end_node_4 = start_node_2 +>: busRoute(route_number="87", distance=450) :+> City(city_type=cityType.end.value, name="Jaffna");
-        end_node_5 = start_node_3 +>: busRoute(route_number="01", distance=200) :+> City(city_type=cityType.end.value, name="Kandy");
+        end_node_1 = start_node_1 +>: busRoute(route_number="57",distance=405) :+> City(city_type=cityType.end.value, name="colombo");
+        end_node_2 = start_node_1 +>: busRoute(route_number="87",distance=450) :+> City(city_type=cityType.end.value, name="colombo");
+        end_node_3 = start_node_2 +>: busRoute(route_number="57", distance=405) :+> City(city_type=cityType.end.value, name="jaffna");
+        end_node_4 = start_node_2 +>: busRoute(route_number="87", distance=450) :+> City(city_type=cityType.end.value, name="jaffna");
+        end_node_5 = start_node_3 +>: busRoute(route_number="01", distance=200) :+> City(city_type=cityType.end.value, name="kandy");
 
         bus_1 = end_node_1 +>: busEdge(edge_type=busEdgeType.direct.value) :+> Bus(
             bus_type=busType.normal.value,
@@ -81,7 +81,7 @@ walker createGraph{
             start_time=time(8, 0),
             end_time=time(12, 0),
             fare=500.0,
-            intermediate_stops=["Vavuniya", "Anuradhapura", "Dambulla"]
+            intermediate_stops=["vavuniya", "anuradhapura", "dambulla"]
         );
 
         bus_2 = end_node_1 +>: busEdge(edge_type=busEdgeType.direct.value) :+> Bus(
@@ -90,7 +90,7 @@ walker createGraph{
             start_time = time(8,0), 
             end_time = time(13, 0), 
             fare = 2800.0,
-            intermediate_stops = ["Vavuniya", "Kurunagala"]
+            intermediate_stops = ["vavuniya", "kurunagala"]
         ); 
 
         bus_3 = end_node_2 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
@@ -99,7 +99,7 @@ walker createGraph{
             start_time = time(9, 0), 
             end_time = time(15, 0), 
             fare = 2200.0, 
-            intermediate_stops = ["Vavuniya", "Puttalam"]
+            intermediate_stops = ["vavuniya", "puttalam"]
         );
 
         bus_4 = end_node_2 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
@@ -108,7 +108,7 @@ walker createGraph{
             start_time = time(10, 30), 
             end_time = time(16, 30), 
             fare = 1600.0, 
-            intermediate_stops = ["Vavuniya", "Puttalam"]
+            intermediate_stops = ["vavuniya", "puttalam"]
         );
         bus_5 = end_node_3 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
             bus_type = busType.luxury.value, 
@@ -116,7 +116,7 @@ walker createGraph{
             start_time = time(16, 0), 
             end_time = time(2, 0), 
             fare = 3000.0, 
-            intermediate_stops = ["Kurunagala", "Vavuniya"]
+            intermediate_stops = ["kurunagala", "vavuniya"]
         );
         bus_6 = end_node_4 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
             bus_type = busType.normal.value, 
@@ -124,7 +124,7 @@ walker createGraph{
             start_time = time(14, 0), 
             end_time = time(22, 0), 
             fare = 1500.0,
-            intermediate_stops = ["Puttalam", "Vavuniya"]
+            intermediate_stops = ["puttalam", "vavuniya"]
         );
         bus_7 = end_node_4 +>: busEdge(edge_type = busEdgeType.via.value) :+> Bus(
             bus_type = busType.semi_luxury.value, 
@@ -132,7 +132,7 @@ walker createGraph{
             start_time = time(7, 30), 
             end_time = time(10, 30), 
             fare = 1200.0, 
-            intermediate_stops = ["Dehiwala", "Colombo", "Puttalam", "Vavuniya"]
+            intermediate_stops = ["dehiwala", "colombo", "puttalam", "vavuniya"]
         );
         bus_8 = end_node_5 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
             bus_type = busType.normal.value, 
@@ -140,7 +140,7 @@ walker createGraph{
             start_time = time(12, 0), 
             end_time = time(15, 0), 
             fare = 800.0, 
-            intermediate_stops = ["Kegalle", "Mawanella"]
+            intermediate_stops = ["kegalle", "mawanella"]
         );
 
         report {"data" : "Graph Created Successfully"};
@@ -168,7 +168,7 @@ walker findResults{
 
     can visit_cities with City entry{
         
-        print("Now we are in",here);
+        # print("Now we are in",here);
 
         if (here.city_type == cityType.end.value and here.name == self.to_city_name){
 
@@ -190,14 +190,13 @@ walker findResults{
     }
 }
 
+
 walker findRoutes{
     has from_city_name: str;
     has to_city_name: str;
     has from_city: str =cityType.start.value;
     has to_city: str = cityType.end.value;
     has routes: list[str] = [];
-    
-    has walkerType: str = walkerType.findRoutes.value; 
 
     can search with `root entry{
 
@@ -209,30 +208,27 @@ walker findRoutes{
 
     can visit_cities with City entry{
         
-        print("Now we are in",here);
-
-        bus_routes = [edge-->(`?City: name==self.to_city_name, city_type==self.to_city)];
-        for r in bus_routes{
+        # print("Now we are in",here);
+        if([-->(`?City: name==self.to_city_name, city_type==self.to_city)]){
+            bus_routes = [edge-->(`?City: name==self.to_city_name, city_type==self.to_city)];
+            for r in bus_routes{
             self.routes.append(r.route_number);
         }
-
-        report {"routes":self.routes};
+        routes_str ="";
+        for item in self.routes{
+            routes_str += item + ", ";
+        }
+        # Remove the last comma and space
+        if (routes_str.endswith(", ")){
+            routes_str = routes_str[:-2];
+        }
+        report {"routes":self.routes,
+                "response": routes_str
+            };
+        }
     }
 }
 
-walker filterRoutes
-{
-    has route_no: str = "";
-    has bus_type: str = "";
-    has bus_edge_type:str = "";
-    has walkerType: str = walkerType.filterRoutes.value; 
-    
-
-    can filterRoutes with city entry
-    {
-        
-    }
-}
 
 walker findGraph{
     
@@ -258,13 +254,29 @@ walker agentAI{
         next_walker = self.find_next_walker(self.user_input);
         print("Next walker determined: ", next_walker);
 
-        if (next_walker.value == "computeBusTime"){
-            root spawn computeBusTime(user_input=self.user_input);
-            print("Result from computeBusTime: ");
-        } 
-        else{
-            print("No suitable walker found for the given input."); 
+        # if (next_walker.value == "computeBusTime"){
+        #     root spawn computeBusTime(user_input=self.user_input);
+        #     print("Result from computeBusTime: ");
+        # } 
+        # else{
+        #     print("No suitable walker found for the given input."); 
+        # }
+
+        match next_walker.value{
+            case "computeBusTime":
+                result = root spawn computeBusTime(user_input=self.user_input);
+                # print("Result from computeBusTime: ", result);
+                return; 
+                
+            case "findRoutes":
+                cities = extract_city_details(user_input=self.user_input);
+                print("start_city: ", cities.start_city);
+                print("end_city: ", cities.end_city);
+                result = root spawn findRoutes(from_city_name=cities.start_city, to_city_name=cities.end_city);
+                # print("Result from findRoutes: ", result);
+                return;      
         }
+        
     }
 }
 
@@ -390,7 +402,7 @@ walker computeIntermediateStops
 
             number_of_stops = len(selected_bus.intermediate_stops);
             self.output_number = number_of_stops;
-            print("test");
+            # print("test");
 
         } 
     }      
@@ -890,7 +902,7 @@ cl {
                 return;
             }
 
-            results = root spawn computeBusTime(user_input=inputValue);
+            results = root spawn agentAI(user_input=inputValue);
 
             let userMsg = {sender: "user", text: inputValue, id: messageId};
             let botMsg = {sender: "bot", text: results.reports[0].response, id: messageId + 1};

@@ -69,7 +69,7 @@ function ChatWindow(props) {
     if (!inputValue) {
       return;
     }
-    let results = await __jacSpawn("computeBusTime", "", {"user_input": inputValue});
+    let results = await __jacSpawn("agentAI", "", {"user_input": inputValue});
     let userMsg = {sender: "user", text: inputValue, id: messageId};
     let botMsg = {sender: "bot", text: results.reports[0].response, id: messageId + 1};
     setMessages(messages.concat([userMsg, botMsg]));

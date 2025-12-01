@@ -744,7 +744,7 @@ function ChatWindow(props) {
             return _context2.a(2);
           case 1:
             _context2.n = 2;
-            return __jacSpawn("computeBusTime", "", {
+            return __jacSpawn("agentAI", "", {
               "user_input": inputValue
             });
           case 2:
