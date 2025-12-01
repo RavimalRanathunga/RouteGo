@@ -155,17 +155,17 @@ walker findRoutes{
     can visit_cities with City entry{
         
         print("Now we are in",here);
-        bus_routes = [edge-->(`?City: name==self.to_city_name, city_type==self.to_city)];
-        for r in bus_routes{
+        if([-->(`?City: name==self.to_city_name, city_type==self.to_city)]){
+            bus_routes = [edge-->(`?City: name==self.to_city_name, city_type==self.to_city)];
+            for r in bus_routes{
             self.routes.append(r.route_number);
         }
-
         report {"routes":self.routes};
+        }
     }
 }
 
-walker filterBuses
-{
+walker filterBuses{
     has from_city_name: str;
     has to_city_name: str;
     has start_time: str;
@@ -289,8 +289,7 @@ walker computeBusTime{
     }
 }
 
-walker computeIntermediateStops
-{
+walker computeIntermediateStops{
 
     has cities: City_details;
     has output_number: int;
@@ -352,6 +351,9 @@ cl {
             let [clicked,setClick] = useState(False);
             let [buses,setBuses] = useState([]);
             let [bus_routes,setBusRoutes] = useState([]);
+            let [selectedBusType,setSelectedBusType] = useState("all");
+            let [selectedRouteType,setSelectedRouteType] = useState("all");
+            let [selectedRoute,setSelectedRoute] = useState("all");
 
             def handleRefresh() -> None{
                 setFromCityName("");
@@ -360,6 +362,34 @@ cl {
                 setEndTime("");
                 setBuses([]);
                 setClick(not clicked);
+                setBusRoutes([]);
+                setSelectedBusType("all");
+                setSelectedRouteType("all");
+            }
+            
+            async def handleFilters() -> None{
+                results = root spawn filterBuses(
+                        from_city_name=from_city_name,
+                        to_city_name=to_city_name,
+                        start_time=start_time,
+                        end_time=end_time,
+                        route_no= selectedRoute if selectedRoute != "all" else "",
+                        bus_type= selectedBusType if selectedBusType != "all" else "",
+                        bus_edge_type= selectedRouteType if selectedRouteType != "all" else ""
+                    );
+
+                    console.log(f"Found {results.reports.length} reports.");
+
+                    if (results.reports.length >0){
+                        let newBuses = [];
+                        for results in results.reports{
+                            for bus in results{
+                                console.log("Bus Found:", bus);
+                                newBuses.push(bus);
+                            }
+                        }
+                    setBuses(newBuses);
+                    }
             }
 
             async def handleClick() -> None{
@@ -558,23 +588,48 @@ cl {
                 </div>
 
             </div>
-            {(<div style={{"display":"flex","flexDirection":"column","padding":"20px 20px"}}>
+             {(<div style={{"display":"flex","flexDirection":"column","padding":"20px 20px"}}>
                 <div style={{"display":"flex","justifyContent":"flex-end","marginBottom":"15px"}}>
-                    <button style={{
-                        "background": "#ff3232ff",
-                        "border": "none",
-                        "padding": "10px 25px",
-                        "borderRadius": "4px",
-                        "cursor": "pointer",
-                        "fontSize": "1rem",
-                        "fontWeight": "600",
-                        "color": "white",
-                        "width": "100px",
-                        "height":"40px",
-                        "textAlign":"center"
-                    }} onClick={handleRefresh}>
+                    <button style={{"background":"#ff3232ff","border":"none","padding":"10px 10px","borderRadius":"4px","cursor":"pointer","fontSize":"1rem","fontWeight":"600","color":"white","width":"100px","height":"40px","textAlign":"center"}} onClick={handleRefresh}>
                         Refresh
                     </button>
+                </div>
+
+                <div style={{"display":"grid","gridTemplateColumns":"repeat(auto-fit, minmax(200px, 1fr))","gap":"15px","marginBottom":"20px","padding":"15px","backgroundColor":"rgba(255,255,255,0.05)","borderRadius":"8px"}}>
+                    <div>
+                        <label style={{"display":"block","marginBottom":"8px","fontSize":"0.9rem","fontWeight":"600","color":"#ff7f32"}}>Filter by Bus Type</label>
+                        <select style={{"width":"100%","padding":"10px","borderRadius":"4px","border":"1px solid #ff7f32","fontSize":"0.9rem","backgroundColor":"rgba(255,255,255,0.1)","color":"white"}} value={selectedBusType} onChange={lambda e: any -> None { setSelectedBusType(e.target.value); }} required={True}>
+                            <option value="all" style={{"color":"black"}} disabled={True}>All Bus Types</option>
+                            <option value="normal" style={{"color":"black"}}>Normal</option>
+                            <option value="semi_luxury" style={{"color":"black"}}>Semi Luxury</option>
+                            <option value="luxury" style={{"color":"black"}}>Luxury</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label style={{"display":"block","marginBottom":"8px","fontSize":"0.9rem","fontWeight":"600","color":"#ff7f32"}}>Filter by Route Type</label>
+                        <select style={{"width":"100%","padding":"10px","borderRadius":"4px","border":"1px solid #ff7f32","fontSize":"0.9rem","backgroundColor":"rgba(255,255,255,0.1)","color":"white"}} value={selectedRouteType} onChange={lambda e: any -> None { setSelectedRouteType(e.target.value); }} required={True}>
+                            <option value="all" style={{"color":"black"}} disabled={True}>All Route Types</option>
+                            <option value="direct" style={{"color":"black"}}>Direct</option>
+                            <option value="via" style={{"color":"black"}}>Via (Intermediate)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label style={{"display":"block","marginBottom":"8px","fontSize":"0.9rem","fontWeight":"600","color":"#ff7f32"}}>Filter by Route</label>
+                        <select style={{"width":"100%","padding":"10px","borderRadius":"4px","border":"1px solid #ff7f32","fontSize":"0.9rem","backgroundColor":"rgba(255,255,255,0.1)","color":"white"}} value={selectedRoute} onChange={lambda e: any -> None { setSelectedRoute(e.target.value); }} required={True}>
+                            <option value="all" style={{"color":"black"}} disabled={True}>All Types</option>
+                            {bus_routes.map(lambda route:any -> any {
+                                return <option key={route} value={route} style={{"color":"black"}}>{route}</option>;
+                            })}
+                        </select>
+                    </div>
+
+                    <div style={{"display":"flex","alignItems":"flex-end"}}>
+                        <button style={{"background":"#667eea","border":"none","padding":"10px 20px","borderRadius":"4px","cursor":"pointer","fontSize":"0.9rem","fontWeight":"600","color":"white","width":"100%"}} onClick={handleFilters}>
+                            Filter Results
+                        </button>
+                    </div>
                 </div>
                 
                 <div style={{"overflowX":"auto"}}>
@@ -604,9 +659,18 @@ cl {
                         </tbody>
                     </table>
                 </div>
-              </div>)if clicked 
-            else(<div style={{"height":"auto","display":"flex","alignItems":"center","justifyContent":"center","minheight":"200px"}}>
-            <h1 style={{"textAlign":"center","fontSize":"1rem","padding":"2px 2px"}}>Search some buses!!!</h1></div>)}
+            </div>)if (clicked and buses.length > 0) 
+            else((<div style={{"height":"auto","display":"flex","alignItems":"center","justifyContent":"center","minheight":"200px"}}>
+                <h1 style={{"textAlign":"center","fontSize":"1rem","padding":"2px 2px"}}>Search some buses!!!</h1>
+                </div>) if not clicked else (<div style={{"height":"auto","display":"flex","alignItems":"center","justifyContent":"center","minheight":"200px","columnGap":"50px","padding":"10px","flexDirection":"column"}}>
+                <h1 style={{"textAlign":"center","fontSize":"1rem","padding":"2px 2px"}}>No buses found for the given criteria.</h1>
+                <div style={{"display":"flex","justifyContent":"flex-end","marginBottom":"15px"}}>
+                    <button style={{"background":"#ff3232ff","border":"none","padding":"10px 10px","borderRadius":"4px","cursor":"pointer","fontSize":"1rem","fontWeight":"600","color":"white","width":"100px","height":"40px","textAlign":"center"}} onClick={handleRefresh}>
+                        Refresh
+                    </button>
+                </div>
+            </div>
+            ))}
         </div>;
         }
 
@@ -1080,6 +1144,7 @@ def ChatBot() -> any {
         </div>;
     }
 }
+
 
 
 

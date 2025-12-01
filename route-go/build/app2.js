@@ -40,22 +40,14 @@ function SearchBusTable() {
     _useState10 = _slicedToArray(_useState1, 2),
     buses = _useState10[0],
     setBuses = _useState10[1];
-  var _useState11 = useState([]),
+  var _useState11 = useState("all"),
     _useState12 = _slicedToArray(_useState11, 2),
-    bus_routes = _useState12[0],
-    setBusRoutes = _useState12[1];
+    selectedBusType = _useState12[0],
+    setSelectedBusType = _useState12[1];
   var _useState13 = useState("all"),
     _useState14 = _slicedToArray(_useState13, 2),
-    selectedBusType = _useState14[0],
-    setSelectedBusType = _useState14[1];
-  var _useState15 = useState("all"),
-    _useState16 = _slicedToArray(_useState15, 2),
-    selectedRouteType = _useState16[0],
-    setSelectedRouteType = _useState16[1];
-  var _useState17 = useState("all"),
-    _useState18 = _slicedToArray(_useState17, 2),
-    selectedRoute = _useState18[0],
-    setSelectedRoute = _useState18[1];
+    selectedRouteType = _useState14[0],
+    setSelectedRouteType = _useState14[1];
   function handleRefresh() {
     setFromCityName("");
     setToCityName("");
@@ -63,30 +55,55 @@ function SearchBusTable() {
     setEndTime("");
     setBuses([]);
     setClick(!clicked);
-    setBusRoutes([]);
     setSelectedBusType("all");
     setSelectedRouteType("all");
   }
-  function handleFilters() {
-    return _handleFilters.apply(this, arguments);
+  function getFilteredBuses() {
+    var filteredBuses = buses;
+    if (selectedBusType !== "all") {
+      filteredBuses = filteredBuses.filter(function (bus) {
+        return bus.bus_type === selectedBusType;
+      });
+    }
+    if (selectedRouteType !== "all") {
+      filteredBuses = filteredBuses.filter(function (bus) {
+        return bus.edge_type === selectedRouteType;
+      });
+    }
+    return filteredBuses;
   }
-  function _handleFilters() {
-    _handleFilters = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee() {
+  function handleResetSecondaryFilters() {
+    setSelectedBusType("all");
+    setSelectedRouteType("all");
+  }
+  function handleClick() {
+    return _handleClick.apply(this, arguments);
+  }
+  function _handleClick() {
+    _handleClick = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee() {
       var results, newBuses, _iterator, _step, _results, _iterator2, _step2, bus;
       return _regenerator().w(function (_context) {
         while (1) switch (_context.n) {
           case 0:
-            _context.n = 1;
-            return __jacSpawn("filterBuses", "", {
+            console.log("Button clicked!");
+            if (!(from_city_name === "" || to_city_name === "" || start_time === "" || end_time === "")) {
+              _context.n = 1;
+              break;
+            }
+            alert("Please fill in all fields before searching.");
+            return _context.a(2);
+          case 1:
+            console.log("From: ".concat(from_city_name, ", To: ").concat(to_city_name, ", Start Time: ").concat(start_time, ", End Time: ").concat(end_time));
+            setClick(!clicked);
+            setBuses([]);
+            _context.n = 2;
+            return __jacSpawn("findResults", "", {
               "from_city_name": from_city_name,
               "to_city_name": to_city_name,
               "start_time": start_time,
-              "end_time": end_time,
-              "route_no": selectedRoute !== "all" ? selectedRoute : "",
-              "bus_type": selectedBusType !== "all" ? selectedBusType : "",
-              "bus_edge_type": selectedRouteType !== "all" ? selectedRouteType : ""
+              "end_time": end_time
             });
-          case 1:
+          case 2:
             results = _context.v;
             console.log("Found ".concat(results.reports.length, " reports."));
             if (results.reports.length > 0) {
@@ -114,90 +131,14 @@ function SearchBusTable() {
                 _iterator.f();
               }
               setBuses(newBuses);
+              handleResetSecondaryFilters();
             }
-          case 2:
+            console.log("Found ".concat(buses.length, " buses."));
+            console.log(buses);
+          case 3:
             return _context.a(2);
         }
       }, _callee);
-    }));
-    return _handleFilters.apply(this, arguments);
-  }
-  function handleClick() {
-    return _handleClick.apply(this, arguments);
-  }
-  function _handleClick() {
-    _handleClick = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2() {
-      var results, newBuses, _iterator3, _step3, _results2, _iterator4, _step4, bus, routes;
-      return _regenerator().w(function (_context2) {
-        while (1) switch (_context2.n) {
-          case 0:
-            console.log("Button clicked!");
-            if (!(from_city_name === "" || to_city_name === "" || start_time === "" || end_time === "")) {
-              _context2.n = 1;
-              break;
-            }
-            alert("Please fill in all fields before searching.");
-            return _context2.a(2);
-          case 1:
-            console.log("From: ".concat(from_city_name, ", To: ").concat(to_city_name, ", Start Time: ").concat(start_time, ", End Time: ").concat(end_time));
-            setClick(!clicked);
-            setBuses([]);
-            setBusRoutes([]);
-            _context2.n = 2;
-            return __jacSpawn("filterBuses", "", {
-              "from_city_name": from_city_name,
-              "to_city_name": to_city_name,
-              "start_time": start_time,
-              "end_time": end_time
-            });
-          case 2:
-            results = _context2.v;
-            console.log("Found ".concat(results.reports.length, " reports."));
-            if (!(results.reports.length > 0)) {
-              _context2.n = 4;
-              break;
-            }
-            newBuses = [];
-            _iterator3 = _createForOfIteratorHelper(results.reports);
-            try {
-              for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-                _results2 = _step3.value;
-                _iterator4 = _createForOfIteratorHelper(_results2);
-                try {
-                  for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
-                    bus = _step4.value;
-                    console.log("Bus Found:", bus);
-                    newBuses.push(bus);
-                  }
-                } catch (err) {
-                  _iterator4.e(err);
-                } finally {
-                  _iterator4.f();
-                }
-              }
-            } catch (err) {
-              _iterator3.e(err);
-            } finally {
-              _iterator3.f();
-            }
-            setBuses(newBuses);
-            _context2.n = 3;
-            return __jacSpawn("findRoutes", "", {
-              "from_city_name": from_city_name,
-              "to_city_name": to_city_name
-            });
-          case 3:
-            routes = _context2.v;
-            console.log("Routes Found:", routes.reports[0].routes);
-            setBusRoutes(bus_routes.concat(routes.reports[0].routes));
-            console.log("Bus Routes:", bus_routes);
-          case 4:
-            console.log("Found ".concat(buses.length, " buses."));
-            console.log(buses);
-          case 5:
-            return _context2.a(2);
-        }
-      }, _callee2);
     }));
     return _handleClick.apply(this, arguments);
   }
@@ -232,10 +173,7 @@ function SearchBusTable() {
     "onChange": function onChange(e) {
       setFromCityName(e.target.value);
     }
-  }, [__jacJsx("option", {
-    "value": "",
-    "disabled": true
-  }, ["Select Start"]), __jacJsx("option", {
+  }, [__jacJsx("option", {}, ["Select Start"]), __jacJsx("option", {
     "value": "Colombo"
   }, ["Colombo"]), __jacJsx("option", {
     "value": "Jaffna"
@@ -252,10 +190,7 @@ function SearchBusTable() {
     "onChange": function onChange(e) {
       setToCityName(e.target.value);
     }
-  }, [__jacJsx("option", {
-    "value": "",
-    "disabled": true
-  }, ["Select Destination"]), __jacJsx("option", {
+  }, [__jacJsx("option", {}, ["Select Destination"]), __jacJsx("option", {
     "value": "Colombo"
   }, ["Colombo"]), __jacJsx("option", {
     "value": "Jaffna"
@@ -274,10 +209,7 @@ function SearchBusTable() {
     "onChange": function onChange(e) {
       setStartTime(e.target.value);
     }
-  }, [__jacJsx("option", {
-    "value": "",
-    "disabled": true
-  }, ["Select Start Time"]), __jacJsx("option", {
+  }, [__jacJsx("option", {}, ["Select Start Time"]), __jacJsx("option", {
     "value": "00:00"
   }, ["00:00"]), __jacJsx("option", {
     "value": "01:00"
@@ -338,10 +270,7 @@ function SearchBusTable() {
     "onChange": function onChange(e) {
       setEndTime(e.target.value);
     }
-  }, [__jacJsx("option", {
-    "value": "",
-    "disabled": true
-  }, ["Select End Time"]), __jacJsx("option", {
+  }, [__jacJsx("option", {}, ["Select End Time"]), __jacJsx("option", {
     "value": "00:00"
   }, ["00:00"]), __jacJsx("option", {
     "value": "01:00"
@@ -408,7 +337,7 @@ function SearchBusTable() {
     },
     "onClick": handleClick,
     "disabled": clicked
-  }, ["Search"])])]), clicked && buses.length > 0 ? __jacJsx("div", {
+  }, ["Search"])])]), clicked ? __jacJsx("div", {
     "style": {
       "display": "flex",
       "flexDirection": "column",
@@ -424,7 +353,7 @@ function SearchBusTable() {
     "style": {
       "background": "#ff3232ff",
       "border": "none",
-      "padding": "10px 10px",
+      "padding": "10px 25px",
       "borderRadius": "4px",
       "cursor": "pointer",
       "fontSize": "1rem",
@@ -466,14 +395,12 @@ function SearchBusTable() {
     "value": selectedBusType,
     "onChange": function onChange(e) {
       setSelectedBusType(e.target.value);
-    },
-    "required": true
+    }
   }, [__jacJsx("option", {
     "value": "all",
     "style": {
       "color": "black"
-    },
-    "disabled": true
+    }
   }, ["All Bus Types"]), __jacJsx("option", {
     "value": "normal",
     "style": {
@@ -510,14 +437,12 @@ function SearchBusTable() {
     "value": selectedRouteType,
     "onChange": function onChange(e) {
       setSelectedRouteType(e.target.value);
-    },
-    "required": true
+    }
   }, [__jacJsx("option", {
     "value": "all",
     "style": {
       "color": "black"
-    },
-    "disabled": true
+    }
   }, ["All Route Types"]), __jacJsx("option", {
     "value": "direct",
     "style": {
@@ -528,44 +453,7 @@ function SearchBusTable() {
     "style": {
       "color": "black"
     }
-  }, ["Via (Intermediate)"])])]), __jacJsx("div", {}, [__jacJsx("label", {
-    "style": {
-      "display": "block",
-      "marginBottom": "8px",
-      "fontSize": "0.9rem",
-      "fontWeight": "600",
-      "color": "#ff7f32"
-    }
-  }, ["Filter by Route"]), __jacJsx("select", {
-    "style": {
-      "width": "100%",
-      "padding": "10px",
-      "borderRadius": "4px",
-      "border": "1px solid #ff7f32",
-      "fontSize": "0.9rem",
-      "backgroundColor": "rgba(255,255,255,0.1)",
-      "color": "white"
-    },
-    "value": selectedRoute,
-    "onChange": function onChange(e) {
-      setSelectedRoute(e.target.value);
-    },
-    "required": true
-  }, [__jacJsx("option", {
-    "value": "all",
-    "style": {
-      "color": "black"
-    },
-    "disabled": true
-  }, ["All Types"]), bus_routes.map(function (route) {
-    return __jacJsx("option", {
-      "key": route,
-      "value": route,
-      "style": {
-        "color": "black"
-      }
-    }, [route]);
-  })])]), __jacJsx("div", {
+  }, ["Via (Intermediate)"])])]), __jacJsx("div", {
     "style": {
       "display": "flex",
       "alignItems": "flex-end"
@@ -582,8 +470,8 @@ function SearchBusTable() {
       "color": "white",
       "width": "100%"
     },
-    "onClick": handleFilters
-  }, ["Filter Results"])])]), __jacJsx("div", {
+    "onClick": handleResetSecondaryFilters
+  }, ["Reset Filters"])])]), __jacJsx("div", {
     "style": {
       "overflowX": "auto"
     }
@@ -646,7 +534,7 @@ function SearchBusTable() {
       color: "#ff7f32",
       fontWeight: "600"
     }
-  }, ["Intermediate Stops"])])]), __jacJsx("tbody", {}, [buses.map(function (bus) {
+  }, ["Intermediate Stops"])])]), __jacJsx("tbody", {}, [getFilteredBuses().map(function (bus) {
     return __jacJsx("tr", {
       "key": bus.bus_id,
       "style": {
@@ -688,7 +576,7 @@ function SearchBusTable() {
         "fontSize": "0.9rem"
       }
     }, [bus.intermediate_stops.join(", ")])]);
-  })])])])]) : !clicked ? __jacJsx("div", {
+  })])])])]) : __jacJsx("div", {
     "style": {
       "height": "auto",
       "display": "flex",
@@ -702,45 +590,7 @@ function SearchBusTable() {
       "fontSize": "1rem",
       "padding": "2px 2px"
     }
-  }, ["Search some buses!!!"])]) : __jacJsx("div", {
-    "style": {
-      "height": "auto",
-      "display": "flex",
-      "alignItems": "center",
-      "justifyContent": "center",
-      "minheight": "200px",
-      "columnGap": "50px",
-      "padding": "10px",
-      "flexDirection": "column"
-    }
-  }, [__jacJsx("h1", {
-    "style": {
-      "textAlign": "center",
-      "fontSize": "1rem",
-      "padding": "2px 2px"
-    }
-  }, ["No buses found for the given criteria."]), __jacJsx("div", {
-    "style": {
-      "display": "flex",
-      "justifyContent": "flex-end",
-      "marginBottom": "15px"
-    }
-  }, [__jacJsx("button", {
-    "style": {
-      "background": "#ff3232ff",
-      "border": "none",
-      "padding": "10px 10px",
-      "borderRadius": "4px",
-      "cursor": "pointer",
-      "fontSize": "1rem",
-      "fontWeight": "600",
-      "color": "white",
-      "width": "100px",
-      "height": "40px",
-      "textAlign": "center"
-    },
-    "onClick": handleRefresh
-  }, ["Refresh"])])])]);
+  }, ["Search some buses!!!"])])]);
 }
 function HeroSection() {
   return __jacJsx("div", {
@@ -852,7 +702,21 @@ function HeroSection() {
       "transform": "translateY(0)",
       "minWidth": "180px"
     }
-  }, ["🚀 Start Browsing"])]), __jacJsx("div", {
+  }, ["🚀 Start Browsing"]), __jacJsx("button", {
+    "style": {
+      "background": "rgba(255, 255, 255, 0.1)",
+      "color": "white",
+      "border": "1px solid rgba(255, 255, 255, 0.2)",
+      "padding": "16px 32px",
+      "fontSize": "1.1rem",
+      "borderRadius": "12px",
+      "cursor": "pointer",
+      "fontWeight": "600",
+      "backdropFilter": "blur(20px)",
+      "transition": "all 0.3s ease",
+      "minWidth": "180px"
+    }
+  }, ["📱 Bus AI"])]), __jacJsx("div", {
     "style": {
       "display": "grid",
       "gridTemplateColumns": "repeat(auto-fit, minmax(200px, 1fr))",
@@ -968,43 +832,43 @@ function HeroSection() {
   }, ["Best connections"])])])])]);
 }
 function ChatWindow(props) {
-  var _useState19 = useState([{
+  var _useState15 = useState([{
       sender: "bot",
       text: "Hi! I'm RouteGo Assistant. How can I help you find buses today?",
       id: 0
     }]),
+    _useState16 = _slicedToArray(_useState15, 2),
+    messages = _useState16[0],
+    setMessages = _useState16[1];
+  var _useState17 = useState(""),
+    _useState18 = _slicedToArray(_useState17, 2),
+    inputValue = _useState18[0],
+    setInputValue = _useState18[1];
+  var _useState19 = useState(1),
     _useState20 = _slicedToArray(_useState19, 2),
-    messages = _useState20[0],
-    setMessages = _useState20[1];
-  var _useState21 = useState(""),
-    _useState22 = _slicedToArray(_useState21, 2),
-    inputValue = _useState22[0],
-    setInputValue = _useState22[1];
-  var _useState23 = useState(1),
-    _useState24 = _slicedToArray(_useState23, 2),
-    messageId = _useState24[0],
-    setMessageId = _useState24[1];
+    messageId = _useState20[0],
+    setMessageId = _useState20[1];
   function handleSendMessage() {
     return _handleSendMessage.apply(this, arguments);
   }
   function _handleSendMessage() {
-    _handleSendMessage = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3() {
+    _handleSendMessage = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2() {
       var results, userMsg, botMsg;
-      return _regenerator().w(function (_context3) {
-        while (1) switch (_context3.n) {
+      return _regenerator().w(function (_context2) {
+        while (1) switch (_context2.n) {
           case 0:
             if (inputValue) {
-              _context3.n = 1;
+              _context2.n = 1;
               break;
             }
-            return _context3.a(2);
+            return _context2.a(2);
           case 1:
-            _context3.n = 2;
+            _context2.n = 2;
             return __jacSpawn("computeBusTime", "", {
               "user_input": inputValue
             });
           case 2:
-            results = _context3.v;
+            results = _context2.v;
             userMsg = {
               sender: "user",
               text: inputValue,
@@ -1019,9 +883,9 @@ function ChatWindow(props) {
             setMessageId(messageId + 2);
             setInputValue("");
           case 3:
-            return _context3.a(2);
+            return _context2.a(2);
         }
-      }, _callee3);
+      }, _callee2);
     }));
     return _handleSendMessage.apply(this, arguments);
   }
@@ -1154,10 +1018,10 @@ function ChatWindow(props) {
   }, ["Send"])])]);
 }
 function ChatBot() {
-  var _useState25 = useState(false),
-    _useState26 = _slicedToArray(_useState25, 2),
-    isChatOpen = _useState26[0],
-    setIsChatOpen = _useState26[1];
+  var _useState21 = useState(false),
+    _useState22 = _slicedToArray(_useState21, 2),
+    isChatOpen = _useState22[0],
+    setIsChatOpen = _useState22[1];
   if (isChatOpen) {
     return __jacJsx("div", {}, [__jacJsx(ChatWindow, {
       "closeChat": function closeChat() {
@@ -1212,28 +1076,28 @@ function app() {
       return _creategraph.apply(this, arguments);
     }
     function _creategraph() {
-      _creategraph = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee4() {
+      _creategraph = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3() {
         var is_graph_created, result;
-        return _regenerator().w(function (_context4) {
-          while (1) switch (_context4.n) {
+        return _regenerator().w(function (_context3) {
+          while (1) switch (_context3.n) {
             case 0:
-              _context4.n = 1;
+              _context3.n = 1;
               return __jacSpawn("findGraph", "", {});
             case 1:
-              is_graph_created = _context4.v;
+              is_graph_created = _context3.v;
               console.log("Graph exists:", is_graph_created.reports[0].data);
               if (!(is_graph_created.reports[0].data === false)) {
-                _context4.n = 3;
+                _context3.n = 3;
                 break;
               }
-              _context4.n = 2;
+              _context3.n = 2;
               return __jacSpawn("createGraph", "", {});
             case 2:
-              result = _context4.v;
+              result = _context3.v;
             case 3:
-              return _context4.a(2);
+              return _context3.a(2);
           }
-        }, _callee4);
+        }, _callee3);
       }));
       return _creategraph.apply(this, arguments);
     }
