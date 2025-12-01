@@ -165,16 +165,44 @@ walker findResults{
             print("Filtering buses between", start_t, "and", end_t);
 
             if(start_t<=end_t){
-                report [-->(`?Bus: start_time >= start_t and start_time <= end_t)];
+                report[--> (`?Bus: start_time >= start_t, start_time <= end_t)];
             }else{
-                report[-->(`?Bus: start_time >= start_t or start_time <= end_t)];
+
+            report[--> (`?Bus: start_time >= start_t or start_time <= end_t)];
             }
         } else {
-            
-            end_results = [-->(`?City: name==self.to_city_name, city_type==self.to_city)];
+        end_results = [-->(`?City: name==self.to_city_name, city_type==self.to_city)];
             print("end_results",end_results);
             visit[-->end_results];
         }
+    }
+}
+
+walker findRoutes{
+    has from_city_name: str;
+    has to_city_name: str;
+    has from_city: str =cityType.start.value;
+    has to_city: str = cityType.end.value;
+    has routes: list[str] = [];
+
+    can search with `root entry{
+
+        print("Searching routes from ", self.from_city_name, " to ", self.to_city_name);
+        start_results = [-->(`?City: name==self.from_city_name, city_type==self.from_city)];
+        print("start_results",start_results);
+        visit[-->start_results];
+    }
+
+    can visit_cities with City entry{
+        
+        print("Now we are in",here);
+
+        bus_routes = [edge-->(`?City: name==self.to_city_name, city_type==self.to_city)];
+        for r in bus_routes{
+            self.routes.append(r.route_number);
+        }
+
+        report {"routes":self.routes};
     }
 }
 
@@ -310,17 +338,16 @@ walker computeIntermediateStops
 
 cl {
 
-    def SearchBusTable()
-        {
+    def SearchBusTable(){
             let [from_city_name,setFromCityName] = useState("");
             let [to_city_name,setToCityName] = useState("");
             let [start_time,setStartTime] = useState("");
             let [end_time,setEndTime] = useState("");
             let [clicked,setClick] = useState(False);
             let [buses,setBuses] = useState([]);
+            let [bus_routes,setBusRoutes] = useState([]);
 
-            def handleRefresh() -> None
-            {
+            def handleRefresh() -> None{
                 setFromCityName("");
                 setToCityName("");
                 setStartTime("");
@@ -329,12 +356,10 @@ cl {
                 setClick(not clicked);
             }
 
-            async def handleClick() -> None
-            {
+            async def handleClick() -> None{
                 console.log("Button clicked!");
 
-                if (from_city_name == "" or to_city_name == "" or start_time == "" or end_time == "")
-                {
+                if (from_city_name == "" or to_city_name == "" or start_time == "" or end_time == ""){
                     alert("Please fill in all fields before searching.");
                     return;
                 }
@@ -343,6 +368,7 @@ cl {
 
                     setClick(not clicked);
                     setBuses([]);
+                    setBusRoutes([]);
 
                     results = root spawn findResults(
                     from_city_name=from_city_name,
@@ -362,16 +388,24 @@ cl {
                             }
                         }
                         setBuses(newBuses);
+
+                        routes = root spawn findRoutes(
+                            from_city_name=from_city_name,
+                            to_city_name=to_city_name
+                        );
+
+                        console.log("Routes Found:", routes.reports[0].routes);
+                        setBusRoutes(bus_routes.concat(routes.reports[0].routes));
+
+                        console.log("Bus Routes:", bus_routes);
+
+
                     }
 
                     console.log(f"Found {buses.length} buses.");
                     console.log(buses);
-
                 }
-
-               
-                }
-
+            }
 
             return 
         <div style={{
@@ -397,14 +431,14 @@ cl {
 
                 <div>
                     <label>From *</label>
-                    <select required style={{
+                    <select required={True} style={{
                         "width": "100%",
                         "padding": "10px",
                         "borderRadius": "4px",
                         "border": "1px solid #ccc",
                         "fontSize": "0.9rem",
                 }} value={from_city_name} onChange={lambda e:any -> None { setFromCityName(e.target.value);}}>
-                        <option>Select Start</option>
+                        <option value="" disabled={True}>Select Start</option>
                         <option value="Colombo">Colombo</option>
                         <option value="Jaffna">Jaffna</option>
                     </select>
@@ -412,14 +446,14 @@ cl {
 
                 <div>
                     <label>To *</label>
-                    <select required style={{
+                    <select required={True} style={{
                         "width": "100%",
                         "padding": "10px",
                         "borderRadius": "4px",
                         "border": "1px solid #ccc",
                         "fontSize": "0.9rem",
                 }} value={to_city_name} onChange={lambda e:any -> None { setToCityName(e.target.value);}}>
-                        <option>Select Destination</option>
+                        <option value="" disabled={True}>Select Destination</option>
                         <option value="Colombo">Colombo</option>
                         <option value="Jaffna">Jaffna</option>
                         <option value="Kandy">Kandy</option>
@@ -428,14 +462,14 @@ cl {
 
                 <div>
                     <label>Time Range:Start Time</label>
-                    <select required style={{
+                    <select required={True} style={{
                         "width": "100%",
                         "padding": "10px",
                         "borderRadius": "4px",
                         "border": "1px solid #ccc",
                         "fontSize": "0.9rem",
                 }} value={start_time} onChange={lambda e:any -> None { setStartTime(e.target.value);}}>
-                        <option>Select Start Time</option>
+                        <option value="" disabled={True}>Select Start Time</option>
                         <option value="00:00">00:00</option>
                         <option value="01:00">01:00</option>
                         <option value="02:00">02:00</option>
@@ -465,14 +499,14 @@ cl {
 
                 <div>
                     <label>Time Range:End Time</label>
-                    <select required style={{
+                    <select required={True} style={{
                         "width": "100%",
                         "padding": "10px",
                         "borderRadius": "4px",
                         "border": "1px solid #ccc",
                         "fontSize": "0.9rem",
                 }} value={end_time} onChange={lambda e:any -> None { setEndTime(e.target.value);}}>
-                        <option>Select End Time</option>
+                        <option value="" disabled={True}>Select End Time</option>
                         <option value="00:00">00:00</option>
                         <option value="01:00">01:00</option>
                         <option value="02:00">02:00</option>
@@ -689,23 +723,6 @@ cl {
                     }}
                     >
                         🚀 Start Browsing
-                    </button>
-
-                    <button style={{
-                        "background": "rgba(255, 255, 255, 0.1)",
-                        "color": "white",
-                        "border": "1px solid rgba(255, 255, 255, 0.2)",
-                        "padding": "16px 32px",
-                        "fontSize": "1.1rem",
-                        "borderRadius": "12px",
-                        "cursor": "pointer",
-                        "fontWeight": "600",
-                        "backdropFilter": "blur(20px)",
-                        "transition": "all 0.3s ease",
-                        "minWidth": "180px"
-                    }}
-                    >
-                        📱 Bus AI
                     </button>
                 </div>
 

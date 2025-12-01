@@ -136,7 +136,6 @@ walker findResults{
     has end_time: str;
     has from_city: str =cityType.start.value;
     has to_city: str = cityType.end.value;
-    has bus_route:list[str] = [];
 
     can search with `root entry{
 
@@ -157,38 +156,56 @@ walker findResults{
             print("Filtering buses between", start_t, "and", end_t);
 
             if(start_t<=end_t){
-                if([--> (`?Bus: start_time >= start_t, start_time <= end_t)]){
-                    print("Buses found in route", here);
-
-                    buses = [--> (`?Bus: start_time >= start_t, start_time <= end_t)];
-                    report {"Buses": buses , "Route": self.bus_route };
-                }
+                report[--> (`?Bus: start_time >= start_t, start_time <= end_t)];
             }else{
 
-                buses = [--> (`?Bus: start_time >= start_t or start_time <= end_t)];
-                report {"Buses": buses , "Route": self.bus_route };
+            report[--> (`?Bus: start_time >= start_t or start_time <= end_t)];
             }
         } else {
-            end_results = [-->(`?City: name==self.to_city_name, city_type==self.to_city)];
-            route_edges = [edge-->(`?City: name==self.to_city_name, city_type==self.to_city)];
-            print("route_edges",route_edges);
-            for edges in route_edges{
-                self.bus_route.append(edges.route_number);
-            }
+        end_results = [-->(`?City: name==self.to_city_name, city_type==self.to_city)];
             print("end_results",end_results);
             visit[-->end_results];
         }
     }
 }
 
+walker findRoutes{
+    has from_city_name: str;
+    has to_city_name: str;
+    has from_city: str =cityType.start.value;
+    has to_city: str = cityType.end.value;
+    has routes: list[str] = [];
 
-walker filterRoutes
+    can search with `root entry{
+
+        print("Searching routes from ", self.from_city_name, " to ", self.to_city_name);
+        start_results = [-->(`?City: name==self.from_city_name, city_type==self.from_city)];
+        print("start_results",start_results);
+        visit[-->start_results];
+    }
+
+    can visit_cities with City entry{
+        
+        print("Now we are in",here);
+
+        if([-->(`?City: name==self.to_city_name, city_type==self.to_city)]){
+            bus_routes = [edge-->(`?City: name==self.to_city_name, city_type==self.to_city)];
+           for r in bus_routes{
+                self.routes.append(r.route_number);
+            }
+            report { "routes": self.routes };
+        }
+    }
+}
+
+
+walker filterBuses
 {
     has route_no: str = "";
     has bus_type: str = "";
     has bus_edge_type:str = "";
 
-    can filterRoutes with city entry
+    can filterRoutes with `root entry
     {
         
     }
@@ -200,39 +217,6 @@ walker findGraph{
         results = [-->(`?City)];
         report {"data":True} if len(results) > 0 else {"data":False};
 
-    }
-}
-
-walker findResults{
-
-    has from_city_name: str;
-    has to_city_name: str;
-    has start_time: str;
-    has end_time: str;
-    has from_city: str =cityType.start.value;
-    has to_city: str = cityType.end.value;
-    has bus_route:list[str] = [];
-
-    can search with `root entry{
-
-        print("Searching buses from ", self.from_city_name, " to ", self.to_city_name);
-        start_results = [-->(`?City: name==self.from_city_name, city_type==self.from_city)];
-        print("start_results",start_results);
-        visit[-->start_results];
-    }
-
-    can visit_cities with City entry{
-        
-        print("Now we are in",here);
-
-            end_results = [-->(`?City: name==self.to_city_name, city_type==self.to_city)];
-            route_edges = [edge-->(`?City: name==self.to_city_name, city_type==self.to_city)];
-            print("route_edges",route_edges);
-            for edges in route_edges{
-                self.bus_route.append(edges.route_number);
-            }
-            print("end_results",end_results);
-            visit[-->end_results];
     }
 }
 
