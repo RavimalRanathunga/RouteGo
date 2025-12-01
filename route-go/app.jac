@@ -1,9 +1,40 @@
 import from datetime {datetime}
 import from datetime {time}
 import from byllm.llm {Model}
-import from utils {extract_city_details}
+# import from utils {extract_city_details}
 
 glob llm = Model(model_name="gemini/gemini-2.0-flash");
+
+
+
+obj City_details{
+    has start_city: str;
+    has end_city: str;
+}
+
+sem City_details.start_city = "Analyze the user input to find the starting city of the bus route. If the starting city is not provided, leave it empty.";
+
+sem City_details.end_city = "Analyze the user input to find the ending city of the bus route. If the ending city is not provided, leave it empty.";
+
+"""
+Extracts starting and ending city information from user input text.
+
+This function uses an LLM to parse natural language input and identify
+the departure and destination cities for a bus route. It returns a
+City_details object containing the extracted city names.
+
+Args:
+    user_input (str): Natural language text containing route information
+
+Returns:
+    City_details: Object with start_city and end_city fields. Fields will
+                 be empty strings if cities are not found in the input.
+
+Example:
+    >>> extract_city_details("I want to go from Colombo to Kandy")
+    City_details(start_city="Colombo", end_city="Kandy")
+"""
+def extract_city_details(user_input: str) -> City_details  by llm();
 
 cl import from react {
     useState,
@@ -44,6 +75,7 @@ node Bus{
 # Edge Definitions
 edge busRoute{
     has route_number: str;
+    has distance: int;
 }
 
 edge busEdge{
@@ -58,23 +90,23 @@ walker createGraph{
         start_node_2 = root ++> City(city_type=cityType.start.value, name="Colombo");
         start_node_3 = root ++> City(city_type=cityType.start.value, name="Colombo");
 
-        end_node_1 = start_node_1 +>: busRoute(route_number="57") :+> City(city_type=cityType.end.value, name="Colombo");
-        end_node_2 = start_node_1 +>: busRoute(route_number="87") :+> City(city_type=cityType.end.value, name="Colombo");
-        end_node_3 = start_node_2 +>: busRoute(route_number="57") :+> City(city_type=cityType.end.value, name="Jaffna");
-        end_node_4 = start_node_2 +>: busRoute(route_number="87") :+> City(city_type=cityType.end.value, name="Jaffna");
-        end_node_5 = start_node_3 +>: busRoute(route_number="01") :+> City(city_type=cityType.end.value, name="Kandy");
+        end_node_1 = start_node_1 +>: busRoute(route_number="57",distance=405) :+> City(city_type=cityType.end.value, name="Colombo");
+        end_node_2 = start_node_1 +>: busRoute(route_number="87",distance=450) :+> City(city_type=cityType.end.value, name="Colombo");
+        end_node_3 = start_node_2 +>: busRoute(route_number="57", distance=405) :+> City(city_type=cityType.end.value, name="Jaffna");
+        end_node_4 = start_node_2 +>: busRoute(route_number="87", distance=450) :+> City(city_type=cityType.end.value, name="Jaffna");
+        end_node_5 = start_node_3 +>: busRoute(route_number="01", distance=200) :+> City(city_type=cityType.end.value, name="Kandy");
 
         bus_1 = end_node_1 +>: busEdge(edge_type=busEdgeType.direct.value) :+> Bus(
-            bus_type=busType.normal.value,
+            bus_type=busType.normal,
             bus_id="AB1234",
             start_time=time(8, 0),
             end_time=time(12, 0),
             fare=500.0,
-            intermediate_stops=["Vavuniya", "Anuradhapura"]
+            intermediate_stops=["Vavuniya", "Anuradhapura", "Dambulla"]
         );
 
         bus_2 = end_node_1 +>: busEdge(edge_type=busEdgeType.direct.value) :+> Bus(
-            bus_type = busType.luxury.value,
+            bus_type = busType.luxury,
             bus_id = "CD5678", 
             start_time = time(8,0), 
             end_time = time(13, 0), 
@@ -83,7 +115,7 @@ walker createGraph{
         ); 
 
         bus_3 = end_node_2 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
-            bus_type = busType.semi_luxury.value, 
+            bus_type = busType.semi_luxury, 
             bus_id = "EF9012", 
             start_time = time(9, 0), 
             end_time = time(15, 0), 
@@ -92,7 +124,7 @@ walker createGraph{
         );
 
         bus_4 = end_node_2 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
-            bus_type = busType.normal.value, 
+            bus_type = busType.normal, 
             bus_id = "GH3456", 
             start_time = time(10, 30), 
             end_time = time(16, 30), 
@@ -100,7 +132,7 @@ walker createGraph{
             intermediate_stops = ["Vavuniya", "Puttalam"]
         );
         bus_5 = end_node_3 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
-            bus_type = busType.luxury.value, 
+            bus_type = busType.luxury, 
             bus_id = "IJ7890", 
             start_time = time(16, 0), 
             end_time = time(2, 0), 
@@ -108,7 +140,7 @@ walker createGraph{
             intermediate_stops = ["Kurunagala", "Vavuniya"]
         );
         bus_6 = end_node_4 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
-            bus_type = busType.normal.value, 
+            bus_type = busType.normal, 
             bus_id = "KL1234", 
             start_time = time(14, 0), 
             end_time = time(22, 0), 
@@ -116,7 +148,7 @@ walker createGraph{
             intermediate_stops = ["Puttalam", "Vavuniya"]
         );
         bus_7 = end_node_4 +>: busEdge(edge_type = busEdgeType.via.value) :+> Bus(
-            bus_type = busType.semi_luxury.value, 
+            bus_type = busType.semi_luxury, 
             bus_id = "MN5678", 
             start_time = time(7, 30), 
             end_time = time(10, 30), 
@@ -124,15 +156,13 @@ walker createGraph{
             intermediate_stops = ["Dehiwala", "Colombo", "Puttalam", "Vavuniya"]
         );
         bus_8 = end_node_5 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
-            bus_type = busType.normal.value, 
+            bus_type = busType.normal, 
             bus_id = "OP9012", 
             start_time = time(12, 0), 
             end_time = time(15, 0), 
             fare = 800.0, 
             intermediate_stops = ["Kegalle", "Mawanella"]
         );
-
-        report {"data":"Graph Created Successfully"};
     }
 
 }
