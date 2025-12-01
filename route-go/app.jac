@@ -97,7 +97,7 @@ walker createGraph{
         end_node_5 = start_node_3 +>: busRoute(route_number="01", distance=200) :+> City(city_type=cityType.end.value, name="Kandy");
 
         bus_1 = end_node_1 +>: busEdge(edge_type=busEdgeType.direct.value) :+> Bus(
-            bus_type=busType.normal,
+            bus_type=busType.normal.value,
             bus_id="AB1234",
             start_time=time(8, 0),
             end_time=time(12, 0),
@@ -106,7 +106,7 @@ walker createGraph{
         );
 
         bus_2 = end_node_1 +>: busEdge(edge_type=busEdgeType.direct.value) :+> Bus(
-            bus_type = busType.luxury,
+            bus_type = busType.luxury.value,
             bus_id = "CD5678", 
             start_time = time(8,0), 
             end_time = time(13, 0), 
@@ -115,7 +115,7 @@ walker createGraph{
         ); 
 
         bus_3 = end_node_2 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
-            bus_type = busType.semi_luxury, 
+            bus_type = busType.semi_luxury.value, 
             bus_id = "EF9012", 
             start_time = time(9, 0), 
             end_time = time(15, 0), 
@@ -124,7 +124,7 @@ walker createGraph{
         );
 
         bus_4 = end_node_2 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
-            bus_type = busType.normal, 
+            bus_type = busType.normal.value, 
             bus_id = "GH3456", 
             start_time = time(10, 30), 
             end_time = time(16, 30), 
@@ -132,7 +132,7 @@ walker createGraph{
             intermediate_stops = ["Vavuniya", "Puttalam"]
         );
         bus_5 = end_node_3 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
-            bus_type = busType.luxury, 
+            bus_type = busType.luxury.value, 
             bus_id = "IJ7890", 
             start_time = time(16, 0), 
             end_time = time(2, 0), 
@@ -140,7 +140,7 @@ walker createGraph{
             intermediate_stops = ["Kurunagala", "Vavuniya"]
         );
         bus_6 = end_node_4 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
-            bus_type = busType.normal, 
+            bus_type = busType.normal.value, 
             bus_id = "KL1234", 
             start_time = time(14, 0), 
             end_time = time(22, 0), 
@@ -148,7 +148,7 @@ walker createGraph{
             intermediate_stops = ["Puttalam", "Vavuniya"]
         );
         bus_7 = end_node_4 +>: busEdge(edge_type = busEdgeType.via.value) :+> Bus(
-            bus_type = busType.semi_luxury, 
+            bus_type = busType.semi_luxury.value, 
             bus_id = "MN5678", 
             start_time = time(7, 30), 
             end_time = time(10, 30), 
@@ -156,13 +156,15 @@ walker createGraph{
             intermediate_stops = ["Dehiwala", "Colombo", "Puttalam", "Vavuniya"]
         );
         bus_8 = end_node_5 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
-            bus_type = busType.normal, 
+            bus_type = busType.normal.value, 
             bus_id = "OP9012", 
             start_time = time(12, 0), 
             end_time = time(15, 0), 
             fare = 800.0, 
             intermediate_stops = ["Kegalle", "Mawanella"]
         );
+
+        report {"data" : "Graph Created Successfully"};
     }
 
 }
