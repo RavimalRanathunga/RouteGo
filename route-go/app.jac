@@ -205,7 +205,7 @@ walker computeBusTime{
 
 
     def compute_average_speed(bus_type: str) -> float{
-        print("average speed called");
+        print("tool: average speed called");
         if (bus_type == "normal"){
             return 40.0;
         } elif (bus_type == "semi_luxury"){
@@ -216,13 +216,13 @@ walker computeBusTime{
     }
 
     def compute_stop_delay(intermediate_stops: list[str]) -> float{
-        print("stop delay called");
+        print("tool: stop delay called");
         stop_delay = len(intermediate_stops) * 10.0;
         return stop_delay;
     }
 
     def compute_number_of_intermediate_stops{
-        print("intermediate stops called");
+        print("tool: intermediate stops called");
         cities: City_details = extract_city_details(user_input=self.user_input);
         # print("Extracted Cities: ", cities);
 
