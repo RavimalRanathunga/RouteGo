@@ -7,6 +7,7 @@ function SearchBusTable() {
   let [end_time, setEndTime] = useState("");
   let [clicked, setClick] = useState(false);
   let [buses, setBuses] = useState([]);
+  let [bus_routes, setBusRoutes] = useState([]);
   function handleRefresh() {
     setFromCityName("");
     setToCityName("");
@@ -24,6 +25,7 @@ function SearchBusTable() {
       console.log(`From: ${from_city_name}, To: ${to_city_name}, Start Time: ${start_time}, End Time: ${end_time}`);
       setClick(!clicked);
       setBuses([]);
+      setBusRoutes([]);
       let results = await __jacSpawn("findResults", "", {"from_city_name": from_city_name, "to_city_name": to_city_name, "start_time": start_time, "end_time": end_time});
       console.log(`Found ${results.reports.length} reports.`);
       if (results.reports.length > 0) {
@@ -35,6 +37,10 @@ function SearchBusTable() {
           }
         }
         setBuses(newBuses);
+        let routes = await __jacSpawn("findRoutes", "", {"from_city_name": from_city_name, "to_city_name": to_city_name});
+        console.log("Routes Found:", routes.reports[0].routes);
+        setBusRoutes(bus_routes.concat(routes.reports[0].routes));
+        console.log("Bus Routes:", bus_routes);
       }
       console.log(`Found ${buses.length} buses.`);
       console.log(buses);

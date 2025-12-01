@@ -40,6 +40,10 @@ function SearchBusTable() {
     _useState10 = _slicedToArray(_useState1, 2),
     buses = _useState10[0],
     setBuses = _useState10[1];
+  var _useState11 = useState([]),
+    _useState12 = _slicedToArray(_useState11, 2),
+    bus_routes = _useState12[0],
+    setBusRoutes = _useState12[1];
   function handleRefresh() {
     setFromCityName("");
     setToCityName("");
@@ -53,7 +57,7 @@ function SearchBusTable() {
   }
   function _handleClick() {
     _handleClick = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee() {
-      var results, newBuses, _iterator, _step, _results, _iterator2, _step2, bus;
+      var results, newBuses, _iterator, _step, _results, _iterator2, _step2, bus, routes;
       return _regenerator().w(function (_context) {
         while (1) switch (_context.n) {
           case 0:
@@ -68,6 +72,7 @@ function SearchBusTable() {
             console.log("From: ".concat(from_city_name, ", To: ").concat(to_city_name, ", Start Time: ").concat(start_time, ", End Time: ").concat(end_time));
             setClick(!clicked);
             setBuses([]);
+            setBusRoutes([]);
             _context.n = 2;
             return __jacSpawn("findResults", "", {
               "from_city_name": from_city_name,
@@ -78,35 +83,48 @@ function SearchBusTable() {
           case 2:
             results = _context.v;
             console.log("Found ".concat(results.reports.length, " reports."));
-            if (results.reports.length > 0) {
-              newBuses = [];
-              _iterator = _createForOfIteratorHelper(results.reports);
-              try {
-                for (_iterator.s(); !(_step = _iterator.n()).done;) {
-                  _results = _step.value;
-                  _iterator2 = _createForOfIteratorHelper(_results);
-                  try {
-                    for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-                      bus = _step2.value;
-                      console.log("Bus Found:", bus);
-                      newBuses.push(bus);
-                    }
-                  } catch (err) {
-                    _iterator2.e(err);
-                  } finally {
-                    _iterator2.f();
-                  }
-                }
-              } catch (err) {
-                _iterator.e(err);
-              } finally {
-                _iterator.f();
-              }
-              setBuses(newBuses);
+            if (!(results.reports.length > 0)) {
+              _context.n = 4;
+              break;
             }
+            newBuses = [];
+            _iterator = _createForOfIteratorHelper(results.reports);
+            try {
+              for (_iterator.s(); !(_step = _iterator.n()).done;) {
+                _results = _step.value;
+                _iterator2 = _createForOfIteratorHelper(_results);
+                try {
+                  for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+                    bus = _step2.value;
+                    console.log("Bus Found:", bus);
+                    newBuses.push(bus);
+                  }
+                } catch (err) {
+                  _iterator2.e(err);
+                } finally {
+                  _iterator2.f();
+                }
+              }
+            } catch (err) {
+              _iterator.e(err);
+            } finally {
+              _iterator.f();
+            }
+            setBuses(newBuses);
+            _context.n = 3;
+            return __jacSpawn("findRoutes", "", {
+              "from_city_name": from_city_name,
+              "to_city_name": to_city_name
+            });
+          case 3:
+            routes = _context.v;
+            console.log("Routes Found:", routes.reports[0].routes);
+            setBusRoutes(bus_routes.concat(routes.reports[0].routes));
+            console.log("Bus Routes:", bus_routes);
+          case 4:
             console.log("Found ".concat(buses.length, " buses."));
             console.log(buses);
-          case 3:
+          case 5:
             return _context.a(2);
         }
       }, _callee);
@@ -696,22 +714,22 @@ function HeroSection() {
   }, ["Best connections"])])])])]);
 }
 function ChatWindow(props) {
-  var _useState11 = useState([{
+  var _useState13 = useState([{
       sender: "bot",
       text: "Hi! I'm RouteGo Assistant. How can I help you find buses today?",
       id: 0
     }]),
-    _useState12 = _slicedToArray(_useState11, 2),
-    messages = _useState12[0],
-    setMessages = _useState12[1];
-  var _useState13 = useState(""),
     _useState14 = _slicedToArray(_useState13, 2),
-    inputValue = _useState14[0],
-    setInputValue = _useState14[1];
-  var _useState15 = useState(1),
+    messages = _useState14[0],
+    setMessages = _useState14[1];
+  var _useState15 = useState(""),
     _useState16 = _slicedToArray(_useState15, 2),
-    messageId = _useState16[0],
-    setMessageId = _useState16[1];
+    inputValue = _useState16[0],
+    setInputValue = _useState16[1];
+  var _useState17 = useState(1),
+    _useState18 = _slicedToArray(_useState17, 2),
+    messageId = _useState18[0],
+    setMessageId = _useState18[1];
   function handleSendMessage() {
     return _handleSendMessage.apply(this, arguments);
   }
@@ -882,10 +900,10 @@ function ChatWindow(props) {
   }, ["Send"])])]);
 }
 function ChatBot() {
-  var _useState17 = useState(false),
-    _useState18 = _slicedToArray(_useState17, 2),
-    isChatOpen = _useState18[0],
-    setIsChatOpen = _useState18[1];
+  var _useState19 = useState(false),
+    _useState20 = _slicedToArray(_useState19, 2),
+    isChatOpen = _useState20[0],
+    setIsChatOpen = _useState20[1];
   if (isChatOpen) {
     return __jacJsx("div", {}, [__jacJsx(ChatWindow, {
       "closeChat": function closeChat() {
