@@ -1,9 +1,40 @@
 import from datetime {datetime}
 import from datetime {time}
 import from byllm.llm {Model}
-import from utils {extract_city_details}
+# import from utils {extract_city_details}
 
 glob llm = Model(model_name="gemini/gemini-2.0-flash");
+
+
+
+obj City_details{
+    has start_city: str;
+    has end_city: str;
+}
+
+sem City_details.start_city = "Analyze the user input to find the starting city of the bus route. If the starting city is not provided, leave it empty.";
+
+sem City_details.end_city = "Analyze the user input to find the ending city of the bus route. If the ending city is not provided, leave it empty.";
+
+"""
+Extracts starting and ending city information from user input text.
+
+This function uses an LLM to parse natural language input and identify
+the departure and destination cities for a bus route. It returns a
+City_details object containing the extracted city names.
+
+Args:
+    user_input (str): Natural language text containing route information
+
+Returns:
+    City_details: Object with start_city and end_city fields. Fields will
+                 be empty strings if cities are not found in the input.
+
+Example:
+    >>> extract_city_details("I want to go from Colombo to Kandy")
+    City_details(start_city="Colombo", end_city="Kandy")
+"""
+def extract_city_details(user_input: str) -> City_details  by llm();
 
 cl import from react {
     useState,
@@ -44,6 +75,7 @@ node Bus{
 # Edge Definitions
 edge busRoute{
     has route_number: str;
+    has distance: int;
 }
 
 edge busEdge{
@@ -58,11 +90,11 @@ walker createGraph{
         start_node_2 = root ++> City(city_type=cityType.start.value, name="Colombo");
         start_node_3 = root ++> City(city_type=cityType.start.value, name="Colombo");
 
-        end_node_1 = start_node_1 +>: busRoute(route_number="57") :+> City(city_type=cityType.end.value, name="Colombo");
-        end_node_2 = start_node_1 +>: busRoute(route_number="87") :+> City(city_type=cityType.end.value, name="Colombo");
-        end_node_3 = start_node_2 +>: busRoute(route_number="57") :+> City(city_type=cityType.end.value, name="Jaffna");
-        end_node_4 = start_node_2 +>: busRoute(route_number="87") :+> City(city_type=cityType.end.value, name="Jaffna");
-        end_node_5 = start_node_3 +>: busRoute(route_number="01") :+> City(city_type=cityType.end.value, name="Kandy");
+        end_node_1 = start_node_1 +>: busRoute(route_number="57",distance=405) :+> City(city_type=cityType.end.value, name="Colombo");
+        end_node_2 = start_node_1 +>: busRoute(route_number="87",distance=450) :+> City(city_type=cityType.end.value, name="Colombo");
+        end_node_3 = start_node_2 +>: busRoute(route_number="57", distance=405) :+> City(city_type=cityType.end.value, name="Jaffna");
+        end_node_4 = start_node_2 +>: busRoute(route_number="87", distance=450) :+> City(city_type=cityType.end.value, name="Jaffna");
+        end_node_5 = start_node_3 +>: busRoute(route_number="01", distance=200) :+> City(city_type=cityType.end.value, name="Kandy");
 
         bus_1 = end_node_1 +>: busEdge(edge_type=busEdgeType.direct.value) :+> Bus(
             bus_type=busType.normal.value,
@@ -70,7 +102,7 @@ walker createGraph{
             start_time=time(8, 0),
             end_time=time(12, 0),
             fare=500.0,
-            intermediate_stops=["Vavuniya", "Anuradhapura"]
+            intermediate_stops=["Vavuniya", "Anuradhapura", "Dambulla"]
         );
 
         bus_2 = end_node_1 +>: busEdge(edge_type=busEdgeType.direct.value) :+> Bus(
@@ -132,7 +164,7 @@ walker createGraph{
             intermediate_stops = ["Kegalle", "Mawanella"]
         );
 
-        report {"data":"Graph Created Successfully"};
+        report {"data" : "Graph Created Successfully"};
     }
 
 }
@@ -233,6 +265,7 @@ walker computeBusTime{
 
 
     def compute_average_speed(bus_type: str) -> float{
+        print("tool: average speed called");
         if (bus_type == "normal"){
             return 40.0;
         } elif (bus_type == "semi_luxury"){
@@ -243,13 +276,15 @@ walker computeBusTime{
     }
 
     def compute_stop_delay(intermediate_stops: list[str]) -> float{
+        print("tool: stop delay called");
         stop_delay = len(intermediate_stops) * 10.0;
         return stop_delay;
     }
 
     def compute_number_of_intermediate_stops{
+        print("tool: intermediate stops called");
         cities: City_details = extract_city_details(user_input=self.user_input);
-        # print("Extracted Cities: ", cities);
+        print("Extracted Cities: ", cities);
 
         result = root spawn computeIntermediateStops(cities,output_number=0);
         # print("Number of Intermediate Stops: ", result.output_number);
@@ -259,10 +294,29 @@ walker computeBusTime{
 
 
     # complete the system prompt
-    def route_and_run(user_input: str, system_prompt: str = "You are a helpful assistant that computes bus travel time based on average speed and stop delays. If the user provides a bus type, starting city, ending city, and intermediate stops, use the provided tools. If the user does not provide starting city or ending city, ask for more information. If the user does not provide intermediate stops, use compute_number_of_intermediate_stops function") -> str by llm(
-        method = "ReAct",
-        tools=([self.compute_average_speed, self.compute_stop_delay, self.compute_number_of_intermediate_stops])
-    );
+    # def route_and_run(user_input: str, system_prompt: str = "You are a helpful assistant that computes bus travel time based on average speed and stop delays. If the user provides a bus type, starting city, ending city, and intermediate stops, use the provided tools. If the user does not provide starting city or ending city, ask for more information. IMPORTANT: IF THE USER DOES NOT PROVIDE INTERMEDIATE STOPS, USE compute_number_of_intermediate_stops FUNCTION") -> str by llm(
+    #     method = "ReAct",
+    #     tools=([self.compute_average_speed, self.compute_stop_delay, self.compute_number_of_intermediate_stops])
+    # );
+
+    def route_and_run(user_input: str, 
+                    system_prompt: str = 
+                        "You are a helpful assistant that computes bus travel time based on average speed and stop delays. "
+                        "If the user provides a bus type, starting city, ending city, and intermediate stops, use the provided tools. "
+                        "If the user does not provide starting city or ending city, ask for more information. "
+                        "IMPORTANT: IF THE USER DOES NOT PROVIDE INTERMEDIATE STOPS, USE compute_number_of_intermediate_stops FUNCTION"
+    ) -> str by llm(
+            # user_input,
+            method="ReAct",
+            # system_prompt=system_prompt,  
+            tools=[
+                self.compute_average_speed, 
+                self.compute_stop_delay, 
+                self.compute_number_of_intermediate_stops
+            ]
+        );
+
+
 
     can start with `root entry{
 
@@ -330,7 +384,7 @@ walker computeIntermediateStops
 
             number_of_stops = len(selected_bus.intermediate_stops);
             self.output_number = number_of_stops;
-            
+            print("test");
 
         } 
     }      
