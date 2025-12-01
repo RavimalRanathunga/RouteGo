@@ -132,10 +132,10 @@ walker findResults{
 
     has from_city_name: str;
     has to_city_name: str;
+    has start_time: str;
+    has end_time: str;
     has from_city: str =cityType.start.value;
     has to_city: str = cityType.end.value;
-    # has start_time: time;
-    # has end_time: time;
 
     can search with `root entry{
 
@@ -150,7 +150,17 @@ walker findResults{
         print("Now we are in",here);
 
         if (here.city_type == cityType.end.value and here.name == self.to_city_name){
-            report[--> (`?Bus)];
+
+            start_t:time = datetime.strptime(self.start_time, "%H:%M").time();
+            end_t:time = datetime.strptime(self.end_time, "%H:%M").time();
+            print("Filtering buses between", start_t, "and", end_t);
+
+            if(start_t<=end_t){
+                report[--> (`?Bus: start_time >= start_t, start_time <= end_t)];
+            }else{
+
+            report[--> (`?Bus: start_time >= start_t or start_time <= end_t)];
+            }
         } else {
         end_results = [-->(`?City: name==self.to_city_name, city_type==self.to_city)];
             print("end_results",end_results);
@@ -159,13 +169,43 @@ walker findResults{
     }
 }
 
-walker filterRoutes
+walker findRoutes{
+    has from_city_name: str;
+    has to_city_name: str;
+    has from_city: str =cityType.start.value;
+    has to_city: str = cityType.end.value;
+    has routes: list[str] = [];
+
+    can search with `root entry{
+
+        print("Searching routes from ", self.from_city_name, " to ", self.to_city_name);
+        start_results = [-->(`?City: name==self.from_city_name, city_type==self.from_city)];
+        print("start_results",start_results);
+        visit[-->start_results];
+    }
+
+    can visit_cities with City entry{
+        
+        print("Now we are in",here);
+
+        if([-->(`?City: name==self.to_city_name, city_type==self.to_city)]){
+            bus_routes = [edge-->(`?City: name==self.to_city_name, city_type==self.to_city)];
+           for r in bus_routes{
+                self.routes.append(r.route_number);
+            }
+            report { "routes": self.routes };
+        }
+    }
+}
+
+
+walker filterBuses
 {
     has route_no: str = "";
     has bus_type: str = "";
     has bus_edge_type:str = "";
 
-    can filterRoutes with city entry
+    can filterRoutes with `root entry
     {
         
     }
