@@ -162,7 +162,10 @@ function SearchBusTable() {
     "onChange": function onChange(e) {
       setFromCityName(e.target.value);
     }
-  }, [__jacJsx("option", {}, ["Select Start"]), __jacJsx("option", {
+  }, [__jacJsx("option", {
+    "value": "",
+    "disabled": true
+  }, ["Select Start"]), __jacJsx("option", {
     "value": "Colombo"
   }, ["Colombo"]), __jacJsx("option", {
     "value": "Jaffna"
@@ -179,7 +182,10 @@ function SearchBusTable() {
     "onChange": function onChange(e) {
       setToCityName(e.target.value);
     }
-  }, [__jacJsx("option", {}, ["Select Destination"]), __jacJsx("option", {
+  }, [__jacJsx("option", {
+    "value": "",
+    "disabled": true
+  }, ["Select Destination"]), __jacJsx("option", {
     "value": "Colombo"
   }, ["Colombo"]), __jacJsx("option", {
     "value": "Jaffna"
@@ -198,7 +204,10 @@ function SearchBusTable() {
     "onChange": function onChange(e) {
       setStartTime(e.target.value);
     }
-  }, [__jacJsx("option", {}, ["Select Start Time"]), __jacJsx("option", {
+  }, [__jacJsx("option", {
+    "value": "",
+    "disabled": true
+  }, ["Select Start Time"]), __jacJsx("option", {
     "value": "00:00"
   }, ["00:00"]), __jacJsx("option", {
     "value": "01:00"
@@ -259,7 +268,10 @@ function SearchBusTable() {
     "onChange": function onChange(e) {
       setEndTime(e.target.value);
     }
-  }, [__jacJsx("option", {}, ["Select End Time"]), __jacJsx("option", {
+  }, [__jacJsx("option", {
+    "value": "",
+    "disabled": true
+  }, ["Select End Time"]), __jacJsx("option", {
     "value": "00:00"
   }, ["00:00"]), __jacJsx("option", {
     "value": "01:00"
@@ -584,21 +596,7 @@ function HeroSection() {
       "transform": "translateY(0)",
       "minWidth": "180px"
     }
-  }, ["🚀 Start Browsing"]), __jacJsx("button", {
-    "style": {
-      "background": "rgba(255, 255, 255, 0.1)",
-      "color": "white",
-      "border": "1px solid rgba(255, 255, 255, 0.2)",
-      "padding": "16px 32px",
-      "fontSize": "1.1rem",
-      "borderRadius": "12px",
-      "cursor": "pointer",
-      "fontWeight": "600",
-      "backdropFilter": "blur(20px)",
-      "transition": "all 0.3s ease",
-      "minWidth": "180px"
-    }
-  }, ["📱 Bus AI"])]), __jacJsx("div", {
+  }, ["🚀 Start Browsing"])]), __jacJsx("div", {
     "style": {
       "display": "grid",
       "gridTemplateColumns": "repeat(auto-fit, minmax(200px, 1fr))",
