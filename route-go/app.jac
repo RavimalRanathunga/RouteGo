@@ -352,6 +352,8 @@ cl {
             let [clicked,setClick] = useState(False);
             let [buses,setBuses] = useState([]);
             let [bus_routes,setBusRoutes] = useState([]);
+            let [selectedBusType,setSelectedBusType] = useState("all");
+            let [selectedRouteType,setSelectedRouteType] = useState("all");
 
             def handleRefresh() -> None{
                 setFromCityName("");
@@ -360,6 +362,9 @@ cl {
                 setEndTime("");
                 setBuses([]);
                 setClick(not clicked);
+                setBusRoutes([]);
+                setSelectedBusType("all");
+                setSelectedRouteType("all");
             }
 
             async def handleClick() -> None{
@@ -558,23 +563,38 @@ cl {
                 </div>
 
             </div>
-            {(<div style={{"display":"flex","flexDirection":"column","padding":"20px 20px"}}>
+             {(<div style={{"display":"flex","flexDirection":"column","padding":"20px 20px"}}>
                 <div style={{"display":"flex","justifyContent":"flex-end","marginBottom":"15px"}}>
-                    <button style={{
-                        "background": "#ff3232ff",
-                        "border": "none",
-                        "padding": "10px 25px",
-                        "borderRadius": "4px",
-                        "cursor": "pointer",
-                        "fontSize": "1rem",
-                        "fontWeight": "600",
-                        "color": "white",
-                        "width": "100px",
-                        "height":"40px",
-                        "textAlign":"center"
-                    }} onClick={handleRefresh}>
+                    <button style={{"background":"#ff3232ff","border":"none","padding":"10px 25px","borderRadius":"4px","cursor":"pointer","fontSize":"1rem","fontWeight":"600","color":"white","width":"100px","height":"40px","textAlign":"center"}} onClick={handleRefresh}>
                         Refresh
                     </button>
+                </div>
+
+                <div style={{"display":"grid","gridTemplateColumns":"repeat(auto-fit, minmax(200px, 1fr))","gap":"15px","marginBottom":"20px","padding":"15px","backgroundColor":"rgba(255,255,255,0.05)","borderRadius":"8px"}}>
+                    <div>
+                        <label style={{"display":"block","marginBottom":"8px","fontSize":"0.9rem","fontWeight":"600","color":"#ff7f32"}}>Filter by Bus Type</label>
+                        <select style={{"width":"100%","padding":"10px","borderRadius":"4px","border":"1px solid #ff7f32","fontSize":"0.9rem","backgroundColor":"rgba(255,255,255,0.1)","color":"white"}} value={selectedBusType} onChange={lambda e: any -> None { setSelectedBusType(e.target.value); }}>
+                            <option value="all" style={{"color":"black"}}>All Bus Types</option>
+                            <option value="normal" style={{"color":"black"}}>Normal</option>
+                            <option value="semi_luxury" style={{"color":"black"}}>Semi Luxury</option>
+                            <option value="luxury" style={{"color":"black"}}>Luxury</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label style={{"display":"block","marginBottom":"8px","fontSize":"0.9rem","fontWeight":"600","color":"#ff7f32"}}>Filter by Route Type</label>
+                        <select style={{"width":"100%","padding":"10px","borderRadius":"4px","border":"1px solid #ff7f32","fontSize":"0.9rem","backgroundColor":"rgba(255,255,255,0.1)","color":"white"}} value={selectedRouteType} onChange={lambda e: any -> None { setSelectedRouteType(e.target.value); }}>
+                            <option value="all" style={{"color":"black"}}>All Route Types</option>
+                            <option value="direct" style={{"color":"black"}}>Direct</option>
+                            <option value="via" style={{"color":"black"}}>Via (Intermediate)</option>
+                        </select>
+                    </div>
+
+                    # <div style={{"display":"flex","alignItems":"flex-end"}}>
+                    #     <button style={{"background":"#667eea","border":"none","padding":"10px 20px","borderRadius":"4px","cursor":"pointer","fontSize":"0.9rem","fontWeight":"600","color":"white","width":"100%"}} onClick={handleResetSecondaryFilters}>
+                    #         Reset Filters
+                    #     </button>
+                    # </div>
                 </div>
                 
                 <div style={{"overflowX":"auto"}}>
@@ -591,7 +611,7 @@ cl {
                         </thead>
 
                         <tbody>
-                            {buses.map(lambda bus:any -> any {
+                            {getFilteredBuses().map(lambda bus:any -> any {
                                 return <tr key={bus.bus_id} style={{"borderBottom":"1px solid rgba(255,255,255,0.1)","backgroundColor":"rgba(255,255,255,0.02)","transition":"backgroundColor 0.2s"}}>
                                     <td style={{"padding":"12px","color":"#fff"}}>{bus.bus_id}</td>
                                     <td style={{"padding":"12px","color":"#ffffffff","fontWeight":"600"}}>{bus.bus_type}</td>
@@ -604,9 +624,10 @@ cl {
                         </tbody>
                     </table>
                 </div>
-              </div>)if clicked 
+            </div>)if clicked 
             else(<div style={{"height":"auto","display":"flex","alignItems":"center","justifyContent":"center","minheight":"200px"}}>
-            <h1 style={{"textAlign":"center","fontSize":"1rem","padding":"2px 2px"}}>Search some buses!!!</h1></div>)}
+                <h1 style={{"textAlign":"center","fontSize":"1rem","padding":"2px 2px"}}>Search some buses!!!</h1>
+            </div>)}
         </div>;
         }
 
