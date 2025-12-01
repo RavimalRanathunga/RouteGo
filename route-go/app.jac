@@ -224,7 +224,7 @@ walker computeBusTime{
     def compute_number_of_intermediate_stops{
         print("tool: intermediate stops called");
         cities: City_details = extract_city_details(user_input=self.user_input);
-        # print("Extracted Cities: ", cities);
+        print("Extracted Cities: ", cities);
 
         result = root spawn computeIntermediateStops(cities,output_number=0);
         # print("Number of Intermediate Stops: ", result.output_number);
