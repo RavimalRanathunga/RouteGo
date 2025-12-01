@@ -44,6 +44,7 @@ node Bus{
 # Edge Definitions
 edge busRoute{
     has route_number: str;
+    has distance: int;
 }
 
 edge busEdge{
@@ -58,11 +59,11 @@ walker createGraph{
         start_node_2 = root ++> City(city_type=cityType.start.value, name="Colombo");
         start_node_3 = root ++> City(city_type=cityType.start.value, name="Colombo");
 
-        end_node_1 = start_node_1 +>: busRoute(route_number="57") :+> City(city_type=cityType.end.value, name="Colombo");
-        end_node_2 = start_node_1 +>: busRoute(route_number="87") :+> City(city_type=cityType.end.value, name="Colombo");
-        end_node_3 = start_node_2 +>: busRoute(route_number="57") :+> City(city_type=cityType.end.value, name="Jaffna");
-        end_node_4 = start_node_2 +>: busRoute(route_number="87") :+> City(city_type=cityType.end.value, name="Jaffna");
-        end_node_5 = start_node_3 +>: busRoute(route_number="01") :+> City(city_type=cityType.end.value, name="Kandy");
+        end_node_1 = start_node_1 +>: busRoute(route_number="57",distance=405) :+> City(city_type=cityType.end.value, name="Colombo");
+        end_node_2 = start_node_1 +>: busRoute(route_number="87",distance=450) :+> City(city_type=cityType.end.value, name="Colombo");
+        end_node_3 = start_node_2 +>: busRoute(route_number="57", distance=405) :+> City(city_type=cityType.end.value, name="Jaffna");
+        end_node_4 = start_node_2 +>: busRoute(route_number="87", distance=450) :+> City(city_type=cityType.end.value, name="Jaffna");
+        end_node_5 = start_node_3 +>: busRoute(route_number="01", distance=200) :+> City(city_type=cityType.end.value, name="Kandy");
 
         bus_1 = end_node_1 +>: busEdge(edge_type=busEdgeType.direct.value) :+> Bus(
             bus_type=busType.normal.value,
@@ -70,7 +71,7 @@ walker createGraph{
             start_time=time(8, 0),
             end_time=time(12, 0),
             fare=500.0,
-            intermediate_stops=["Vavuniya", "Anuradhapura"]
+            intermediate_stops=["Vavuniya", "Anuradhapura", "Dambulla"]
         );
 
         bus_2 = end_node_1 +>: busEdge(edge_type=busEdgeType.direct.value) :+> Bus(
@@ -132,23 +133,20 @@ walker createGraph{
             intermediate_stops = ["Kegalle", "Mawanella"]
         );
 
-        report {"data":"Graph Created Successfully"};
+        report {"data" : "Graph Created Successfully"};
     }
-
 }
 
-walker findResults{
-
+walker findRoutes{
     has from_city_name: str;
     has to_city_name: str;
-    has start_time: str;
-    has end_time: str;
     has from_city: str =cityType.start.value;
     has to_city: str = cityType.end.value;
+    has routes: list[str] = [];
 
     can search with `root entry{
 
-        print("Searching buses from ", self.from_city_name, " to ", self.to_city_name);
+        print("Searching routes from ", self.from_city_name, " to ", self.to_city_name);
         start_results = [-->(`?City: name==self.from_city_name, city_type==self.from_city)];
         print("start_results",start_results);
         visit[-->start_results];
@@ -157,36 +155,65 @@ walker findResults{
     can visit_cities with City entry{
         
         print("Now we are in",here);
-
-        if (here.city_type == cityType.end.value and here.name == self.to_city_name){
-
-            start_t:time = datetime.strptime(self.start_time, "%H:%M").time();
-            end_t:time = datetime.strptime(self.end_time, "%H:%M").time();
-            print("Filtering buses between", start_t, "and", end_t);
-
-            if(start_t<=end_t){
-                report[--> (`?Bus: start_time >= start_t, start_time <= end_t)];
-            }else{
-
-            report[--> (`?Bus: start_time >= start_t or start_time <= end_t)];
-            }
-        } else {
-        end_results = [-->(`?City: name==self.to_city_name, city_type==self.to_city)];
-            print("end_results",end_results);
-            visit[-->end_results];
+        bus_routes = [edge-->(`?City: name==self.to_city_name, city_type==self.to_city)];
+        for r in bus_routes{
+            self.routes.append(r.route_number);
         }
+
+        report {"routes":self.routes};
     }
 }
 
-walker filterRoutes
+walker filterBuses
 {
+    has from_city_name: str;
+    has to_city_name: str;
+    has start_time: str;
+    has end_time: str;
+    has from_city: str =cityType.start.value;
+    has to_city: str = cityType.end.value;
     has route_no: str = "";
     has bus_type: str = "";
     has bus_edge_type:str = "";
 
-    can filterRoutes with city entry
-    {
-        
+    can filterRoutes with `root entry{
+        start_results = [-->(`?City: name==self.from_city_name, city_type==self.from_city)];
+        print("start_results",start_results);
+        visit[-->start_results];
+    }
+
+    can filter with City entry{
+        start_t:time = datetime.strptime(self.start_time, "%H:%M").time();
+        end_t:time = datetime.strptime(self.end_time, "%H:%M").time();
+        if (here.city_type == cityType.end.value and here.name == self.to_city_name){
+            if (self.bus_edge_type == ""){
+                if (self.bus_type == ""){
+                    report[--> (`?Bus: start_time >= start_t, start_time <= end_t)];
+                }
+                else{
+                    report[--> (`?Bus: bus_type==self.bus_type, start_time >= start_t, start_time <= end_t)];
+                }
+            }
+            else{
+                if (self.bus_type == ""){
+                    report[->:busEdge:edge_type==self.bus_edge_type:->(`?Bus: start_time >= start_t, start_time <= end_t)];
+                }
+                else{
+                    report[--> (`?Bus: bus_type==self.bus_type, start_time >= start_t, start_time <= end_t)];
+                }
+            }
+        }
+        else{
+            if (self.route_no == ""){
+                end_results = [-->(`?City: name==self.to_city_name, city_type==self.to_city)];
+                print("end_results",end_results);
+                visit[-->end_results];
+            }
+            else{
+                end_results = [->:busRoute:route_number==self.route_no:->(`?City: name==self.to_city_name, city_type==self.to_city)];
+                visit[-->end_results];
+            }
+        }        
     }
 }
 
@@ -195,16 +222,14 @@ walker findGraph{
 
         results = [-->(`?City)];
         report {"data":True} if len(results) > 0 else {"data":False};
-
     }
 }
 
 walker computeBusTime{
     has user_input: str = "";
-    # has system_prompt: str = ;
-
-
+    
     def compute_average_speed(bus_type: str) -> float{
+        print("tool: average speed called");
         if (bus_type == "normal"){
             return 40.0;
         } elif (bus_type == "semi_luxury"){
@@ -215,13 +240,15 @@ walker computeBusTime{
     }
 
     def compute_stop_delay(intermediate_stops: list[str]) -> float{
+        print("tool: stop delay called");
         stop_delay = len(intermediate_stops) * 10.0;
         return stop_delay;
     }
 
     def compute_number_of_intermediate_stops{
+        print("tool: intermediate stops called");
         cities: City_details = extract_city_details(user_input=self.user_input);
-        # print("Extracted Cities: ", cities);
+        print("Extracted Cities: ", cities);
 
         result = root spawn computeIntermediateStops(cities,output_number=0);
         # print("Number of Intermediate Stops: ", result.output_number);
@@ -229,12 +256,24 @@ walker computeBusTime{
 
     }
 
+    def route_and_run(user_input: str, 
+                    system_prompt: str = 
+                        "You are a helpful assistant that computes bus travel time based on average speed and stop delays. "
+                        "If the user provides a bus type, starting city, ending city, and intermediate stops, use the provided tools. "
+                        "If the user does not provide starting city or ending city, ask for more information. "
+                        "IMPORTANT: IF THE USER DOES NOT PROVIDE INTERMEDIATE STOPS, USE compute_number_of_intermediate_stops FUNCTION"
+    ) -> str by llm(
+            # user_input,
+            method="ReAct",
+            # system_prompt=system_prompt,  
+            tools=[
+                self.compute_average_speed, 
+                self.compute_stop_delay, 
+                self.compute_number_of_intermediate_stops
+            ]
+        );
 
-    # complete the system prompt
-    def route_and_run(user_input: str, system_prompt: str = "You are a helpful assistant that computes bus travel time based on average speed and stop delays. If the user provides a bus type, starting city, ending city, and intermediate stops, use the provided tools. If the user does not provide starting city or ending city, ask for more information. If the user does not provide intermediate stops, use compute_number_of_intermediate_stops function") -> str by llm(
-        method = "ReAct",
-        tools=([self.compute_average_speed, self.compute_stop_delay, self.compute_number_of_intermediate_stops])
-    );
+
 
     can start with `root entry{
 
@@ -248,8 +287,6 @@ walker computeBusTime{
         };    
         
     }
-
-
 }
 
 walker computeIntermediateStops
@@ -287,7 +324,6 @@ walker computeIntermediateStops
                     
                 }
 
-                # print("Minimum Distance Edge: ", self.min_distance_edge);
                 next_node = [->:busRoute:distance==self.min_distance_edge.distance:->(`?City)](?city_type==cityType.end.value);
                 visit next_node[0];
 
@@ -295,76 +331,41 @@ walker computeIntermediateStops
         }
         elif (here.city_type == cityType.end.value and here.name == self.cities.end_city){
             
-
             bus_nodes = [->:busEdge:edge_type=="direct":->(`?Bus)];
             
             selected_bus = bus_nodes[0]; # the first bus is selected out of the all direct buses
 
             number_of_stops = len(selected_bus.intermediate_stops);
             self.output_number = number_of_stops;
-            
-
+            print("test");
         } 
     }      
 }
 
-
 cl {
 
-    def SearchBusTable()
-        {
+    def SearchBusTable(){
             let [from_city_name,setFromCityName] = useState("");
             let [to_city_name,setToCityName] = useState("");
             let [start_time,setStartTime] = useState("");
             let [end_time,setEndTime] = useState("");
             let [clicked,setClick] = useState(False);
             let [buses,setBuses] = useState([]);
-            let [selectedBusType,setSelectedBusType] = useState("all");
-            let [selectedRouteType,setSelectedRouteType] = useState("all");
+            let [bus_routes,setBusRoutes] = useState([]);
 
-            def handleRefresh() -> None
-            {
+            def handleRefresh() -> None{
                 setFromCityName("");
                 setToCityName("");
                 setStartTime("");
                 setEndTime("");
                 setBuses([]);
                 setClick(not clicked);
-                setSelectedBusType("all");
-                setSelectedRouteType("all");
             }
 
-            def getFilteredBuses() -> list
-            {
-                filteredBuses = buses;
-                
-                if selectedBusType != "all" {
-                    filteredBuses = filteredBuses.filter(lambda bus: any -> bool {
-                        return bus.bus_type == selectedBusType;
-                    });
-                }
-                
-                if selectedRouteType != "all" {
-                    filteredBuses = filteredBuses.filter(lambda bus: any -> bool {
-                        return bus.edge_type == selectedRouteType;
-                    });
-                }
-                
-                return filteredBuses;
-            }
-
-            def handleResetSecondaryFilters() -> None
-            {
-                setSelectedBusType("all");
-                setSelectedRouteType("all");
-            }
-
-            async def handleClick() -> None
-            {
+            async def handleClick() -> None{
                 console.log("Button clicked!");
 
-                if (from_city_name == "" or to_city_name == "" or start_time == "" or end_time == "")
-                {
+                if (from_city_name == "" or to_city_name == "" or start_time == "" or end_time == ""){
                     alert("Please fill in all fields before searching.");
                     return;
                 }
@@ -373,12 +374,13 @@ cl {
 
                     setClick(not clicked);
                     setBuses([]);
+                    setBusRoutes([]);
 
-                    results = root spawn findResults(
-                    from_city_name=from_city_name,
-                    to_city_name=to_city_name,
-                    start_time=start_time,
-                    end_time=end_time
+                    results = root spawn filterBuses(
+                        from_city_name=from_city_name,
+                        to_city_name=to_city_name,
+                        start_time=start_time,
+                        end_time=end_time
                     );
 
                     console.log(f"Found {results.reports.length} reports.");
@@ -392,17 +394,22 @@ cl {
                             }
                         }
                         setBuses(newBuses);
-                        handleResetSecondaryFilters();
+
+                        routes = root spawn findRoutes(
+                            from_city_name=from_city_name,
+                            to_city_name=to_city_name
+                        );
+
+                        console.log("Routes Found:", routes.reports[0].routes);
+                        setBusRoutes(bus_routes.concat(routes.reports[0].routes));
+
+                        console.log("Bus Routes:", bus_routes);
                     }
 
                     console.log(f"Found {buses.length} buses.");
                     console.log(buses);
-
                 }
-
-               
-                }
-
+            }
 
             return 
         <div style={{
@@ -428,14 +435,14 @@ cl {
 
                 <div>
                     <label>From *</label>
-                    <select required style={{
+                    <select required={True} style={{
                         "width": "100%",
                         "padding": "10px",
                         "borderRadius": "4px",
                         "border": "1px solid #ccc",
                         "fontSize": "0.9rem",
                 }} value={from_city_name} onChange={lambda e:any -> None { setFromCityName(e.target.value);}}>
-                        <option>Select Start</option>
+                        <option value="" disabled={True}>Select Start</option>
                         <option value="Colombo">Colombo</option>
                         <option value="Jaffna">Jaffna</option>
                     </select>
@@ -443,14 +450,14 @@ cl {
 
                 <div>
                     <label>To *</label>
-                    <select required style={{
+                    <select required={True} style={{
                         "width": "100%",
                         "padding": "10px",
                         "borderRadius": "4px",
                         "border": "1px solid #ccc",
                         "fontSize": "0.9rem",
                 }} value={to_city_name} onChange={lambda e:any -> None { setToCityName(e.target.value);}}>
-                        <option>Select Destination</option>
+                        <option value="" disabled={True}>Select Destination</option>
                         <option value="Colombo">Colombo</option>
                         <option value="Jaffna">Jaffna</option>
                         <option value="Kandy">Kandy</option>
@@ -459,14 +466,14 @@ cl {
 
                 <div>
                     <label>Time Range:Start Time</label>
-                    <select required style={{
+                    <select required={True} style={{
                         "width": "100%",
                         "padding": "10px",
                         "borderRadius": "4px",
                         "border": "1px solid #ccc",
                         "fontSize": "0.9rem",
                 }} value={start_time} onChange={lambda e:any -> None { setStartTime(e.target.value);}}>
-                        <option>Select Start Time</option>
+                        <option value="" disabled={True}>Select Start Time</option>
                         <option value="00:00">00:00</option>
                         <option value="01:00">01:00</option>
                         <option value="02:00">02:00</option>
@@ -496,14 +503,14 @@ cl {
 
                 <div>
                     <label>Time Range:End Time</label>
-                    <select required style={{
+                    <select required={True} style={{
                         "width": "100%",
                         "padding": "10px",
                         "borderRadius": "4px",
                         "border": "1px solid #ccc",
                         "fontSize": "0.9rem",
                 }} value={end_time} onChange={lambda e:any -> None { setEndTime(e.target.value);}}>
-                        <option>Select End Time</option>
+                        <option value="" disabled={True}>Select End Time</option>
                         <option value="00:00">00:00</option>
                         <option value="01:00">01:00</option>
                         <option value="02:00">02:00</option>
@@ -551,39 +558,23 @@ cl {
                 </div>
 
             </div>
-            
             {(<div style={{"display":"flex","flexDirection":"column","padding":"20px 20px"}}>
                 <div style={{"display":"flex","justifyContent":"flex-end","marginBottom":"15px"}}>
-                    <button style={{"background":"#ff3232ff","border":"none","padding":"10px 25px","borderRadius":"4px","cursor":"pointer","fontSize":"1rem","fontWeight":"600","color":"white","width":"100px","height":"40px","textAlign":"center"}} onClick={handleRefresh}>
+                    <button style={{
+                        "background": "#ff3232ff",
+                        "border": "none",
+                        "padding": "10px 25px",
+                        "borderRadius": "4px",
+                        "cursor": "pointer",
+                        "fontSize": "1rem",
+                        "fontWeight": "600",
+                        "color": "white",
+                        "width": "100px",
+                        "height":"40px",
+                        "textAlign":"center"
+                    }} onClick={handleRefresh}>
                         Refresh
                     </button>
-                </div>
-
-                <div style={{"display":"grid","gridTemplateColumns":"repeat(auto-fit, minmax(200px, 1fr))","gap":"15px","marginBottom":"20px","padding":"15px","backgroundColor":"rgba(255,255,255,0.05)","borderRadius":"8px"}}>
-                    <div>
-                        <label style={{"display":"block","marginBottom":"8px","fontSize":"0.9rem","fontWeight":"600","color":"#ff7f32"}}>Filter by Bus Type</label>
-                        <select style={{"width":"100%","padding":"10px","borderRadius":"4px","border":"1px solid #ff7f32","fontSize":"0.9rem","backgroundColor":"rgba(255,255,255,0.1)","color":"white"}} value={selectedBusType} onChange={lambda e: any -> None { setSelectedBusType(e.target.value); }}>
-                            <option value="all" style={{"color":"black"}}>All Bus Types</option>
-                            <option value="normal" style={{"color":"black"}}>Normal</option>
-                            <option value="semi_luxury" style={{"color":"black"}}>Semi Luxury</option>
-                            <option value="luxury" style={{"color":"black"}}>Luxury</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label style={{"display":"block","marginBottom":"8px","fontSize":"0.9rem","fontWeight":"600","color":"#ff7f32"}}>Filter by Route Type</label>
-                        <select style={{"width":"100%","padding":"10px","borderRadius":"4px","border":"1px solid #ff7f32","fontSize":"0.9rem","backgroundColor":"rgba(255,255,255,0.1)","color":"white"}} value={selectedRouteType} onChange={lambda e: any -> None { setSelectedRouteType(e.target.value); }}>
-                            <option value="all" style={{"color":"black"}}>All Route Types</option>
-                            <option value="direct" style={{"color":"black"}}>Direct</option>
-                            <option value="via" style={{"color":"black"}}>Via (Intermediate)</option>
-                        </select>
-                    </div>
-
-                    <div style={{"display":"flex","alignItems":"flex-end"}}>
-                        <button style={{"background":"#667eea","border":"none","padding":"10px 20px","borderRadius":"4px","cursor":"pointer","fontSize":"0.9rem","fontWeight":"600","color":"white","width":"100%"}} onClick={handleResetSecondaryFilters}>
-                            Reset Filters
-                        </button>
-                    </div>
                 </div>
                 
                 <div style={{"overflowX":"auto"}}>
@@ -600,7 +591,7 @@ cl {
                         </thead>
 
                         <tbody>
-                            {getFilteredBuses().map(lambda bus:any -> any {
+                            {buses.map(lambda bus:any -> any {
                                 return <tr key={bus.bus_id} style={{"borderBottom":"1px solid rgba(255,255,255,0.1)","backgroundColor":"rgba(255,255,255,0.02)","transition":"backgroundColor 0.2s"}}>
                                     <td style={{"padding":"12px","color":"#fff"}}>{bus.bus_id}</td>
                                     <td style={{"padding":"12px","color":"#ffffffff","fontWeight":"600"}}>{bus.bus_type}</td>
@@ -613,10 +604,9 @@ cl {
                         </tbody>
                     </table>
                 </div>
-            </div>)if clicked 
+              </div>)if clicked 
             else(<div style={{"height":"auto","display":"flex","alignItems":"center","justifyContent":"center","minheight":"200px"}}>
-                <h1 style={{"textAlign":"center","fontSize":"1rem","padding":"2px 2px"}}>Search some buses!!!</h1>
-            </div>)}
+            <h1 style={{"textAlign":"center","fontSize":"1rem","padding":"2px 2px"}}>Search some buses!!!</h1></div>)}
         </div>;
         }
 
@@ -737,23 +727,6 @@ cl {
                     }}
                     >
                         🚀 Start Browsing
-                    </button>
-
-                    <button style={{
-                        "background": "rgba(255, 255, 255, 0.1)",
-                        "color": "white",
-                        "border": "1px solid rgba(255, 255, 255, 0.2)",
-                        "padding": "16px 32px",
-                        "fontSize": "1.1rem",
-                        "borderRadius": "12px",
-                        "cursor": "pointer",
-                        "fontWeight": "600",
-                        "backdropFilter": "blur(20px)",
-                        "transition": "all 0.3s ease",
-                        "minWidth": "180px"
-                    }}
-                    >
-                        📱 Bus AI
                     </button>
                 </div>
 
