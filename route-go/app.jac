@@ -205,6 +205,7 @@ walker computeBusTime{
 
 
     def compute_average_speed(bus_type: str) -> float{
+        print("average speed called");
         if (bus_type == "normal"){
             return 40.0;
         } elif (bus_type == "semi_luxury"){
@@ -215,11 +216,13 @@ walker computeBusTime{
     }
 
     def compute_stop_delay(intermediate_stops: list[str]) -> float{
+        print("stop delay called");
         stop_delay = len(intermediate_stops) * 10.0;
         return stop_delay;
     }
 
     def compute_number_of_intermediate_stops{
+        print("intermediate stops called");
         cities: City_details = extract_city_details(user_input=self.user_input);
         # print("Extracted Cities: ", cities);
 
@@ -231,10 +234,29 @@ walker computeBusTime{
 
 
     # complete the system prompt
-    def route_and_run(user_input: str, system_prompt: str = "You are a helpful assistant that computes bus travel time based on average speed and stop delays. If the user provides a bus type, starting city, ending city, and intermediate stops, use the provided tools. If the user does not provide starting city or ending city, ask for more information. If the user does not provide intermediate stops, use compute_number_of_intermediate_stops function") -> str by llm(
-        method = "ReAct",
-        tools=([self.compute_average_speed, self.compute_stop_delay, self.compute_number_of_intermediate_stops])
-    );
+    # def route_and_run(user_input: str, system_prompt: str = "You are a helpful assistant that computes bus travel time based on average speed and stop delays. If the user provides a bus type, starting city, ending city, and intermediate stops, use the provided tools. If the user does not provide starting city or ending city, ask for more information. IMPORTANT: IF THE USER DOES NOT PROVIDE INTERMEDIATE STOPS, USE compute_number_of_intermediate_stops FUNCTION") -> str by llm(
+    #     method = "ReAct",
+    #     tools=([self.compute_average_speed, self.compute_stop_delay, self.compute_number_of_intermediate_stops])
+    # );
+
+    def route_and_run(user_input: str, 
+                    system_prompt: str = 
+                        "You are a helpful assistant that computes bus travel time based on average speed and stop delays. "
+                        "If the user provides a bus type, starting city, ending city, and intermediate stops, use the provided tools. "
+                        "If the user does not provide starting city or ending city, ask for more information. "
+                        "IMPORTANT: IF THE USER DOES NOT PROVIDE INTERMEDIATE STOPS, USE compute_number_of_intermediate_stops FUNCTION"
+    ) -> str by llm(
+            # user_input,
+            method="ReAct",
+            # system_prompt=system_prompt,  
+            tools=[
+                self.compute_average_speed, 
+                self.compute_stop_delay, 
+                self.compute_number_of_intermediate_stops
+            ]
+        );
+
+
 
     can start with `root entry{
 
@@ -302,7 +324,7 @@ walker computeIntermediateStops
 
             number_of_stops = len(selected_bus.intermediate_stops);
             self.output_number = number_of_stops;
-            
+            print("test");
 
         } 
     }      

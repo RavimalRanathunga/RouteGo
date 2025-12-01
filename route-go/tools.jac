@@ -173,7 +173,8 @@ walker filterRoutes{
 
 walker computeBusTime{
     has user_input: str = "";
-    # has system_prompt: str = ;
+    
+    
 
 
     def compute_average_speed(bus_type: str) -> float{
@@ -203,7 +204,11 @@ walker computeBusTime{
 
 
     # complete the system prompt
-    def route_and_run(user_input: str, system_prompt: str = "You are a helpful assistant that computes bus travel time based on average speed and stop delays. If the user provides a bus type, starting city, ending city, and intermediate stops, use the provided tools. If the user does not provide starting city or ending city, ask for more information. If the user does not provide intermediate stops, use compute_number_of_intermediate_stops function") -> str by llm(
+    def route_and_run(user_input: str, system_prompt: str = 
+                    "You are a helpful assistant that computes bus travel time based on average speed and stop delays. "
+                    "If the user provides a bus type, starting city, ending city, and intermediate stops, use the provided tools. "
+                    "If the user does not provide starting city or ending city, ask for more information. "
+                    "IMPORTANT: IF THE USER DOES NOT PROVIDE INTERMEDIATE STOPS, USE compute_number_of_intermediate_stops FUNCTION") -> str by llm(
         method = "ReAct",
         tools=([self.compute_average_speed, self.compute_stop_delay, self.compute_number_of_intermediate_stops])
     );
@@ -284,7 +289,7 @@ walker computeIntermediateStops
 
 with entry{
     root spawn createGraph();
-    compute_time_walker = root spawn computeBusTime(user_input="Compute the time taken using average speed and stop delay for a luxury bus starting at Jaffna and ending at Colombo.");
+    compute_time_walker = root spawn computeBusTime(user_input="Compute average speed and stop delay for a luxury bus starting at Jaffna and ending at Colombo.");
 }
 
 
