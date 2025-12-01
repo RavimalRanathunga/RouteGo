@@ -27,6 +27,15 @@ enum busEdgeType{
     via = "via",
 }
 
+enum walkerType{
+    createGraph = "createGraph",
+    findResults = "findResults",
+    findRoutes = "findRoutes",
+    filterRoutes = "filterRoutes",
+    findGraph = "findGraph",
+    computeBusTime = "computeBusTime",
+}
+
 # Node Definitions
 node City{
     has city_type: str;
@@ -147,6 +156,7 @@ walker findResults{
     has end_time: str;
     has from_city: str =cityType.start.value;
     has to_city: str = cityType.end.value;
+    has walkerType: str = walkerType.findResults.value;
 
     can search with `root entry{
 
@@ -186,6 +196,8 @@ walker findRoutes{
     has from_city: str =cityType.start.value;
     has to_city: str = cityType.end.value;
     has routes: list[str] = [];
+    
+    has walkerType: str = walkerType.findRoutes.value; 
 
     can search with `root entry{
 
@@ -213,6 +225,8 @@ walker filterRoutes
     has route_no: str = "";
     has bus_type: str = "";
     has bus_edge_type:str = "";
+    has walkerType: str = walkerType.filterRoutes.value; 
+    
 
     can filterRoutes with city entry
     {
@@ -221,6 +235,8 @@ walker filterRoutes
 }
 
 walker findGraph{
+    
+    has walkerType: str = walkerType.findGraph.value;
     can find with `root entry{
 
         results = [-->(`?City)];
@@ -233,9 +249,27 @@ walker findGraph{
 walker agentAI{
     has user_input: str = "";
     has chat_history: list[str] = [];
+
+    def find_next_walker(user_input:str) -> walkerType by llm();
+
+    can serve with `root entry{
+
+        print("User input received: ", self.user_input);
+        next_walker = self.find_next_walker(self.user_input);
+        print("Next walker determined: ", next_walker);
+
+        if (next_walker.value == "computeBusTime"){
+            root spawn computeBusTime(user_input=self.user_input);
+            print("Result from computeBusTime: ");
+        } 
+        else{
+            print("No suitable walker found for the given input."); 
+        }
+    }
 }
 
 walker computeBusTime{
+    has walkerType: str = walkerType.computeBusTime.value; 
     has user_input: str = "";
   
     def compute_average_speed(bus_type: str) -> float{
@@ -275,9 +309,9 @@ walker computeBusTime{
             "use the provided tools.\n"
             "If the user does not provide starting city or ending city, ask for more information.\n"
             "IMPORTANT: IF THE USER DOES NOT PROVIDE INTERMEDIATE STOPS, USE compute_number_of_intermediate_stops FUNCTION.\n\n"
-            "### Conversation History ###\n"
-            "{chat_history}\n"
-            "### End of History ###\n"
+            # "### Conversation History ###\n"
+            # "{chat_history}\n"
+            # "### End of History ###\n"
     ) -> str by llm(
             method="ReAct",
             tools=[
@@ -289,16 +323,10 @@ walker computeBusTime{
 
 
 
+
     can start with `root entry{
 
-        self.chat_history.append("User: " + self.user_input);
-
-        final_system_prompt = system_prompt.format(
-            chat_history="\n".join(self.chat_history)
-        );
-
-        response = self.route_and_run(user_input=self.user_input, system_prompt=final_system_prompt);
-        self.chat_history.append("Assistant: " + response);
+        response = self.route_and_run(user_input=self.user_input);
 
         print("Computed Response: ", response);
  
@@ -862,7 +890,7 @@ cl {
                 return;
             }
 
-            results = root spawn computeBusTime(user_input=inputValue,chat_history=[]);
+            results = root spawn computeBusTime(user_input=inputValue);
 
             let userMsg = {sender: "user", text: inputValue, id: messageId};
             let botMsg = {sender: "bot", text: results.reports[0].response, id: messageId + 1};
