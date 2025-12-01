@@ -236,9 +236,9 @@ function SearchBusTable() {
     "value": "",
     "disabled": true
   }, ["Select Start"]), __jacJsx("option", {
-    "value": "Colombo"
+    "value": "colombo"
   }, ["Colombo"]), __jacJsx("option", {
-    "value": "Jaffna"
+    "value": "jaffna"
   }, ["Jaffna"])])]), __jacJsx("div", {}, [__jacJsx("label", {}, ["To *"]), __jacJsx("select", {
     "required": true,
     "style": {
@@ -256,11 +256,11 @@ function SearchBusTable() {
     "value": "",
     "disabled": true
   }, ["Select Destination"]), __jacJsx("option", {
-    "value": "Colombo"
+    "value": "colombo"
   }, ["Colombo"]), __jacJsx("option", {
-    "value": "Jaffna"
+    "value": "jaffna"
   }, ["Jaffna"]), __jacJsx("option", {
-    "value": "Kandy"
+    "value": "kandy"
   }, ["Kandy"])])]), __jacJsx("div", {}, [__jacJsx("label", {}, ["Time Range:Start Time"]), __jacJsx("select", {
     "required": true,
     "style": {
@@ -589,9 +589,9 @@ function SearchBusTable() {
     }
   }, [__jacJsx("table", {
     "style": {
-      width: "100%",
-      borderCollapse: "collapse",
-      backgroundColor: "rgba(255,255,255,0.05)"
+      "width": "100%",
+      "borderCollapse": "collapse",
+      "backgroundColor": "rgba(255,255,255,0.05)"
     }
   }, [__jacJsx("thead", {}, [__jacJsx("tr", {
     "style": {
