@@ -1,4 +1,4 @@
-import from byllm.llm {Model}
+import from byllm.lib {Model}
 glob llm = Model(model_name="gemini/gemini-2.0-flash");
 
 obj City_details{

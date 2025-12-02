@@ -1,4 +1,4 @@
-import from byllm.llm {Model}
+import from byllm.lib {Model}
 import from datetime {time}
 
 import from utils {extract_city_details}
