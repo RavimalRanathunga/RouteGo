@@ -1,6 +1,6 @@
 import from datetime {datetime}
 import from datetime {time}
-import from byllm.lib {Model}
+import from byllm.lib{Model}
 import from utils {extract_city_details}
 
 glob llm = Model(model_name="gemini/gemini-2.0-flash");
