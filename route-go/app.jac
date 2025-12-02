@@ -1,6 +1,6 @@
 import from datetime {datetime}
 import from datetime {time}
-import from byllm.lib {Model}
+import from byllm.lib{Model}
 import from utils {extract_city_details}
 
 glob llm = Model(model_name="gemini/gemini-2.0-flash");
@@ -220,7 +220,7 @@ walker filterBuses{
                     report[->:busEdge:edge_type==self.bus_edge_type:->(`?Bus: start_time >= start_t, start_time <= end_t)];
                 }
                 else{
-                    report[--> (`?Bus: bus_type==self.bus_type, start_time >= start_t, start_time <= end_t)];
+                    report[->:busEdge:edge_type==self.bus_edge_type:->(`?Bus: bus_type==self.bus_type, start_time >= start_t, start_time <= end_t)];
                 }
             }
         }
