@@ -202,6 +202,7 @@ function SearchBusTable() {
     return _handleClick.apply(this, arguments);
   }
   return __jacJsx("div", {
+    "id": "bustable",
     "style": {
       "background": "linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)",
       "padding": "40px 20px",
@@ -837,7 +838,14 @@ function HeroSection() {
       "flexWrap": "wrap"
     }
   }, [__jacJsx("button", {
-    "onClick": SearchBusTable,
+    "onClick": function onClick() {
+      var element = document.getElementById("bustable");
+      if (element) {
+        element.scrollIntoView({
+          behavior: "smooth"
+        });
+      }
+    },
     "style": {
       "background": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
       "color": "white",
@@ -989,25 +997,27 @@ function ChatWindow(props) {
   }
   function _handleSendMessage() {
     _handleSendMessage = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3() {
-      var userMsg, results, botMsg;
+      var input_val, userMsg, results, botMsg;
       return _regenerator().w(function (_context3) {
         while (1) switch (_context3.n) {
           case 0:
+            input_val = inputValue;
             if (inputValue) {
               _context3.n = 1;
               break;
             }
             return _context3.a(2);
           case 1:
+            setInputValue("");
             userMsg = {
               sender: "user",
-              text: inputValue,
+              text: input_val,
               id: messageId
             };
             setMessages(messages.concat([userMsg]));
             _context3.n = 2;
             return __jacSpawn("agentAI", "", {
-              "user_input": inputValue
+              "user_input": input_val
             });
           case 2:
             results = _context3.v;
@@ -1018,7 +1028,6 @@ function ChatWindow(props) {
             };
             setMessages(messages.concat([userMsg, botMsg]));
             setMessageId(messageId + 2);
-            setInputValue("");
           case 3:
             return _context3.a(2);
         }
