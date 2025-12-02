@@ -1,6 +1,6 @@
 import from datetime {datetime}
 import from datetime {time}
-import from byllm.llm {Model}
+import from byllm.lib {Model}
 import from utils {extract_city_details}
 
 glob llm = Model(model_name="gemini/gemini-2.0-flash");
@@ -248,6 +248,37 @@ walker agentAI{
     has user_input: str = "";
     has chat_history: list[str] = [];
 
+        """
+    Determines the most appropriate walker to handle the user's input using AI analysis.
+    
+    This function uses a large language model to analyze user input and decide which
+    walker should be spawned to process the request. It classifies user queries into
+    different categories and returns the corresponding walker type.
+    
+    Args:
+        user_input (str): The natural language input from the user describing their
+                         bus route query or travel time calculation request.
+    
+    Returns:
+        walkerType: An enum value indicating which walker should handle the request.
+                   Possible values include:
+                   - walkerType.computeBusTime: For travel time calculations
+                   - walkerType.findRoutes: For finding available bus routes
+                   
+                   
+    Examples:
+        >>> find_next_walker("How long does it take to get from Colombo to Jaffna?")
+        walkerType.computeBusTime
+        
+        >>> find_next_walker("Show me routes from Colombo to Kandy")
+        walkerType.findRoutes
+        
+    Note:
+        This function relies on the configured LLM (gemini/gemini-2.0-flash) to perform
+        the classification. The accuracy depends on the model's ability to understand
+        transportation-related queries in the Sri Lankan context.
+    """
+
     def find_next_walker(user_input:str) -> walkerType by llm();
 
     can serve with `root entry{
@@ -259,8 +290,8 @@ walker agentAI{
         match next_walker.value{
             case "computeBusTime":
                 result = root spawn computeBusTime(user_input=self.user_input);
-                # print("Result from computeBusTime: ", result);
-                return; 
+                print("Result from computeBusTime: ", result);
+                return;
                 
             case "findRoutes":
                 cities = extract_city_details(user_input=self.user_input);
@@ -305,18 +336,53 @@ walker computeBusTime{
 
     }
 
-    def route_and_run(user_input: str, 
-                    system_prompt: str = 
-            "You are a helpful assistant that computes bus travel time based on average speed "
-            "and stop delays.\n"
-            "If the user provides a bus type, starting city, ending city, and intermediate stops, "
-            "use the provided tools.\n"
-            "If the user does not provide starting city or ending city, ask for more information.\n"
-            "IMPORTANT: IF THE USER DOES NOT PROVIDE INTERMEDIATE STOPS, USE compute_number_of_intermediate_stops FUNCTION.\n\n"
-            # "### Conversation History ###\n"
-            # "{chat_history}\n"
-            # "### End of History ###\n"
-        ) -> str by llm(method="ReAct",tools=[self.compute_average_speed, self.compute_stop_delay, self.compute_number_of_intermediate_stops]);
+        """
+    Processes user input to compute bus travel time using ReAct methodology with integrated tools.
+    
+    This function serves as the main orchestrator for travel time calculations, intelligently 
+    determining which tools to use based on the information provided in the user input.
+    
+    Args:
+        user_input (str): Natural language input from the user describing their travel query.
+                         Should ideally contain bus type, starting city, ending city, and 
+                         optionally intermediate stops information.
+    
+    Returns:
+        str: A natural language response containing the computed stop delay time, average speed,
+             or available routes.
+    
+    Tool Usage Logic:
+        - If user provides intermediate stops: Uses compute_stop_delay tool directly with the
+          provided stops list to calculate delay time.
+        - If user does NOT provide intermediate stops: Automatically uses 
+          compute_number_of_intermediate_stops tool to find the number of stops on the 
+          shortest route, then uses compute_stop_delay tool with that count.
+        - Always uses compute_average_speed tool when bus type information is available.
+    
+    Available Tools:
+        1. compute_average_speed(bus_type: str) -> float:
+           Returns average speed in km/h based on bus type (normal: 40, semi_luxury: 60, luxury: 80)
+        
+        2. compute_stop_delay(intermediate_stops: list[str]) -> float:
+           Calculates total delay in minutes based on number of intermediate stops (10 min per stop)
+        
+        3. compute_number_of_intermediate_stops() -> int:
+           Finds the shortest route between cities and returns the number of intermediate stops
+    
+    Examples:
+        >>> route_and_run("How long does it take for a luxury bus from Colombo to Jaffna with stops at Kurunegala and Vavuniya?")
+        "Based on the luxury bus specifications and the 2 intermediate stops..."
+        
+        >>> route_and_run("Travel time for normal bus from Colombo to Kandy")
+        "I'll find the route information first. The shortest route has 2 intermediate stops..."
+    
+    Note:
+        Uses ReAct (Reasoning and Acting) methodology to determine the optimal sequence of 
+        tool calls based on available information in the user input. The LLM automatically 
+        handles missing information by requesting clarification or using available tools 
+        to gather required data.
+    """
+    def route_and_run(user_input: str) -> str by llm(method="ReAct",tools=[self.compute_average_speed, self.compute_stop_delay, self.compute_number_of_intermediate_stops]);
 
     can start with `root entry{
 
@@ -943,9 +1009,11 @@ cl {
                 return;
             }
 
-            results = root spawn computeBusTime(user_input=inputValue);
-
             let userMsg = {sender: "user", text: inputValue, id: messageId};
+            setMessages(messages.concat([userMsg]));
+
+            results = root spawn agentAI(user_input=inputValue);
+
             let botMsg = {sender: "bot", text: results.reports[0].response, id: messageId + 1};
             
             setMessages(messages.concat([userMsg, botMsg]));
@@ -959,8 +1027,8 @@ cl {
 
         def handleKeyPress(e: any) -> None {
             if e.key == "Enter" {
-                e.preventDefault();
                 handleSendMessage();
+                e.preventDefault();
             }
         }
 

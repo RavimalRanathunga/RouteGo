@@ -989,7 +989,7 @@ function ChatWindow(props) {
   }
   function _handleSendMessage() {
     _handleSendMessage = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3() {
-      var results, userMsg, botMsg;
+      var userMsg, results, botMsg;
       return _regenerator().w(function (_context3) {
         while (1) switch (_context3.n) {
           case 0:
@@ -999,17 +999,18 @@ function ChatWindow(props) {
             }
             return _context3.a(2);
           case 1:
-            _context3.n = 2;
-            return __jacSpawn("computeBusTime", "", {
-              "user_input": inputValue
-            });
-          case 2:
-            results = _context3.v;
             userMsg = {
               sender: "user",
               text: inputValue,
               id: messageId
             };
+            setMessages(messages.concat([userMsg]));
+            _context3.n = 2;
+            return __jacSpawn("agentAI", "", {
+              "user_input": inputValue
+            });
+          case 2:
+            results = _context3.v;
             botMsg = {
               sender: "bot",
               text: results.reports[0].response,
@@ -1030,8 +1031,8 @@ function ChatWindow(props) {
   }
   function handleKeyPress(e) {
     if (e.key === "Enter") {
-      e.preventDefault();
       handleSendMessage();
+      e.preventDefault();
     }
   }
   return __jacJsx("div", {

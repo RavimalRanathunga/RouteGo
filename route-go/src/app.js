@@ -97,8 +97,9 @@ function ChatWindow(props) {
     if (!inputValue) {
       return;
     }
-    let results = await __jacSpawn("computeBusTime", "", {"user_input": inputValue});
     let userMsg = {sender: "user", text: inputValue, id: messageId};
+    setMessages(messages.concat([userMsg]));
+    let results = await __jacSpawn("agentAI", "", {"user_input": inputValue});
     let botMsg = {sender: "bot", text: results.reports[0].response, id: messageId + 1};
     setMessages(messages.concat([userMsg, botMsg]));
     setMessageId(messageId + 2);
@@ -109,8 +110,8 @@ function ChatWindow(props) {
   }
   function handleKeyPress(e) {
     if (e.key === "Enter") {
-      e.preventDefault();
       handleSendMessage();
+      e.preventDefault();
     }
   }
   return __jacJsx("div", {"style": {"position": "fixed", "bottom": "100px", "right": "20px", "width": "350px", "height": "500px", "background": "white", "borderRadius": "10px", "boxShadow": "0 4px 12px rgba(0,0,0,0.2)", "display": "flex", "flexDirection": "column", "zIndex": "999"}}, [__jacJsx("div", {"style": {"background": "#ff7f32", "color": "white", "padding": "15px", "borderRadius": "10px 10px 0 0", "display": "flex", "justifyContent": "space-between", "alignItems": "center"}}, [__jacJsx("h4", {"style": {"margin": "0", "fontSize": "1rem"}}, ["RouteGo Chat"]), __jacJsx("button", {"onClick": () => {
