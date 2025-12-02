@@ -256,14 +256,6 @@ walker agentAI{
         next_walker = self.find_next_walker(self.user_input);
         print("Next walker determined: ", next_walker);
 
-        # if (next_walker.value == "computeBusTime"){
-        #     root spawn computeBusTime(user_input=self.user_input);
-        #     print("Result from computeBusTime: ");
-        # } 
-        # else{
-        #     print("No suitable walker found for the given input."); 
-        # }
-
         match next_walker.value{
             case "computeBusTime":
                 result = root spawn computeBusTime(user_input=self.user_input);
