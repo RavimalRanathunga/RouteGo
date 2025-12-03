@@ -1,6 +1,6 @@
 import from datetime {datetime}
 import from datetime {time}
-import from byllm.lib {Model}
+import from byllm.lib{Model}
 import from utils {extract_city_details}
 
 glob llm = Model(model_name="gemini/gemini-2.0-flash");
@@ -26,12 +26,14 @@ enum busEdgeType{
     via = "via",
 }
 
+enum chatType{
+    general:"general",
+    bus_search:"bus_search",
+}
+
 enum walkerType{
-    createGraph = "createGraph",
-    findResults = "findResults",
     findRoutes = "findRoutes",
     filterRoutes = "filterRoutes",
-    findGraph = "findGraph",
     computeBusTime = "computeBusTime",
 }
 
@@ -218,7 +220,7 @@ walker filterBuses{
                     report[->:busEdge:edge_type==self.bus_edge_type:->(`?Bus: start_time >= start_t, start_time <= end_t)];
                 }
                 else{
-                    report[--> (`?Bus: bus_type==self.bus_type, start_time >= start_t, start_time <= end_t)];
+                    report[->:busEdge:edge_type==self.bus_edge_type:->(`?Bus: bus_type==self.bus_type, start_time >= start_t, start_time <= end_t)];
                 }
             }
         }
@@ -248,42 +250,55 @@ walker agentAI{
     has user_input: str = "";
     has chat_history: list[str] = [];
 
-        """
-    Determines the most appropriate walker to handle the user's input using AI analysis.
-    
-    This function uses a large language model to analyze user input and decide which
-    walker should be spawned to process the request. It classifies user queries into
-    different categories and returns the corresponding walker type.
+    """
+    Determines the most appropriate walker to handle the user's input using given {user_input}.
     
     Args:
-        user_input (str): The natural language input from the user describing their
+        user_input:str = The natural language input from the user describing their
                          bus route query or travel time calculation request.
     
     Returns:
         walkerType: An enum value indicating which walker should handle the request.
-                   Possible values include:
-                   - walkerType.computeBusTime: For travel time calculations
-                   - walkerType.findRoutes: For finding available bus routes
-                   
                    
     Examples:
         >>> find_next_walker("How long does it take to get from Colombo to Jaffna?")
-        walkerType.computeBusTime
+            walkerType.computeBusTime
         
         >>> find_next_walker("Show me routes from Colombo to Kandy")
-        walkerType.findRoutes
-        
-    Note:
-        This function relies on the configured LLM (gemini/gemini-2.0-flash) to perform
-        the classification. The accuracy depends on the model's ability to understand
-        transportation-related queries in the Sri Lankan context.
-    """
-
+            walkerType.findRoutes"""
     def find_next_walker(user_input:str) -> walkerType by llm();
+
+    """use this function to select chat type based on {user_input}
+        Args:
+            user_input:str = The natural language input from the user describing their
+                            query related to buses or general chat.
+        Returns:
+            chatType: An enum value indicating which chat type the {user_input} belongs to.
+        
+        Examples:
+            >>> select_chat_type("Tell me a joke")
+            chatType.general
+            
+            >>> select_chat_type("Find me a bus from Colombo to Kandy")
+            chatType.bus_search"""
+    def select_chat_type(user_input:str) -> chatType by llm();
 
     can serve with `root entry{
 
         print("User input received: ", self.user_input);
+        chat = self.select_chat_type(self.user_input);
+        print(chat);
+        # chat_category = chat.value;
+        # print("Chat category determined: ", chat_category);
+        # if (chat_category == "general"){
+        #     print("General chat detected. Responding accordingly.");
+        #     response = "I'm here to help you with bus routes and travel times. How can I assist you today?";
+        #     report {
+        #         "user_input": self.user_input,
+        #         "response": response,
+        #     };
+        #     return;
+        # }
         next_walker = self.find_next_walker(self.user_input);
         print("Next walker determined: ", next_walker);
 
@@ -549,7 +564,7 @@ cl {
             }
 
             return 
-        <div style={{
+        <div id="bustable"style={{
                 "background": "linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)",
                 "padding": "40px 20px",
                 "borderRadius": "0px", 
@@ -881,7 +896,12 @@ cl {
                     "flexWrap": "wrap"
                 }}>
                     <button 
-                        onClick={SearchBusTable}
+                        onClick={lambda -> None { 
+                            let element = document.getElementById("bustable");
+                            if element {
+                                element.scrollIntoView({ behavior: "smooth" });
+                            }
+                        }}
                         style={{
                         "background": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                         "color": "white",
@@ -1005,20 +1025,23 @@ cl {
         # );
 
         async def handleSendMessage() -> None {
+
+            let input_val = inputValue;
             if not inputValue {
                 return;
             }
+            setInputValue("");
 
-            let userMsg = {sender: "user", text: inputValue, id: messageId};
+            let userMsg = {sender: "user", text: input_val, id: messageId};
             setMessages(messages.concat([userMsg]));
 
-            results = root spawn agentAI(user_input=inputValue);
+            results = root spawn agentAI(user_input=input_val);
 
             let botMsg = {sender: "bot", text: results.reports[0].response, id: messageId + 1};
             
             setMessages(messages.concat([userMsg, botMsg]));
             setMessageId(messageId + 2);
-            setInputValue("");
+            
         }
 
         def handleInputChange(e: any) -> None {
