@@ -417,10 +417,10 @@ walker agentAI{
             match next_walker.value{
             case "computeBusTimeAgent":
                 result = root spawn computeBusTimeAgent(user_input=self.user_input);
-                self.chat_history.append("User: " + self.user_input);
-                print(self.chat_history);
-                self.chat_history.append("Agent: " + result.response);
-                print(self.chat_history);
+                self.chat_history.append(f"User: {self.user_input}");
+                # print(self.chat_history);
+                self.chat_history.append(f"Agent: {self.response}");
+                print("Final chat_history",self.chat_history);
                 print("Result from computeBusTimeAgent: ", result);
                 self.response = result.response;
                 report {
@@ -436,13 +436,14 @@ walker agentAI{
                 result = root spawn findRoutesAgent(from_city_name=cities.start_city, to_city_name=cities.end_city);
                 print("result",result);
                 print("user input",self.user_input);
-                print(self.chat_history);
+                # print(self.chat_history);
                 self.chat_history.append(f"User: {self.user_input}");
                 print("chat_history",self.chat_history);
                 self.chat_history.append(f"Agent: Available routes from {cities.start_city} to {cities.end_city} are: " + ", ".join(result.routes));
                 self.response = self.generate_response(chat_history=self.chat_history, user_input=self.user_input);
                 print("Generated Response: ", self.response);
-                self.chat_history.append("Agent: " + self.response);
+                self.chat_history.append(f"Agent: {self.response}");
+                print("Final chat_history",self.chat_history);
                 
                 available_routes = "";
                 for route in result.routes{
