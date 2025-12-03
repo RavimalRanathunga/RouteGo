@@ -289,7 +289,7 @@ walker computeIntermediateStops
 
 with entry{
     root spawn createGraph();
-    compute_time_walker = root spawn computeBusTime(user_input="Compute average speed and stop delay for a luxury bus starting at Jaffna and ending at Colombo.");
+    compute_time_walker = root spawn computeBusTime(user_input="Compute average speed  and stop delay for a luxury bus starting at Jaffna and ending at Colombo.");
 }
 
 
