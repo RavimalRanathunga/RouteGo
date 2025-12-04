@@ -405,6 +405,7 @@ walker agentAI{
 
             next_walker = self.find_next_walker(self.user_input, self.chat_history);
             print("Next walker determined: ", next_walker);
+            print(type(next_walker.value));
 
         }except e{
             report {
@@ -414,9 +415,17 @@ walker agentAI{
             return;
         }
 
-            match next_walker.value{
+        # if (next_walker.value == "computeBusTimeAgent"){
+        #     print("hello");
+        #     result = root spawn computeBusTimeAgent(user_input=self.user_input, response="");
+        #     print("result",result);
+        # }
+
+        match next_walker.value{
+            
             case "computeBusTimeAgent":
-                result = root spawn computeBusTimeAgent(user_input=self.user_input);
+                result = root spawn computeBusTimeAgent(user_input=self.user_input,response="");
+                print("result",result);
                 self.chat_history.append(f"User: {self.user_input}");
                 # print(self.chat_history);
                 self.chat_history.append(f"Agent: {self.response}");
@@ -426,6 +435,7 @@ walker agentAI{
                 report {
                     "user_input": self.user_input,
                     "response": self.response,
+                    # "response": result.response,
                 };
                 return;
                 
@@ -488,9 +498,10 @@ walker agentAI{
 
 
 walker computeBusTimeAgent{
-    has walkerType: str = walkerType.computeBusTime.value; 
+    # has walkerType: str = walkerType.computeBusTime.value; 
     has user_input: str = "";
     has response: str = "";
+    # has chat_history: list[str] = [];
   
     def compute_average_speed(bus_type: str) -> float{
         print("tool: average speed called");
@@ -557,7 +568,7 @@ walker computeBusTimeAgent{
         "Based on the luxury bus specifications and the 2 intermediate stops..."
         
         >>> route_and_run("Travel time for normal bus from Colombo to Kandy")
-        "I'll find the route information first. The shortest route has 2 intermediate stops..."
+        "I'll find the route information first. I'll call computeIntermediateStops to get the number of stops..."
     
     Note:
         Uses ReAct (Reasoning and Acting) methodology to determine the optimal sequence of 
@@ -655,7 +666,6 @@ cl {
         </div>;
     }
 }
-
 
 
 
