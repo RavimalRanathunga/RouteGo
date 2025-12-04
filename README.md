@@ -53,6 +53,18 @@
 
 ---
 
+## 🎬 Demo Video
+
+<div align="center">
+
+[![Watch the Demo](https://img.youtube.com/vi/_gIW9ozB6FE/maxresdefault.jpg)](https://youtu.be/_gIW9ozB6FE)
+
+*Click the thumbnail above to watch the demo on YouTube*
+
+</div>
+
+---
+
 ## Features
 
 <table>
@@ -105,7 +117,7 @@ flowchart TB
         end
     end
     
-    subgraph Database["📦 Graph Database"]
+    subgraph Database["📦 Real Graph"]
         I[🏙️ City Nodes]
         J[🚌 Bus Nodes]
         K[🔗 Route Edges]
