@@ -105,7 +105,7 @@ flowchart TB
         end
     end
     
-    subgraph Database["📦 Graph Database"]
+    subgraph Database["📦 Real Graph"]
         I[🏙️ City Nodes]
         J[🚌 Bus Nodes]
         K[🔗 Route Edges]
