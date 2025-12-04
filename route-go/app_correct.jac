@@ -405,6 +405,7 @@ walker agentAI{
 
             next_walker = self.find_next_walker(self.user_input, self.chat_history);
             print("Next walker determined: ", next_walker);
+            print(type(next_walker.value));
 
         }except e{
             report {
@@ -414,19 +415,27 @@ walker agentAI{
             return;
         }
 
+        # if (next_walker.value == "computeBusTimeAgent"){
+        #     print("hello");
+        #     result = root spawn computeBusTimeAgent(user_input=self.user_input, response="");
+        #     print("result",result);
+        # }
+
         match next_walker.value{
             
             case "computeBusTimeAgent":
                 result = root spawn computeBusTimeAgent(user_input=self.user_input,response="");
                 print("result",result);
                 self.chat_history.append(f"User: {self.user_input}");
-                self.chat_history.append(f"Agent: {result.response}");
+                # print(self.chat_history);
+                self.chat_history.append(f"Agent: {self.response}");
                 print("Final chat_history",self.chat_history);
-
+                print("Result from computeBusTimeAgent: ", result);
                 self.response = result.response;
                 report {
                     "user_input": self.user_input,
                     "response": self.response,
+                    # "response": result.response,
                 };
                 return;
                 
@@ -436,19 +445,27 @@ walker agentAI{
                 print("end_city: ", cities.end_city);
                 result = root spawn findRoutesAgent(from_city_name=cities.start_city, to_city_name=cities.end_city);
                 print("result",result);
-                
+                print("user input",self.user_input);
+                # print(self.chat_history);
                 self.chat_history.append(f"User: {self.user_input}");
-                if (len(result.routes) > 0) {
-                    self.chat_history.append(f"findRoutesAgent: Available routes from {cities.start_city} to {cities.end_city} are: " + ", ".join(result.routes));
-                } else {
-                    self.chat_history.append(f"findRoutesAgent: No routes found from {cities.start_city} to {cities.end_city}");
-                }
-
+                print("chat_history",self.chat_history);
+                self.chat_history.append(f"Agent: Available routes from {cities.start_city} to {cities.end_city} are: " + ", ".join(result.routes));
                 self.response = self.generate_response(chat_history=self.chat_history, user_input=self.user_input);
                 print("Generated Response: ", self.response);
                 self.chat_history.append(f"Agent: {self.response}");
                 print("Final chat_history",self.chat_history);
                 
+                available_routes = "";
+                for route in result.routes{
+                    available_routes += route + ", ";
+                }
+                self.chat_history.append("User: " + self.user_input);
+                self.chat_history.append(f"Agent: Available routes {available_routes}");
+                
+                self.response = self.generate_response(self.chat_history,self.user_input);
+                print("Generated Response: ", self.response);
+                self.chat_history.append("Agent: " + self.response);
+
                 report {
                     "user_input": self.user_input,
                     # "response": result.routes[0],
