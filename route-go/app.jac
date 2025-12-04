@@ -524,7 +524,6 @@ walker computeBusTimeAgent{
 
         result = root spawn computeIntermediateStops(cities,output_number=0);
         return result.output_number;
-
     }
 
     """
@@ -573,10 +572,7 @@ walker computeBusTimeAgent{
 
         self.response = self.route_and_run(user_input=self.user_input);
 
-        print("Computed Response: ", self.response);
- 
-            
-        
+        print("Computed Response: ", self.response);     
     }
 }
 
