@@ -520,10 +520,12 @@ walker computeBusTimeAgent{
         return stop_delay;
     }
 
-    def compute_number_of_intermediate_stops{
+    def compute_number_of_intermediate_stops -> int{
         print("tool: intermediate stops called");
         cities: City_details = extract_city_details(user_input=self.user_input);
         print("Extracted Cities: ", cities);
+        print("Start City: ", cities.start_city.lower());
+        print("End City: ", cities.end_city.lower());
 
         result = root spawn computeIntermediateStops(cities,output_number=0);
         return result.output_number;
@@ -569,12 +571,6 @@ walker computeBusTimeAgent{
         
         >>> route_and_run("Travel time for normal bus from Colombo to Kandy")
         "I'll find the route information first. I'll call computeIntermediateStops to get the number of stops..."
-    
-    Note:
-        Uses ReAct (Reasoning and Acting) methodology to determine the optimal sequence of 
-        tool calls based on available information in the user input. The LLM automatically 
-        handles missing information by requesting clarification or using available tools 
-        to gather required data.
     """
     def route_and_run(user_input: str) -> str by llm(method="ReAct",tools=[self.compute_average_speed, self.compute_stop_delay, self.compute_number_of_intermediate_stops]);
 
@@ -599,16 +595,17 @@ walker computeIntermediateStops{
             print("Insufficient information to compute intermediate stops. Please provide both starting and ending cities.");
         }
         else{
-            visit[-->](`?City: city_type==cityType.start.value, name==self.cities.start_city);
+            visit[-->](`?City: city_type==cityType.start.value, name==self.cities.start_city.lower());
 
         }
     }
 
     can search with City entry{
 
-        if (here.city_type == cityType.start.value and here.name == self.cities.start_city){
+        if (here.city_type == cityType.start.value and here.name == self.cities.start_city.lower()){
         
-            filtered_edges = [edge-->(`?City: city_type==cityType.end.value, name==self.cities.end_city)];
+            filtered_edges = [edge-->(`?City: city_type==cityType.end.value, name==self.cities.end_city.lower())];
+            print("Filtered edges: ", filtered_edges);
             
             if (len(filtered_edges) == 0){
                 print("No routes found between ", self.cities.start_city, " and ", self.cities.end_city);
@@ -621,12 +618,13 @@ walker computeIntermediateStops{
                     }
                     
                 }
+                print("Minimum distance edge: ", self.min_distance_edge);
 
                 next_node = [->:busRoute:distance==self.min_distance_edge.distance:->(`?City)](?city_type==cityType.end.value);
                 visit next_node[0];
             }
         }
-        elif (here.city_type == cityType.end.value and here.name == self.cities.end_city){
+        elif (here.city_type == cityType.end.value and here.name == self.cities.end_city.lower()){
             
             bus_nodes = [->:busEdge:edge_type=="direct":->(`?Bus)];
             
@@ -634,6 +632,7 @@ walker computeIntermediateStops{
 
             number_of_stops = len(selected_bus.intermediate_stops);
             self.output_number = number_of_stops;
+            print("Number of intermediate stops: ", number_of_stops);
             # print("test");
         } 
     }      
