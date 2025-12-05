@@ -1,6 +1,7 @@
 cl import from react{
     useState,
-    useEffect
+    useEffect,
+    useRef
 }
 
 cl def ChatWindow(props: any) -> any {
@@ -9,14 +10,19 @@ cl def ChatWindow(props: any) -> any {
         ]);
         let [inputValue, setInputValue] = useState("");
         let [messageId, setMessageId] = useState(1);
+        let messagesEndRef = useRef(null);
 
-        # useEffect(
-        #     lambda -> None {},
-        #     []
-        # );
+        # Auto-scroll to bottom when messages change
+        useEffect(
+            lambda -> None {
+                if messagesEndRef.current {
+                    messagesEndRef.current.scrollIntoView({"behavior": "smooth"});
+                }
+            },
+            [messages]
+        );
 
         async def handleSendMessage() -> None {
-
             let input_val = inputValue;
             if not inputValue {
                 return;
@@ -32,7 +38,6 @@ cl def ChatWindow(props: any) -> any {
             
             setMessages(messages.concat([userMsg, botMsg]));
             setMessageId(messageId + 2);
-            
         }
 
         def handleInputChange(e: any) -> None {
@@ -139,6 +144,7 @@ cl def ChatWindow(props: any) -> any {
                         </div>
                     </div>;
                 })}
+                <div ref={messagesEndRef} />
             </div>
             <div
                 style={{
@@ -186,32 +192,9 @@ cl def ChatBot() -> any {
     let [isChatOpen, setIsChatOpen] = useState(false);
 
     if isChatOpen {
-        return <div>
-            <ChatWindow
-                closeChat={lambda -> None { setIsChatOpen(false); }}
-            />
-            <button
-                onClick={lambda -> None { setIsChatOpen(false); }}
-                style={{
-                    "position": "fixed",
-                    "bottom": "100px",
-                    "right": "20px",
-                    "width": "100px",
-                    "height": "200px",
-                    "background": "white",
-                    "borderRadius": "10px",
-                    "boxShadow": "0 4px 12px rgba(0,0,0,0.2)",
-                    "display": "flex",
-                    "flexDirection": "column",
-                    "zIndex": "999",
-                    "position": "absolute",
-                    "top": "0",
-                    "opacity": "0",
-                    "cursor":"pointer"
-                }}
-            >
-            </button>
-        </div>;
+        return <ChatWindow
+            closeChat={lambda -> None { setIsChatOpen(false); }}
+        />;
     }
 
     return <div>
