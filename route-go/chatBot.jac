@@ -1,7 +1,6 @@
 cl import from react{
     useState,
-    useEffect,
-    useRef
+    useEffect
 }
 
 cl def ChatWindow(props: any) -> any {
@@ -10,19 +9,14 @@ cl def ChatWindow(props: any) -> any {
         ]);
         let [inputValue, setInputValue] = useState("");
         let [messageId, setMessageId] = useState(1);
-        let messagesEndRef = useRef(null);
 
-        # Auto-scroll to bottom when messages change
-        useEffect(
-            lambda -> None {
-                if messagesEndRef.current {
-                    messagesEndRef.current.scrollIntoView({"behavior": "smooth"});
-                }
-            },
-            [messages]
-        );
+        # useEffect(
+        #     lambda -> None {},
+        #     []
+        # );
 
         async def handleSendMessage() -> None {
+
             let input_val = inputValue;
             if not inputValue {
                 return;
@@ -38,6 +32,7 @@ cl def ChatWindow(props: any) -> any {
             
             setMessages(messages.concat([userMsg, botMsg]));
             setMessageId(messageId + 2);
+            
         }
 
         def handleInputChange(e: any) -> None {
@@ -144,7 +139,6 @@ cl def ChatWindow(props: any) -> any {
                         </div>
                     </div>;
                 })}
-                <div ref={messagesEndRef} />
             </div>
             <div
                 style={{
