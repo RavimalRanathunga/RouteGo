@@ -65,6 +65,18 @@
 
 ---
 
+## 📸 Frontend UI
+
+<div align="center">
+
+<img src="https://github.com/ThiruvarankanM/RouteGo/blob/9c59a2e112d32c3582ec51c9c63c20059d1e20f5/Frontend_UI.png?raw=true" alt="RouteGo Frontend UI" width="100%"/>
+
+*RouteGo Frontend Interface*
+
+</div>
+
+---
+
 ## Features
 
 <table>
@@ -311,7 +323,7 @@ jac serve app.jac
 │  🤖 Bot:  "Available routes: 57, 87"                        │
 ├─────────────────────────────────────────────────────────────┤
 │  👤 User: "How long does a luxury bus take?"                │
-│  �� Bot:  "Based on 80 km/h speed and 2 stops..."           │
+│  🤖 Bot:  "Based on 80 km/h speed and 2 stops..."           │
 ├─────────────────────────────────────────────────────────────┤
 │  👤 User: "Find buses between 8 AM and 12 PM"               │
 │  🤖 Bot:  Lists all departing buses in time window          │
