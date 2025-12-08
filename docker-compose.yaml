@@ -1,0 +1,56 @@
+version: "3.9"
+
+services:
+  redis:
+    image: redis:latest
+    container_name: redis_server
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: [
+      "redis-server",
+      "--appendonly", "yes",
+      "--requirepass", "mypassword123"
+    ]
+    restart: unless-stopped
+
+  redis-insight:
+    image: redis/redisinsight:latest
+    container_name: redis_insight
+    ports:
+      - "5540:5540"
+    depends_on:
+      - redis
+    environment:
+      - RI_MASTER_AUTH=mypassword123
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:6.0
+    container_name: mongodb_server
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword123
+    volumes:
+      - mongo-data:/data/db
+    restart: unless-stopped
+
+  # mongo-express:
+  #   image: mongo-express:latest
+  #   container_name: mongo_express
+  #   ports:
+  #     - "8081:8081"
+  #   depends_on:
+  #     - mongodb
+  #   environment:
+  #     ME_CONFIG_MONGODB_ADMINUSERNAME: root
+  #     ME_CONFIG_MONGODB_ADMINPASSWORD: rootpassword123
+  #     ME_CONFIG_MONGODB_SERVER: mongodb
+  #   restart: unless-stopped
+
+volumes:
+  redis-data:
+  mongo-data:

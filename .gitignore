@@ -1,0 +1,14 @@
+node_modules
+.DS_Store
+.env
+.vscode
+venv1
+jaseci
+venv
+package-lock.json
+app.session
+app.session.users.json
+build
+compiled
+dist
+src
