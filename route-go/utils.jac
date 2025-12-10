@@ -15,9 +15,9 @@ sem City_details.start_city = "Analyze the user input to find the starting city 
 
 sem City_details.end_city = "Analyze the user input to find the ending city of the bus route. If the ending city is not provided, leave it empty.";
 
-sem Time_details.start_time = "Analyze the user input to find the starting time of time range. If the starting time is not provided, leave it empty.";
+sem Time_details.start_time = "Analyze the user input to find the starting time of time range in 24 hr format(Ex:-6 p.m. = 18:00, 4 a.m.=04:00). If the starting time is not provided, leave it empty.";
 
-sem Time_details.end_time = "Analyze the user input to find the ending time of time range. If the ending time is not provided, leave it empty.";
+sem Time_details.end_time = "Analyze the user input to find the ending time of time range in 24 hr format(Ex:-6 p.m. = 18:00, 4 a.m.=04:00). If the ending time is not provided, leave it empty.";
 
 """
 Extracts starting and ending city information from user input text.

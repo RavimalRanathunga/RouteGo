@@ -4,3 +4,16 @@ node_modules
 .vscode
 venv1
 jaseci
+venv
+package-lock.json
+app.session
+app.session.users.json
+build
+compiled
+dist
+src
+anchor_store.db.bak
+anchor_store.db.dat
+anchor_store.db.dir
+.babelec
+vite.config.js

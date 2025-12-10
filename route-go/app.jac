@@ -3,9 +3,9 @@ import from datetime {time}
 import from byllm.lib{Model}
 import from utils {extract_city_details,extract_time_details}
 
-cl import from .HeroSection {HeroSection}
-cl import from .chatBot {ChatBot}
-cl import from .SearchBusTable {SearchBusTable}
+cl import from .components.HeroSection {HeroSection}
+cl import from .components.chatBot {ChatBot}
+cl import from .components.SearchBusTable {SearchBusTable}
 
 glob llm = Model(model_name="gemini/gemini-2.0-flash");
 
@@ -281,7 +281,7 @@ walker filterBusesAgent{
     has bus_type: str = "";
     has bus_edge_type:str = "";
     has response: str = "";
-    has buses:list = [];
+    has buses:list[str] = [];
 
     can filterRoutes with `root entry{
         start_results = [-->(`?City: name==self.from_city_name, city_type==self.from_city)];
@@ -328,7 +328,6 @@ walker filterBusesAgent{
     }
 }
 
-
 walker findGraph{
     can find with `root entry{
 
@@ -352,7 +351,7 @@ walker agentAI{
     The abilities of each walker are defined below.
         walkerType.findRoutesAgent: Handles requests related to finding bus routes between cities.
         walkerType.computeBusTimeAgent: Handles requests related to computing bus travel times.
-        walkerType.filterBusesAgent: Handles requests related to filtering buses based on criteria.
+        walkerType.filterBusesAgent: Handles requests related to find buses from one city to another city between a time period.
 
     Returns:
         List of walkerType: An enum values indicating which walkers should handle the request.
@@ -405,7 +404,6 @@ walker agentAI{
 
             next_walker = self.find_next_walker(self.user_input, self.chat_history);
             print("Next walker determined: ", next_walker);
-            print(type(next_walker.value));
 
         }except e{
             report {
@@ -415,27 +413,19 @@ walker agentAI{
             return;
         }
 
-        # if (next_walker.value == "computeBusTimeAgent"){
-        #     print("hello");
-        #     result = root spawn computeBusTimeAgent(user_input=self.user_input, response="");
-        #     print("result",result);
-        # }
-
         match next_walker.value{
             
             case "computeBusTimeAgent":
                 result = root spawn computeBusTimeAgent(user_input=self.user_input,response="");
                 print("result",result);
                 self.chat_history.append(f"User: {self.user_input}");
-                # print(self.chat_history);
-                self.chat_history.append(f"Agent: {self.response}");
+                self.chat_history.append(f"Agent: {result.response}");
                 print("Final chat_history",self.chat_history);
-                print("Result from computeBusTimeAgent: ", result);
+
                 self.response = result.response;
                 report {
                     "user_input": self.user_input,
                     "response": self.response,
-                    # "response": result.response,
                 };
                 return;
                 
@@ -445,37 +435,30 @@ walker agentAI{
                 print("end_city: ", cities.end_city);
                 result = root spawn findRoutesAgent(from_city_name=cities.start_city, to_city_name=cities.end_city);
                 print("result",result);
-                print("user input",self.user_input);
-                # print(self.chat_history);
+                
                 self.chat_history.append(f"User: {self.user_input}");
-                print("chat_history",self.chat_history);
-                self.chat_history.append(f"Agent: Available routes from {cities.start_city} to {cities.end_city} are: " + ", ".join(result.routes));
+                if (len(result.routes) > 0) {
+                    self.chat_history.append(f"findRoutesAgent: Available routes from {cities.start_city} to {cities.end_city} are: " + ", ".join(result.routes));
+                } else {
+                    self.chat_history.append(f"findRoutesAgent: No routes found from {cities.start_city} to {cities.end_city}");
+                }
+
                 self.response = self.generate_response(chat_history=self.chat_history, user_input=self.user_input);
                 print("Generated Response: ", self.response);
                 self.chat_history.append(f"Agent: {self.response}");
                 print("Final chat_history",self.chat_history);
                 
-                available_routes = "";
-                for route in result.routes{
-                    available_routes += route + ", ";
-                }
-                self.chat_history.append("User: " + self.user_input);
-                self.chat_history.append(f"Agent: Available routes {available_routes}");
-                
-                self.response = self.generate_response(self.chat_history,self.user_input);
-                print("Generated Response: ", self.response);
-                self.chat_history.append("Agent: " + self.response);
-
                 report {
                     "user_input": self.user_input,
-                    # "response": result.routes[0],
                     "response": self.response,
                 };
+                return;
 
             case "filterBusesAgent":
                 cities = extract_city_details(user_input=self.user_input);
                 print("start_city: ", cities.start_city);
                 print("end_city: ", cities.end_city);
+
                 times = extract_time_details(user_input=self.user_input);
                 print("start time:",times.start_time);
                 print("end time:",times.end_time);
@@ -488,21 +471,33 @@ walker agentAI{
                     return;
                 }
 
-                result = root spawn filterBusesAgent(from_city_name=cities.start_city,to_city_name=cities.to_city,start_time=times.start_time);
-                self.chat_history.append("User: " + self.user_input);
+                result = root spawn filterBusesAgent(from_city_name=cities.start_city,to_city_name=cities.end_city,start_time=times.start_time,end_time=times.end_time);
+
+                self.chat_history.append(f"User: {self.user_input}");
+                if(len(result.buses) == 0){
+                    self.chat_history.append(f"filterBusesAgent: No buses found from {cities.start_city} to {cities.end_city} between {times.start_time} and {times.end_time}");
+                }else{
+                    bus_string:str = f"filterBusesAgent: Buses found from {cities.start_city} to {cities.end_city} between {times.start_time} and {times.end_time}";
+                    for bus in result.buses{
+                        bus_string += f"found Bus: {bus.bus_id}, {bus.bus_type}, {bus.fare}, {bus.intermediate_stops}";
+                    }
+                    print(bus_string);
+                    self.chat_history.append(bus_string);
+                }
+                print("Chat history",self.chat_history);
                 self.response = self.generate_response(self.chat_history,self.user_input);
-                
+                report {
+                    "response":self.response
+                };
+                return;
             }
         }
 }
 
-
 walker computeBusTimeAgent{
-    # has walkerType: str = walkerType.computeBusTime.value; 
     has user_input: str = "";
     has response: str = "";
-    # has chat_history: list[str] = [];
-  
+    
     def compute_average_speed(bus_type: str) -> float{
         print("tool: average speed called");
         if (bus_type == "normal"){
@@ -529,7 +524,6 @@ walker computeBusTimeAgent{
 
         result = root spawn computeIntermediateStops(cities,output_number=0);
         return result.output_number;
-
     }
 
     """
@@ -578,10 +572,7 @@ walker computeBusTimeAgent{
 
         self.response = self.route_and_run(user_input=self.user_input);
 
-        print("Computed Response: ", self.response);
- 
-            
-        
+        print("Computed Response: ", self.response);     
     }
 }
 

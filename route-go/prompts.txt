@@ -1,3 +1,0 @@
-what are the routes between colombo and jaffna
-
-Compute average speed and stop delay for a luxury bus starting at Jaffna and ending at Colombo.
