@@ -3,9 +3,9 @@ import from datetime {time}
 import from byllm.lib{Model}
 import from utils {extract_city_details,extract_time_details}
 
-cl import from .HeroSection {HeroSection}
-cl import from .chatBot {ChatBot}
-cl import from .SearchBusTable {SearchBusTable}
+cl import from .components.HeroSection {HeroSection}
+cl import from .components.chatBot {ChatBot}
+cl import from .components.SearchBusTable {SearchBusTable}
 
 glob llm = Model(model_name="gemini/gemini-2.0-flash");
 
