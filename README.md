@@ -183,15 +183,16 @@ flowchart TB
 ## Project Structure
 
 ```
-route-go/
-├── app.jac              # Main application entry point
-├── utils.jac            # LLM utility functions
-├── chatBot.jac          # AI chatbot component
-├── HeroSection.jac      # Landing page hero section
-├── SearchBusTable.jac   # Bus search interface
-├── package.json         # Node.js dependencies
-├── src/                 # Compiled Jac-Client components
-└── build/               # Production build output
+route-go-new/
+├── main.jac                      # Main application entry point
+├── utils.jac                     # LLM utility functions
+├── endpoints.sv.jac              # Server endpoints definition
+├── jac.toml                      # Jac configuration file
+├── .gitignore                    # Git ignore files
+└── components/                   # UI Components
+    ├── ChatBot.cl.jac            # AI chatbot component
+    ├── HeroSection.cl.jac        # Landing page hero section
+    └── SearchBusTable.cl.jac     # Bus search interface
 ```
 
 ---
@@ -241,17 +242,17 @@ source .venv/bin/activate
 
 ### Step 5: Install Jac and Dependencies
 ```bash
-pip install jaclang jac-client
+pip install jac-client byllm 
 ```
 
 ### Step 6: Navigate to the Route-Go Directory
 ```bash
-cd route-go
+cd route-go-new
 ```
 
-### Step 7: Install Node.js Dependencies
+### Step 7: Install Watchdog
 ```bash
-npm install
+jac install --dev
 ```
 
 ### Step 8: Set Up Environment Variables
@@ -282,12 +283,12 @@ export GEMINI_API_KEY="your-api-key"
 ### ▶️ Running the Application
 
 ```bash
-jac serve app.jac
+jac start main.jac --dev
 ```
 
 <div align="center">
 
-**Application URL:** `http://localhost:8000/page/app`
+**Application URL:** `http://localhost:8000/cl/app`
 
 </div>
 
