@@ -18,3 +18,4 @@ anchor_store.db.dir
 .babelec
 vite.config.js
 __pycache__
+route-go/

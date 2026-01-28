@@ -1,19 +1,16 @@
-cl import from react{
-    useState,
-    useEffect
-}
+cl import from react{ useEffect, useState }
 
-cl def SearchBusTable(){
-            let [from_city_name,setFromCityName] = useState("");
-            let [to_city_name,setToCityName] = useState("");
-            let [start_time,setStartTime] = useState("");
-            let [end_time,setEndTime] = useState("");
-            let [clicked,setClick] = useState(False);
-            let [buses,setBuses] = useState([]);
-            let [bus_routes,setBusRoutes] = useState([]);
-            let [selectedBusType,setSelectedBusType] = useState("all");
-            let [selectedRouteType,setSelectedRouteType] = useState("all");
-            let [selectedRoute,setSelectedRoute] = useState("all");
+cl def:pub SearchBusTable(){
+            [from_city_name,setFromCityName] = useState("");
+            [to_city_name,setToCityName] = useState("");
+            [start_time,setStartTime] = useState("");
+            [end_time,setEndTime] = useState("");
+            [clicked,setClick] = useState(False);
+            [buses,setBuses] = useState([]);
+            [bus_routes,setBusRoutes] = useState([]);
+            [selectedBusType,setSelectedBusType] = useState("all");
+            [selectedRouteType,setSelectedRouteType] = useState("all");
+            [selectedRoute,setSelectedRoute] = useState("all");
 
             def handleRefresh() -> None{
                 setFromCityName("");
@@ -41,9 +38,9 @@ cl def SearchBusTable(){
                     console.log(f"Found {results.reports.length} reports.");
 
                     if (results.reports.length >0){
-                        let newBuses = [];
-                        for results in results.reports{
-                            for bus in results{
+                        newBuses = [];
+                        for result in results.reports{
+                            for bus in result{
                                 console.log("Bus Found:", bus);
                                 newBuses.push(bus);
                             }
@@ -76,9 +73,9 @@ cl def SearchBusTable(){
                     console.log(f"Found {results.reports.length} reports.");
 
                     if (results.reports.length >0){
-                        let newBuses = [];
-                        for results in results.reports{
-                            for bus in results{
+                        newBuses = [];
+                        for result in results.reports{
+                            for bus in result{
                                 console.log("Bus Found:", bus);
                                 newBuses.push(bus);
                             }
@@ -106,7 +103,6 @@ cl def SearchBusTable(){
                 "background": "linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)",
                 "padding": "40px 20px",
                 "borderRadius": "0px", 
-                # "width": "100%",
                 "color": "white",
         }}>
 
@@ -131,7 +127,7 @@ cl def SearchBusTable(){
                         "borderRadius": "4px",
                         "border": "1px solid #ccc",
                         "fontSize": "0.9rem",
-                }} value={from_city_name} onChange={lambda e:any -> None { setFromCityName(e.target.value);}}>
+                }} value={from_city_name} onChange={lambda e:any -> None { setFromCityName(e.target.value); }}>
                         <option value="" disabled={True}>Select Start</option>
                         <option value="colombo">Colombo</option>
                         <option value="jaffna">Jaffna</option>
@@ -199,7 +195,7 @@ cl def SearchBusTable(){
                         "borderRadius": "4px",
                         "border": "1px solid #ccc",
                         "fontSize": "0.9rem",
-                }} value={end_time} onChange={lambda e:any -> None { setEndTime(e.target.value);}}>
+                }} value={end_time} onChange={lambda e:any -> None { setEndTime(e.target.value); }}>
                         <option value="" disabled={True}>Select End Time</option>
                         <option value="00:00">00:00</option>
                         <option value="01:00">01:00</option>
@@ -332,4 +328,4 @@ cl def SearchBusTable(){
             </div>
             ))}
         </div>;
-        }
+}

@@ -1,19 +1,8 @@
-import from datetime {datetime}
-import from datetime {time}
-import from byllm.lib{Model}
-import from utils {extract_city_details,extract_time_details}
+import from datetime { datetime }
+import from datetime { time }
+import from utils { extract_city_details, extract_time_details }
 
-cl import from .components.HeroSection {HeroSection}
-cl import from .components.chatBot {ChatBot}
-cl import from .components.SearchBusTable {SearchBusTable}
-
-glob llm = Model(model_name="gemini/gemini-2.0-flash");
-
-cl import from react{
-    useState,
-    useEffect
-}
-
+#Enum Definitions
 enum cityType{
     start = "start",
     end = "end",
@@ -67,7 +56,7 @@ edge busEdge{
 }
 
 # Walker Definitions
-walker createGraph{
+walker:pub createGraph {
 
     can start with `root entry {
         start_node_1 = root ++> City(city_type=cityType.start.value, name="jaffna");
@@ -152,7 +141,7 @@ walker createGraph{
     }
 }
 
-walker findRoutes{
+walker:pub findRoutes {
     has from_city_name: str;
     has to_city_name: str;
     has from_city: str =cityType.start.value;
@@ -190,7 +179,7 @@ walker findRoutes{
     }
 }
 
-walker findRoutesAgent{
+walker:pub findRoutesAgent {
     has from_city_name: str;
     has to_city_name: str;
     has from_city: str =cityType.start.value;
@@ -218,7 +207,7 @@ walker findRoutesAgent{
     }
 }
 
-walker filterBuses{
+walker:pub filterBuses {
     has from_city_name: str;
     has to_city_name: str;
     has start_time: str;
@@ -270,7 +259,7 @@ walker filterBuses{
     }
 }
 
-walker filterBusesAgent{
+walker:pub filterBusesAgent {
     has from_city_name: str;
     has to_city_name: str;
     has start_time: str;
@@ -328,7 +317,7 @@ walker filterBusesAgent{
     }
 }
 
-walker findGraph{
+walker:pub findGraph {
     can find with `root entry{
 
         results = [-->(`?City)];
@@ -336,7 +325,7 @@ walker findGraph{
     }
 }
 
-walker agentAI{
+walker:pub agentAI {
     has user_input: str = "";
     has chat_history: list[str] = [];
     has response: str = "";
@@ -494,7 +483,7 @@ walker agentAI{
         }
 }
 
-walker computeBusTimeAgent{
+walker:pub computeBusTimeAgent {
     has user_input: str = "";
     has response: str = "";
     
@@ -576,7 +565,7 @@ walker computeBusTimeAgent{
     }
 }
 
-walker computeIntermediateStops{
+walker:pub computeIntermediateStops {
 
     has cities: City_details;
     has output_number: int;
@@ -628,36 +617,5 @@ walker computeIntermediateStops{
         } 
     }      
 }
-
-cl {
-
-    def app() -> any {
-
-        useEffect(
-            lambda -> None
-            {
-                async def creategraph() -> None
-                {
-                    is_graph_created = root spawn findGraph();
-                    console.log("Graph exists:", is_graph_created.reports[0].data);
-                    if (is_graph_created.reports[0].data == False){
-                        result = root spawn createGraph();
-                    }
-                }
-            creategraph();
-            },
-            []
-        );
-
-        return <div style={{"width":"100%"}}>
-            <HeroSection />
-            <SearchBusTable />
-            <ChatBot />
-        </div>;
-    }
-}
-
-
-
 
 

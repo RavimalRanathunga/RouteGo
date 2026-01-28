@@ -1,4 +1,4 @@
-cl def HeroSection(){
+cl def:pub HeroSection(){
         return <div style={{
                 "display": "flex",
                 "flexDirection": "column",
@@ -99,7 +99,7 @@ cl def HeroSection(){
                 }}>
                     <button 
                         onClick={lambda -> None { 
-                            let element = document.getElementById("bustable");
+                            element = document.getElementById("bustable");
                             if element {
                                 element.scrollIntoView({ behavior: "smooth" });
                             }

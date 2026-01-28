@@ -1,34 +1,26 @@
-cl import from react{
-    useState,
-    useEffect
-}
+cl import from react{ useEffect, useState }
 
-cl def ChatWindow(props: any) -> any {
-        let [messages, setMessages] = useState([
+cl def:pub ChatWindow(props: any) -> any {
+        [messages, setMessages] = useState([
             {sender: "bot", text: "Hi! I'm RouteGo Assistant. How can I help you find buses today?", id: 0}
         ]);
-        let [inputValue, setInputValue] = useState("");
-        let [messageId, setMessageId] = useState(1);
-
-        # useEffect(
-        #     lambda -> None {},
-        #     []
-        # );
+        [inputValue, setInputValue] = useState("");
+        [messageId, setMessageId] = useState(1);
 
         async def handleSendMessage() -> None {
 
-            let input_val = inputValue;
+            input_val = inputValue;
             if not inputValue {
                 return;
             }
             setInputValue("");
 
-            let userMsg = {sender: "user", text: input_val, id: messageId};
+            userMsg = {sender: "user", text: input_val, id: messageId};
             setMessages(messages.concat([userMsg]));
 
             results = root spawn agentAI(user_input=input_val);
 
-            let botMsg = {sender: "bot", text: results.reports[0].response, id: messageId + 1};
+            botMsg = {sender: "bot", text: results.reports[0].response, id: messageId + 1};
             
             setMessages(messages.concat([userMsg, botMsg]));
             setMessageId(messageId + 2);
@@ -106,9 +98,9 @@ cl def ChatWindow(props: any) -> any {
                 }}
             >
                 {messages.map(lambda msg: any -> any {
-                    let justifyContent = "flex-start";
-                    let bgColor = "#e0e0e0";
-                    let textColor = "black";
+                    justifyContent = "flex-start";
+                    bgColor = "#e0e0e0";
+                    textColor = "black";
                     
                     if msg.sender == "user" {
                         justifyContent = "flex-end";
@@ -180,10 +172,10 @@ cl def ChatWindow(props: any) -> any {
                 </button>
             </div>
         </div>;
-    }
+}
 
 cl def ChatBot() -> any {
-    let [isChatOpen, setIsChatOpen] = useState(false);
+    [isChatOpen, setIsChatOpen] = useState(false);
 
     if isChatOpen {
         return <ChatWindow
