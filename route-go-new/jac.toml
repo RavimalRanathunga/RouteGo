@@ -5,9 +5,11 @@ description = "Jac client application: route-go-new"
 entry-point = "main.jac"
 
 [dependencies]
+byllm = "~=0.6"
 
 [dependencies.npm]
-jac-client-node = "1.0.4"
+jac-client-node = "1.0.7"
+"@tanstack/react-form" = "^1.33.0"
 
 [dependencies.npm.dev]
 "@jac-client/dev-deps" = "1.0.0"

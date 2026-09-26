@@ -1,42 +1,46 @@
-cl import from react{ useEffect, useState }
+# agentAI is deliberately NOT imported here: importing a walker into a
+# client-inferred file breaks the Vite bundle (it emits an ES import for a
+# name the compiled server stub never exports), even though it resolves the
+# `jac check` warnings on `results.reports`. Registration happens via main.jac.
+cl def:pub ChatWindow(closeChat: Callable[[], None]) -> JsxElement {
+        has messages: list[any] = [
+            {"sender": "bot", "text": "Hi! I'm RouteGo Assistant. How can I help you find buses today?", "id": 0}
+        ];
+        has inputValue: str = "";
+        has messageId: int = 1;
 
-cl def:pub ChatWindow(props: any) -> any {
-        [messages, setMessages] = useState([
-            {sender: "bot", text: "Hi! I'm RouteGo Assistant. How can I help you find buses today?", id: 0}
-        ]);
-        [inputValue, setInputValue] = useState("");
-        [messageId, setMessageId] = useState(1);
-
-        async def handleSendMessage() -> None {
+        async def send_message() -> None {
 
             input_val = inputValue;
             if not inputValue {
                 return;
             }
-            setInputValue("");
+            inputValue = "";
 
-            userMsg = {sender: "user", text: input_val, id: messageId};
-            setMessages(messages.concat([userMsg]));
+            userMsg = {"sender": "user", "text": input_val, "id": messageId};
 
             results = root spawn agentAI(user_input=input_val);
 
-            botMsg = {sender: "bot", text: results.reports[0].response, id: messageId + 1};
-            
-            setMessages(messages.concat([userMsg, botMsg]));
-            setMessageId(messageId + 2);
-            
+            botMsg = {"sender": "bot", "text": results.reports[0].response, "id": messageId + 1};
+
+            messages = messages + [userMsg, botMsg];
+            messageId = messageId + 2;
+
         }
 
-        def handleInputChange(e: any) -> None {
-            setInputValue(e.target.value);
+        def handle_input_change(e: ChangeEvent) {
+            inputValue = e.target.value;
         }
 
-        def handleKeyPress(e: any) -> None {
+        def handle_key_press(e: KeyboardEvent) {
             if e.key == "Enter" {
-                handleSendMessage();
+                send_message();
                 e.preventDefault();
             }
         }
+
+        def handle_close(_e: MouseEvent) { closeChat(); }
+        def handle_send_click(_e: MouseEvent) { send_message(); }
 
         return <div
             style={{
@@ -73,7 +77,7 @@ cl def:pub ChatWindow(props: any) -> any {
                     RouteGo Chat
                 </h4>
                 <button
-                    onClick={lambda -> None { props.closeChat(); }}
+                    onClick={handle_close}
                     style={{
                         "background": "none",
                         "border": "none",
@@ -97,23 +101,13 @@ cl def:pub ChatWindow(props: any) -> any {
                     "flexDirection": "column"
                 }}
             >
-                {messages.map(lambda msg: any -> any {
-                    justifyContent = "flex-start";
-                    bgColor = "#e0e0e0";
-                    textColor = "black";
-                    
-                    if msg.sender == "user" {
-                        justifyContent = "flex-end";
-                        bgColor = "#ff7f32";
-                        textColor = "white";
-                    }
-                    
-                    return <div
+                {for msg in messages {
+                    <div
                         key={msg.id}
                         style={{
                             "marginBottom": "10px",
                             "display": "flex",
-                            "justifyContent": justifyContent
+                            "justifyContent": "flex-end" if msg.sender == "user" else "flex-start"
                         }}
                     >
                         <div
@@ -121,16 +115,16 @@ cl def:pub ChatWindow(props: any) -> any {
                                 "maxWidth": "70%",
                                 "padding": "10px 15px",
                                 "borderRadius": "10px",
-                                "background": bgColor,
-                                "color": textColor,
+                                "background": "#ff7f32" if msg.sender == "user" else "#e0e0e0",
+                                "color": "white" if msg.sender == "user" else "black",
                                 "wordWrap": "break-word",
                                 "fontSize": "0.95rem"
                             }}
                         >
                             {msg.text}
                         </div>
-                    </div>;
-                })}
+                    </div>
+                }}
             </div>
             <div
                 style={{
@@ -143,8 +137,8 @@ cl def:pub ChatWindow(props: any) -> any {
                 <input
                     type="text"
                     value={inputValue}
-                    onChange={lambda e: any -> None { handleInputChange(e); }}
-                    onKeyPress={lambda e: any -> None { handleKeyPress(e); }}
+                    onChange={handle_input_change}
+                    onKeyPress={handle_key_press}
                     placeholder="Type your message..."
                     style={{
                         "flex": "1",
@@ -156,7 +150,7 @@ cl def:pub ChatWindow(props: any) -> any {
                     }}
                 />
                 <button
-                    onClick={lambda -> None { handleSendMessage(); }}
+                    onClick={handle_send_click}
                     style={{
                         "background": "#ff7f32",
                         "color": "white",
@@ -174,18 +168,21 @@ cl def:pub ChatWindow(props: any) -> any {
         </div>;
 }
 
-cl def ChatBot() -> any {
-    [isChatOpen, setIsChatOpen] = useState(false);
+cl def:pub ChatBot() -> JsxElement {
+    has isChatOpen: bool = False;
+
+    def open_chat(_e: MouseEvent) { isChatOpen = True; }
+    def close_chat() { isChatOpen = False; }
 
     if isChatOpen {
         return <ChatWindow
-            closeChat={lambda -> None { setIsChatOpen(false); }}
+            closeChat={close_chat}
         />;
     }
 
     return <div>
         <button
-            onClick={lambda -> None { setIsChatOpen(true); }}
+            onClick={open_chat}
             style={{
                 "position": "fixed",
                 "bottom": "20px",

@@ -1,6 +1,6 @@
 import from datetime { datetime }
 import from datetime { time }
-import from utils { extract_city_details, extract_time_details }
+import from utils { extract_city_details, extract_time_details, City_details }
 
 #Enum Definitions
 enum cityType{
@@ -58,7 +58,7 @@ edge busEdge{
 # Walker Definitions
 walker:pub createGraph {
 
-    can start with `root entry {
+    can start with Root entry {
         start_node_1 = root ++> City(city_type=cityType.start.value, name="jaffna");
         start_node_2 = root ++> City(city_type=cityType.start.value, name="colombo");
         start_node_3 = root ++> City(city_type=cityType.start.value, name="colombo");
@@ -80,60 +80,60 @@ walker:pub createGraph {
 
         bus_2 = end_node_1 +>: busEdge(edge_type=busEdgeType.direct.value) :+> Bus(
             bus_type = busType.luxury.value,
-            bus_id = "CD5678", 
-            start_time = time(8,0), 
-            end_time = time(13, 0), 
+            bus_id = "CD5678",
+            start_time = time(8,0),
+            end_time = time(13, 0),
             fare = 2800.0,
             intermediate_stops = ["vavuniya", "kurunagala"]
-        ); 
+        );
 
         bus_3 = end_node_2 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
-            bus_type = busType.semi_luxury.value, 
-            bus_id = "EF9012", 
-            start_time = time(9, 0), 
-            end_time = time(15, 0), 
-            fare = 2200.0, 
+            bus_type = busType.semi_luxury.value,
+            bus_id = "EF9012",
+            start_time = time(9, 0),
+            end_time = time(15, 0),
+            fare = 2200.0,
             intermediate_stops = ["vavuniya", "puttalam"]
         );
 
         bus_4 = end_node_2 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
-            bus_type = busType.normal.value, 
-            bus_id = "GH3456", 
-            start_time = time(10, 30), 
-            end_time = time(16, 30), 
-            fare = 1600.0, 
+            bus_type = busType.normal.value,
+            bus_id = "GH3456",
+            start_time = time(10, 30),
+            end_time = time(16, 30),
+            fare = 1600.0,
             intermediate_stops = ["vavuniya", "puttalam"]
         );
         bus_5 = end_node_3 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
-            bus_type = busType.luxury.value, 
-            bus_id = "IJ7890", 
-            start_time = time(16, 0), 
-            end_time = time(2, 0), 
-            fare = 3000.0, 
+            bus_type = busType.luxury.value,
+            bus_id = "IJ7890",
+            start_time = time(16, 0),
+            end_time = time(2, 0),
+            fare = 3000.0,
             intermediate_stops = ["kurunagala", "vavuniya"]
         );
         bus_6 = end_node_4 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
-            bus_type = busType.normal.value, 
-            bus_id = "KL1234", 
-            start_time = time(14, 0), 
-            end_time = time(22, 0), 
+            bus_type = busType.normal.value,
+            bus_id = "KL1234",
+            start_time = time(14, 0),
+            end_time = time(22, 0),
             fare = 1500.0,
             intermediate_stops = ["puttalam", "vavuniya"]
         );
         bus_7 = end_node_4 +>: busEdge(edge_type = busEdgeType.via.value) :+> Bus(
-            bus_type = busType.semi_luxury.value, 
-            bus_id = "MN5678", 
-            start_time = time(7, 30), 
-            end_time = time(10, 30), 
-            fare = 1200.0, 
+            bus_type = busType.semi_luxury.value,
+            bus_id = "MN5678",
+            start_time = time(7, 30),
+            end_time = time(10, 30),
+            fare = 1200.0,
             intermediate_stops = ["dehiwala", "colombo", "puttalam", "vavuniya"]
         );
         bus_8 = end_node_5 +>: busEdge(edge_type = busEdgeType.direct.value) :+> Bus(
-            bus_type = busType.normal.value, 
-            bus_id = "OP9012", 
-            start_time = time(12, 0), 
-            end_time = time(15, 0), 
-            fare = 800.0, 
+            bus_type = busType.normal.value,
+            bus_id = "OP9012",
+            start_time = time(12, 0),
+            end_time = time(15, 0),
+            fare = 800.0,
             intermediate_stops = ["kegalle", "mawanella"]
         );
 
@@ -144,23 +144,22 @@ walker:pub createGraph {
 walker:pub findRoutes {
     has from_city_name: str;
     has to_city_name: str;
-    has from_city: str =cityType.start.value;
+    has from_city: str = cityType.start.value;
     has to_city: str = cityType.end.value;
     has routes: list[str] = [];
 
-    can search with `root entry{
-
+    can search with Root entry {
         print("Searching routes from ", self.from_city_name, " to ", self.to_city_name);
-        start_results = [-->(`?City: name==self.from_city_name, city_type==self.from_city)];
+        start_results = [-->[?:City, name==self.from_city_name, city_type==self.from_city]];
         print("start_results",start_results);
-        visit[-->start_results];
+        visit start_results;
     }
 
-    can visit_cities with City entry{
-        
-        # print("Now we are in",here);
-        if([-->(`?City: name==self.to_city_name, city_type==self.to_city)]){
-            bus_routes = [edge-->(`?City: name==self.to_city_name, city_type==self.to_city)];
+    can visit_cities with City entry {
+
+        matching_cities: list[City] = [-->[?:City, name==self.to_city_name, city_type==self.to_city]];
+        if (matching_cities){
+            bus_routes: list[busRoute] = [edge->:busRoute:-> matching_cities];
             for r in bus_routes{
             self.routes.append(r.route_number);
         }
@@ -182,23 +181,23 @@ walker:pub findRoutes {
 walker:pub findRoutesAgent {
     has from_city_name: str;
     has to_city_name: str;
-    has from_city: str =cityType.start.value;
+    has from_city: str = cityType.start.value;
     has to_city: str = cityType.end.value;
     has routes: list[str] = [];
-    
-    can search with `root entry{
 
+    can search with Root entry {
         print("Searching routes from ", self.from_city_name, " to ", self.to_city_name);
-        start_results = [-->(`?City: name==self.from_city_name, city_type==self.from_city)];
+        start_results = [-->[?:City, name==self.from_city_name, city_type==self.from_city]];
         print("start_results",start_results);
-        visit[-->start_results];
+        visit start_results;
     }
 
-    can visit_cities with City entry{
-        
+    can visit_cities with City entry {
+
         print("Now we are in",here);
-        if([-->(`?City: name==self.to_city_name, city_type==self.to_city)]){
-            bus_routes = [edge-->(`?City: name==self.to_city_name, city_type==self.to_city)];
+        matching_cities: list[City] = [-->[?:City, name==self.to_city_name, city_type==self.to_city]];
+        if (matching_cities){
+            bus_routes: list[busRoute] = [edge->:busRoute:-> matching_cities];
             print("bus_routes",bus_routes);
             for r in bus_routes{
                 self.routes.append(r.route_number);
@@ -212,50 +211,50 @@ walker:pub filterBuses {
     has to_city_name: str;
     has start_time: str;
     has end_time: str;
-    has from_city: str =cityType.start.value;
+    has from_city: str = cityType.start.value;
     has to_city: str = cityType.end.value;
     has route_no: str = "";
     has bus_type: str = "";
-    has bus_edge_type:str = "";
+    has bus_edge_type: str = "";
 
-    can filterRoutes with `root entry{
-        start_results = [-->(`?City: name==self.from_city_name, city_type==self.from_city)];
+    can filterRoutes with Root entry {
+        start_results = [-->[?:City, name==self.from_city_name, city_type==self.from_city]];
         print("start_results",start_results);
-        visit[-->start_results];
+        visit start_results;
     }
 
-    can filter with City entry{
+    can filter with City entry {
         start_t:time = datetime.strptime(self.start_time, "%H:%M").time();
         end_t:time = datetime.strptime(self.end_time, "%H:%M").time();
         if (here.city_type == cityType.end.value and here.name == self.to_city_name){
             if (self.bus_edge_type == ""){
                 if (self.bus_type == ""){
-                    report[--> (`?Bus: start_time >= start_t, start_time <= end_t)];
+                    report[-->[?:Bus, start_time >= start_t, start_time <= end_t]];
                 }
                 else{
-                    report[--> (`?Bus: bus_type==self.bus_type, start_time >= start_t, start_time <= end_t)];
+                    report[-->[?:Bus, bus_type==self.bus_type, start_time >= start_t, start_time <= end_t]];
                 }
             }
             else{
                 if (self.bus_type == ""){
-                    report[->:busEdge:edge_type==self.bus_edge_type:->(`?Bus: start_time >= start_t, start_time <= end_t)];
+                    report[->:busEdge:edge_type==self.bus_edge_type:->[?:Bus, start_time >= start_t, start_time <= end_t]];
                 }
                 else{
-                    report[->:busEdge:edge_type==self.bus_edge_type:->(`?Bus: bus_type==self.bus_type, start_time >= start_t, start_time <= end_t)];
+                    report[->:busEdge:edge_type==self.bus_edge_type:->[?:Bus, bus_type==self.bus_type, start_time >= start_t, start_time <= end_t]];
                 }
             }
         }
         else{
             if (self.route_no == ""){
-                end_results = [-->(`?City: name==self.to_city_name, city_type==self.to_city)];
+                end_results = [-->[?:City, name==self.to_city_name, city_type==self.to_city]];
                 print("end_results",end_results);
-                visit[-->end_results];
+                visit end_results;
             }
             else{
-                end_results = [->:busRoute:route_number==self.route_no:->(`?City: name==self.to_city_name, city_type==self.to_city)];
-                visit[-->end_results];
+                end_results = [->:busRoute:route_number==self.route_no:->[?:City, name==self.to_city_name, city_type==self.to_city]];
+                visit end_results;
             }
-        }        
+        }
     }
 }
 
@@ -264,63 +263,62 @@ walker:pub filterBusesAgent {
     has to_city_name: str;
     has start_time: str;
     has end_time: str;
-    has from_city: str =cityType.start.value;
+    has from_city: str = cityType.start.value;
     has to_city: str = cityType.end.value;
     has route_no: str = "";
     has bus_type: str = "";
-    has bus_edge_type:str = "";
+    has bus_edge_type: str = "";
     has response: str = "";
-    has buses:list[str] = [];
+    has buses: list[Bus] = [];
 
-    can filterRoutes with `root entry{
-        start_results = [-->(`?City: name==self.from_city_name, city_type==self.from_city)];
+    can filterRoutes with Root entry {
+        start_results = [-->[?:City, name==self.from_city_name, city_type==self.from_city]];
         print("start_results",start_results);
-        visit[-->start_results];
+        visit start_results;
     }
 
-    can filter with City entry{
+    can filter with City entry {
         start_t:time = datetime.strptime(self.start_time, "%H:%M").time();
         end_t:time = datetime.strptime(self.end_time, "%H:%M").time();
         if (here.city_type == cityType.end.value and here.name == self.to_city_name){
             if (self.bus_edge_type == ""){
                 if (self.bus_type == ""){
-                    buses = [--> (`?Bus: start_time >= start_t, start_time <= end_t)];
+                    buses = [-->[?:Bus, start_time >= start_t, start_time <= end_t]];
                     self.buses = self.buses + buses;
                 }
                 else{
-                    buses = [--> (`?Bus: bus_type==self.bus_type, start_time >= start_t, start_time <= end_t)];
+                    buses = [-->[?:Bus, bus_type==self.bus_type, start_time >= start_t, start_time <= end_t]];
                     self.buses = self.buses + buses;
                 }
             }
             else{
                 if (self.bus_type == ""){
-                    buses = [->:busEdge:edge_type==self.bus_edge_type:->(`?Bus: start_time >= start_t, start_time <= end_t)];
+                    buses = [->:busEdge:edge_type==self.bus_edge_type:->[?:Bus, start_time >= start_t, start_time <= end_t]];
                     self.buses = self.buses + buses;
                 }
                 else{
-                    buses = [->:busEdge:edge_type==self.bus_edge_type:->(`?Bus: bus_type==self.bus_type, start_time >= start_t, start_time <= end_t)];
+                    buses = [->:busEdge:edge_type==self.bus_edge_type:->[?:Bus, bus_type==self.bus_type, start_time >= start_t, start_time <= end_t]];
                     self.buses = self.buses + buses;
                 }
             }
         }
         else{
             if (self.route_no == ""){
-                end_results = [-->(`?City: name==self.to_city_name, city_type==self.to_city)];
+                end_results = [-->[?:City, name==self.to_city_name, city_type==self.to_city]];
                 print("end_results",end_results);
-                visit[-->end_results];
+                visit end_results;
             }
             else{
-                end_results = [->:busRoute:route_number==self.route_no:->(`?City: name==self.to_city_name, city_type==self.to_city)];
-                visit[-->end_results];
+                end_results = [->:busRoute:route_number==self.route_no:->[?:City, name==self.to_city_name, city_type==self.to_city]];
+                visit end_results;
             }
-        }        
+        }
     }
 }
 
 walker:pub findGraph {
-    can find with `root entry{
-
-        results = [-->(`?City)];
+    can find with Root entry {
+        results = [-->[?:City]];
         report {"data":True} if len(results) > 0 else {"data":False};
     }
 }
@@ -332,11 +330,11 @@ walker:pub agentAI {
 
     """
     Determines the most appropriate walkers to handle the user's input using given {user_input}.
-    
+
     Args:
         user_input:str = The natural language input from the user describing their
                          bus route query or travel time calculation request.
-    
+
     The abilities of each walker are defined below.
         walkerType.findRoutesAgent: Handles requests related to finding bus routes between cities.
         walkerType.computeBusTimeAgent: Handles requests related to computing bus travel times.
@@ -344,11 +342,11 @@ walker:pub agentAI {
 
     Returns:
         List of walkerType: An enum values indicating which walkers should handle the request.
-                   
+
     Examples:
         >>> find_next_walkers("How long does it take to get from Colombo to Jaffna?")
             walkerType.computeBusTimeAgent
-        
+
         >>> find_next_walkers("Show me routes from Colombo to Kandy")
             walkerType.findRoutesAgent"""
     def find_next_walker(user_input:str,chat_history:list[str]) -> walkerType by llm();
@@ -359,18 +357,18 @@ walker:pub agentAI {
                             query related to buses or general chat.
         Returns:
             chatType: An enum value indicating which chat type the {user_input} belongs to.
-        
+
         Examples:
             >>> select_chat_type("Tell me a joke")
             chatType.general
-            
+
             >>> select_chat_type("Find me a bus from Colombo to Kandy")
             chatType.bus_search"""
     def select_chat_type(user_input:str) -> chatType by llm();
 
     def generate_response(chat_history:list[str], user_input:str) -> str by llm();
 
-    can serve with `root entry{
+    can serve with Root entry {
 
         chat_category: str;
         next_walker: walkerType;
@@ -394,7 +392,7 @@ walker:pub agentAI {
             next_walker = self.find_next_walker(self.user_input, self.chat_history);
             print("Next walker determined: ", next_walker);
 
-        }except e{
+        }except Exception as e{
             report {
                 "user_input": self.user_input,
                 "response": "Sorry, Service is currently unavailable. Please try again later.",
@@ -403,31 +401,31 @@ walker:pub agentAI {
         }
 
         match next_walker.value{
-            
+
             case "computeBusTimeAgent":
-                result = root spawn computeBusTimeAgent(user_input=self.user_input,response="");
-                print("result",result);
+                time_result = root spawn computeBusTimeAgent(user_input=self.user_input,response="");
+                print("result",time_result);
                 self.chat_history.append(f"User: {self.user_input}");
-                self.chat_history.append(f"Agent: {result.response}");
+                self.chat_history.append(f"Agent: {time_result.response}");
                 print("Final chat_history",self.chat_history);
 
-                self.response = result.response;
+                self.response = time_result.response;
                 report {
                     "user_input": self.user_input,
                     "response": self.response,
                 };
                 return;
-                
+
             case "findRoutesAgent":
                 cities = extract_city_details(user_input=self.user_input);
                 print("start_city: ", cities.start_city);
                 print("end_city: ", cities.end_city);
-                result = root spawn findRoutesAgent(from_city_name=cities.start_city, to_city_name=cities.end_city);
-                print("result",result);
-                
+                routes_result = root spawn findRoutesAgent(from_city_name=cities.start_city, to_city_name=cities.end_city);
+                print("result",routes_result);
+
                 self.chat_history.append(f"User: {self.user_input}");
-                if (len(result.routes) > 0) {
-                    self.chat_history.append(f"findRoutesAgent: Available routes from {cities.start_city} to {cities.end_city} are: " + ", ".join(result.routes));
+                if (len(routes_result.routes) > 0) {
+                    self.chat_history.append(f"findRoutesAgent: Available routes from {cities.start_city} to {cities.end_city} are: " + ", ".join(routes_result.routes));
                 } else {
                     self.chat_history.append(f"findRoutesAgent: No routes found from {cities.start_city} to {cities.end_city}");
                 }
@@ -436,7 +434,7 @@ walker:pub agentAI {
                 print("Generated Response: ", self.response);
                 self.chat_history.append(f"Agent: {self.response}");
                 print("Final chat_history",self.chat_history);
-                
+
                 report {
                     "user_input": self.user_input,
                     "response": self.response,
@@ -460,14 +458,14 @@ walker:pub agentAI {
                     return;
                 }
 
-                result = root spawn filterBusesAgent(from_city_name=cities.start_city,to_city_name=cities.end_city,start_time=times.start_time,end_time=times.end_time);
+                buses_result = root spawn filterBusesAgent(from_city_name=cities.start_city,to_city_name=cities.end_city,start_time=times.start_time,end_time=times.end_time);
 
                 self.chat_history.append(f"User: {self.user_input}");
-                if(len(result.buses) == 0){
+                if(len(buses_result.buses) == 0){
                     self.chat_history.append(f"filterBusesAgent: No buses found from {cities.start_city} to {cities.end_city} between {times.start_time} and {times.end_time}");
                 }else{
                     bus_string:str = f"filterBusesAgent: Buses found from {cities.start_city} to {cities.end_city} between {times.start_time} and {times.end_time}";
-                    for bus in result.buses{
+                    for bus in buses_result.buses{
                         bus_string += f"found Bus: {bus.bus_id}, {bus.bus_type}, {bus.fare}, {bus.intermediate_stops}";
                     }
                     print(bus_string);
@@ -486,7 +484,7 @@ walker:pub agentAI {
 walker:pub computeBusTimeAgent {
     has user_input: str = "";
     has response: str = "";
-    
+
     def compute_average_speed(bus_type: str) -> float{
         print("tool: average speed called");
         if (bus_type == "normal"){
@@ -495,7 +493,8 @@ walker:pub computeBusTimeAgent {
             return 60.0;
         } elif (bus_type == "luxury"){
             return 80.0;
-        } 
+        }
+        return 0.0;
     }
 
     def compute_stop_delay(intermediate_stops: list[str]) -> float{
@@ -511,57 +510,57 @@ walker:pub computeBusTimeAgent {
         print("Start City: ", cities.start_city.lower());
         print("End City: ", cities.end_city.lower());
 
-        result = root spawn computeIntermediateStops(cities,output_number=0);
+        result = root spawn computeIntermediateStops(cities=cities, output_number=0);
         return result.output_number;
     }
 
     """
     Processes user input to compute bus travel time using ReAct methodology with integrated tools.
-    
-    This function serves as the main orchestrator for travel time calculations, intelligently 
+
+    This function serves as the main orchestrator for travel time calculations, intelligently
     determining which tools to use based on the information provided in the user input.
-    
+
     Args:
         user_input (str): Natural language input from the user describing their travel query.
-                         Should ideally contain bus type, starting city, ending city, and 
+                         Should ideally contain bus type, starting city, ending city, and
                          optionally intermediate stops information.
-    
+
     Returns:
         str: A natural language response containing the computed stop delay time, average speed,
              or available routes.
-    
+
     Tool Usage Logic:
         - If user provides intermediate stops: Uses compute_stop_delay tool directly with the
           provided stops list to calculate delay time.
-        - If user does NOT provide intermediate stops: Automatically uses 
-          compute_number_of_intermediate_stops tool to find the number of stops on the 
+        - If user does NOT provide intermediate stops: Automatically uses
+          compute_number_of_intermediate_stops tool to find the number of stops on the
           shortest route, then uses compute_stop_delay tool with that count.
         - Always uses compute_average_speed tool when bus type information is available.
-    
+
     Available Tools:
         1. compute_average_speed(bus_type: str) -> float:
            Returns average speed in km/h based on bus type (normal: 40, semi_luxury: 60, luxury: 80)
-        
+
         2. compute_stop_delay(intermediate_stops: list[str]) -> float:
            Calculates total delay in minutes based on number of intermediate stops (10 min per stop)
-        
+
         3. compute_number_of_intermediate_stops() -> int:
            Finds the shortest route between cities and returns the number of intermediate stops
-    
+
     Examples:
         >>> route_and_run("How long does it take for a luxury bus from Colombo to Jaffna with stops at Kurunegala and Vavuniya?")
         "Based on the luxury bus specifications and the 2 intermediate stops..."
-        
+
         >>> route_and_run("Travel time for normal bus from Colombo to Kandy")
         "I'll find the route information first. I'll call computeIntermediateStops to get the number of stops..."
     """
     def route_and_run(user_input: str) -> str by llm(method="ReAct",tools=[self.compute_average_speed, self.compute_stop_delay, self.compute_number_of_intermediate_stops]);
 
-    can start with `root entry{
+    can start with Root entry {
 
         self.response = self.route_and_run(user_input=self.user_input);
 
-        print("Computed Response: ", self.response);     
+        print("Computed Response: ", self.response);
     }
 }
 
@@ -569,53 +568,52 @@ walker:pub computeIntermediateStops {
 
     has cities: City_details;
     has output_number: int;
-    
-    can start with `root entry{
+
+    can start with Root entry {
         if (self.cities.start_city == "" or self.cities.end_city == ""){
             print("Insufficient information to compute intermediate stops. Please provide both starting and ending cities.");
         }
         else{
-            visit[-->](`?City: city_type==cityType.start.value, name==self.cities.start_city.lower());
+            visit [-->[?:City, city_type==cityType.start.value, name==self.cities.start_city.lower()]];
 
         }
     }
 
-    can search with City entry{
+    can search with City entry {
 
         if (here.city_type == cityType.start.value and here.name == self.cities.start_city.lower()){
-        
-            filtered_edges = [edge-->(`?City: city_type==cityType.end.value, name==self.cities.end_city.lower())];
-            print("Filtered edges: ", filtered_edges);
-            
-            if (len(filtered_edges) == 0){
+
+            matching_end_cities: list[City] = [-->[?:City, city_type==cityType.end.value, name==self.cities.end_city.lower()]];
+
+            if (len(matching_end_cities) == 0){
                 print("No routes found between ", self.cities.start_city, " and ", self.cities.end_city);
             }
             else{
-                self.min_distance_edge = filtered_edges[0];
-                for item in filtered_edges{
-                    if (item.distance < self.min_distance_edge.distance){
-                        self.min_distance_edge = item;
-                    }
-                    
-                }
-                print("Minimum distance edge: ", self.min_distance_edge);
+                filtered_edges: list[busRoute] = [edge->:busRoute:-> matching_end_cities];
+                print("Filtered edges: ", filtered_edges);
 
-                next_node = [->:busRoute:distance==self.min_distance_edge.distance:->(`?City)](?city_type==cityType.end.value);
+                min_distance_edge: busRoute = filtered_edges[0];
+                for item in filtered_edges{
+                    if (item.distance < min_distance_edge.distance){
+                        min_distance_edge = item;
+                    }
+
+                }
+                print("Minimum distance edge: ", min_distance_edge);
+
+                next_node = [->:busRoute:distance==min_distance_edge.distance:->[?:City, city_type==cityType.end.value]];
                 visit next_node[0];
             }
         }
         elif (here.city_type == cityType.end.value and here.name == self.cities.end_city.lower()){
-            
-            bus_nodes = [->:busEdge:edge_type=="direct":->(`?Bus)];
-            
+
+            bus_nodes = [->:busEdge:edge_type=="direct":->[?:Bus]];
+
             selected_bus = bus_nodes[0]; # the first bus is selected out of the all direct buses
 
             number_of_stops = len(selected_bus.intermediate_stops);
             self.output_number = number_of_stops;
             print("Number of intermediate stops: ", number_of_stops);
-            # print("test");
-        } 
-    }      
+        }
+    }
 }
-
-

@@ -9,6 +9,7 @@
 <!-- Badges -->
 <p>
   <img src="https://img.shields.io/badge/Jac-Language-667eea?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyTDIgNy4yNXY5LjVMMTIgMjJsMTAtNS4yNXYtOS41TDEyIDJ6Ii8+PC9zdmc+" alt="Jac Language"/>
+  <img src="https://img.shields.io/badge/Jac-0.34.17-667eea?style=for-the-badge" alt="Jac Version"/>
   <img src="https://img.shields.io/badge/Jac--Client-Frontend-764ba2?style=for-the-badge" alt="Jac-Client"/>
   <img src="https://img.shields.io/badge/Gemini-2.0%20Flash-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="Gemini"/>
 </p>
@@ -212,12 +213,9 @@ git clone https://github.com/RavimalRanathunga/RouteGo.git
 cd RouteGo
 ```
 
-### Step 3: Create a Python Virtual Environment
-```bash
-python -m venv .venv
-```
+### Step 3: Install the Jac Binary
 
-### Step 4: Activate the Virtual Environment
+Jac 0.34.17 ships as a self-contained native binary — no Python, pip, or Node.js required to install it.
 
 <table>
 <tr>
@@ -225,37 +223,37 @@ python -m venv .venv
 
 **macOS/Linux:**
 ```bash
-source .venv/bin/activate
+curl -fsSL https://raw.githubusercontent.com/jaseci-labs/jaseci/main/scripts/install.sh | bash -s -- --version 0.34.17
 ```
 
 </td>
 <td>
 
 **Windows:**
-```bash
-.venv\Scripts\activate
-```
+
+Use WSL and run the same installer command.
 
 </td>
 </tr>
 </table>
 
-### Step 5: Install Jac and Dependencies
+Verify the install:
 ```bash
-pip install jac-client byllm 
+jac --version
 ```
 
-### Step 6: Navigate to the Route-Go Directory
+### Step 4: Navigate to the Route-Go Directory
 ```bash
 cd route-go-new
 ```
 
-### Step 7: Install Watchdog
+### Step 5: Install Project Dependencies
 ```bash
 jac install --dev
+jac install byllm
 ```
 
-### Step 8: Set Up Environment Variables
+### Step 6: Set Up Environment Variables
 
 <table>
 <tr>
@@ -263,7 +261,7 @@ jac install --dev
 
 **macOS/Linux:**
 ```bash
-export GEMINI_API_KEY="your-api-key"
+export GOOGLE_API_KEY="your-api-key"
 ```
 
 </td>
@@ -271,7 +269,7 @@ export GEMINI_API_KEY="your-api-key"
 
 **Windows (PowerShell):**
 ```powershell
-\$env:GEMINI_API_KEY="your-api-key"
+\$env:GOOGLE_API_KEY="your-api-key"
 ```
 
 </td>
