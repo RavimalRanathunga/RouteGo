@@ -1,4 +1,11 @@
-cl def:pub HeroSection(){
+cl def:pub HeroSection() -> JsxElement {
+        def scroll_to_table(_e: MouseEvent) {
+            element = document.getElementById("bustable");
+            if element {
+                (element as any).scrollIntoView({ "behavior": "smooth" });
+            }
+        }
+
         return <div style={{
                 "display": "flex",
                 "flexDirection": "column",
@@ -13,7 +20,7 @@ cl def:pub HeroSection(){
                 "overflow": "hidden"
             }}
         >
-            
+
             <div style={{
                 "position": "absolute",
                 "top": "20%",
@@ -42,7 +49,7 @@ cl def:pub HeroSection(){
                 "animation": "slideInUp 0.8s ease-out",
                 "zIndex": 1
             }}>
-                
+
                 <div style={{
                     "display": "inline-block",
                     "background": "rgba(255, 255, 255, 0.1)",
@@ -76,7 +83,7 @@ cl def:pub HeroSection(){
                         "WebkitTextFillColor": "transparent"
                     }}>Sri Lanka</span>
                 </h1>
-                
+
                 <p style={{
                     "fontSize": "1.3rem",
                     "marginBottom": "3rem",
@@ -89,7 +96,7 @@ cl def:pub HeroSection(){
                     Discover optimal bus routes across all 25 districts with real-time filtering and intelligent path finding
                 </p>
 
-                
+
                 <div style={{
                     "display": "flex",
                     "gap": "1rem",
@@ -97,13 +104,8 @@ cl def:pub HeroSection(){
                     "marginBottom": "4rem",
                     "flexWrap": "wrap"
                 }}>
-                    <button 
-                        onClick={lambda -> None { 
-                            element = document.getElementById("bustable");
-                            if element {
-                                element.scrollIntoView({ behavior: "smooth" });
-                            }
-                        }}
+                    <button
+                        onClick={scroll_to_table}
                         style={{
                         "background": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                         "color": "white",
@@ -123,7 +125,7 @@ cl def:pub HeroSection(){
                     </button>
                 </div>
 
-                
+
                 <div style={{
                     "display": "grid",
                     "gridTemplateColumns": "repeat(auto-fit, minmax(200px, 1fr))",
@@ -141,8 +143,8 @@ cl def:pub HeroSection(){
                         "transition": "all 0.3s ease"
                     }}
                     >
-                        <div style={{ 
-                            "fontSize": "2.5rem", 
+                        <div style={{
+                            "fontSize": "2.5rem",
                             "marginBottom": "1rem",
                             "background": "linear-gradient(135deg, #667eea, #764ba2)",
                             "borderRadius": "50%",
@@ -166,10 +168,10 @@ cl def:pub HeroSection(){
                         "textAlign": "center",
                         "transition": "all 0.3s ease"
                     }}
-                
+
                     >
-                        <div style={{ 
-                            "fontSize": "2.5rem", 
+                        <div style={{
+                            "fontSize": "2.5rem",
                             "marginBottom": "1rem",
                             "background": "linear-gradient(135deg, #ff6b6b, #ee5a24)",
                             "borderRadius": "50%",
@@ -194,8 +196,8 @@ cl def:pub HeroSection(){
                         "transition": "all 0.3s ease"
                     }}
                     >
-                        <div style={{ 
-                            "fontSize": "2.5rem", 
+                        <div style={{
+                            "fontSize": "2.5rem",
                             "marginBottom": "1rem",
                             "background": "linear-gradient(135deg, #00d2ff, #3a7bd5)",
                             "borderRadius": "50%",
